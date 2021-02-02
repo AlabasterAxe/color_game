@@ -53,8 +53,8 @@ const box_size = 100.0;
 const gap_size = 10.0;
 
 class GameBox {
-  final Offset loc;
-  final Color color;
+  Offset loc;
+  Color color;
 
   GameBox(this.loc, this.color);
 
@@ -100,15 +100,34 @@ class _MyHomePageState extends State<MyHomePage> {
   List<GameBox> slidingRow;
   List<GameBox> slidingColumn;
 
-  List<GameBox> getColumnMates(GameBox box) {
-    return [];
+  List<GameBox> boxes = [
+    GameBox(Offset(.5, .5), Colors.red),
+    GameBox(Offset(.5, -.5), Colors.red),
+    GameBox(Offset(-.5, -.5), Colors.red),
+    GameBox(Offset(-0.5, .5), Colors.red),
+  ];
+
+  List<GameBox> getColumnMates(GameBox tappedBox) {
+    List<GameBox> result = [];
+    for (GameBox box in boxes) {
+      if (tappedBox.loc.dx == box.loc.dx) {
+        result.add(box);
+      }
+    }
+    return result;
   }
 
   List<GameBox> getRowMates(GameBox box) {
-    return [];
+    List<GameBox> result = [];
+    for (GameBox box in boxes) {
+      if (tappedBox.loc.dy == box.loc.dy) {
+        result.add(box);
+      }
+    }
+    return result;
   }
 
-  GameBox getTappedBox(List<GameBox> boxes, Offset globalTapCoords) {
+  GameBox getTappedBox(Offset globalTapCoords) {
     for (GameBox box in boxes) {
       if (box.getRect(MediaQuery.of(context).size).contains(globalTapCoords)) {
         return box;
@@ -119,19 +138,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<GameBox> boxes = [
-      GameBox(Offset(.5, .5), Colors.red),
-      GameBox(Offset(.5, -.5), Colors.red),
-      GameBox(Offset(-.5, -.5), Colors.red),
-      GameBox(Offset(-0.5, .5), Colors.red),
-    ];
-
     return Scaffold(
       body: Center(
         child: GestureDetector(
           onPanStart: (DragStartDetails deets) {
             tapStartLoc = deets.globalPosition;
-            tappedBox = getTappedBox(boxes, tapStartLoc);
+            tappedBox = getTappedBox(tapStartLoc);
+            slidingColumn = getColumnMates(tappedBox);
+            slidingRow = getRowMates(tappedBox);
+            setState(() {
+              for (GameBox box in [...slidingColumn, ...slidingRow]) {
+                box.color = Colors.yellow;
+              }
+              tappedBox.color = Colors.green;
+            });
           },
           onPanUpdate: (DragUpdateDetails deets) {},
           onPanEnd: (DragEndDetails deets) {},
