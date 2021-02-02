@@ -57,6 +57,16 @@ class GameBox {
   final Color color;
 
   GameBox(this.loc, this.color);
+
+  Rect getRect(Size screenSize) {
+    double totalBoxSize = box_size + gap_size / 2;
+    Offset screenCenterOffset =
+        Offset(screenSize.width / 2, screenSize.height / 2);
+    Offset boxCenterOffset = screenCenterOffset + (loc * totalBoxSize);
+
+    return Rect.fromCenter(
+        center: boxCenterOffset, height: totalBoxSize, width: totalBoxSize);
+  }
 }
 
 class GameBoxWidget extends StatelessWidget {
@@ -66,14 +76,11 @@ class GameBoxWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    Offset screenCenterOffset =
-        Offset(screenSize.width / 2, screenSize.height / 2);
-    Offset boxCenterOffset =
-        screenCenterOffset + (box.loc * (box_size + gap_size / 2));
+    Rect boundsRect = box.getRect(screenSize);
 
     return Positioned(
-      top: boxCenterOffset.dy - (box_size + gap_size / 2) / 2,
-      left: boxCenterOffset.dx - (box_size + gap_size / 2) / 2,
+      top: boundsRect.top,
+      left: boundsRect.left,
       child: Padding(
         padding: const EdgeInsets.all(gap_size),
         child: Container(
@@ -87,27 +94,51 @@ class GameBoxWidget extends StatelessWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<GameBox> boxes = [
-    GameBox(Offset(.5, .5), Colors.red),
-    GameBox(Offset(.5, -.5), Colors.red),
-    GameBox(Offset(-.5, -.5), Colors.red),
-    GameBox(Offset(-.5, .5), Colors.red),
-    GameBox(Offset(-1.5, .5), Colors.red),
-  ];
+  Offset tapStartLoc;
+  Offset tapUpdateLoc;
+  GameBox tappedBox;
+  List<GameBox> slidingRow;
+  List<GameBox> slidingColumn;
+
+  List<GameBox> getColumnMates(GameBox box) {
+    return [];
+  }
+
+  List<GameBox> getRowMates(GameBox box) {
+    return [];
+  }
+
+  GameBox getTappedBox(List<GameBox> boxes, Offset globalTapCoords) {
+    for (GameBox box in boxes) {
+      if (box.getRect(MediaQuery.of(context).size).contains(globalTapCoords)) {
+        return box;
+      }
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    List<GameBox> boxes = [
+      GameBox(Offset(.5, .5), Colors.red),
+      GameBox(Offset(.5, -.5), Colors.red),
+      GameBox(Offset(-.5, -.5), Colors.red),
+      GameBox(Offset(-0.5, .5), Colors.red),
+    ];
+
     return Scaffold(
       body: Center(
-        child: Stack(
-            alignment: Alignment.center,
-            children: boxes.map((b) => GameBoxWidget(b)).toList()),
+        child: GestureDetector(
+          onPanStart: (DragStartDetails deets) {
+            tapStartLoc = deets.globalPosition;
+            tappedBox = getTappedBox(boxes, tapStartLoc);
+          },
+          onPanUpdate: (DragUpdateDetails deets) {},
+          onPanEnd: (DragEndDetails deets) {},
+          child: Stack(
+              alignment: Alignment.center,
+              children: boxes.map((b) => GameBoxWidget(b)).toList()),
+        ),
       ),
     );
   }
