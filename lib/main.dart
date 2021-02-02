@@ -51,6 +51,7 @@ class MyHomePage extends StatefulWidget {
 
 const box_size = 100.0;
 const gap_size = 10.0;
+const world_to_offset_ratio = box_size + gap_size;
 
 class GameBox {
   Offset loc;
@@ -59,7 +60,7 @@ class GameBox {
   GameBox(this.loc, this.color);
 
   Rect getRect(Size screenSize) {
-    double totalBoxSize = box_size + gap_size / 2;
+    double totalBoxSize = box_size + gap_size;
     Offset screenCenterOffset =
         Offset(screenSize.width / 2, screenSize.height / 2);
     Offset boxCenterOffset = screenCenterOffset + (loc * totalBoxSize);
@@ -146,14 +147,26 @@ class _MyHomePageState extends State<MyHomePage> {
             tappedBox = getTappedBox(tapStartLoc);
             slidingColumn = getColumnMates(tappedBox);
             slidingRow = getRowMates(tappedBox);
-            setState(() {
-              for (GameBox box in [...slidingColumn, ...slidingRow]) {
-                box.color = Colors.yellow;
-              }
-              tappedBox.color = Colors.green;
-            });
           },
-          onPanUpdate: (DragUpdateDetails deets) {},
+          onPanUpdate: (DragUpdateDetails deets) {
+            tapUpdateLoc = deets.globalPosition;
+            Offset delta = tapUpdateLoc - tapStartLoc;
+            if (delta.dy.abs() > delta.dx.abs()) {
+              setState(() {
+                for (GameBox box in slidingColumn) {
+                  box.loc = box.loc
+                      .translate(0, deets.delta.dy / world_to_offset_ratio);
+                }
+              });
+            } else {
+              setState(() {
+                for (GameBox box in slidingRow) {
+                  box.loc = box.loc
+                      .translate(deets.delta.dx / world_to_offset_ratio, 0);
+                }
+              });
+            }
+          },
           onPanEnd: (DragEndDetails deets) {},
           child: Stack(
               alignment: Alignment.center,
