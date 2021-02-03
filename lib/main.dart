@@ -53,11 +53,20 @@ const box_size = 100.0;
 const gap_size = 10.0;
 const world_to_offset_ratio = box_size + gap_size;
 
+// this offset is rounding to the unit-sized .5 offset grid
+const Offset roundOffset = Offset(.5, .5);
+
 class GameBox {
+  // this is the box's drawn location
   Offset loc;
+
+  // this stores the original location of the box during a drag
+  Offset startLoc;
   Color color;
 
-  GameBox(this.loc, this.color);
+  GameBox(this.loc, this.color) {
+    startLoc = loc;
+  }
 
   Rect getRect(Size screenSize) {
     double totalBoxSize = box_size + gap_size;
@@ -103,9 +112,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<GameBox> boxes = [
     GameBox(Offset(.5, .5), Colors.red),
-    GameBox(Offset(.5, -.5), Colors.red),
-    GameBox(Offset(-.5, -.5), Colors.red),
-    GameBox(Offset(-0.5, .5), Colors.red),
+    GameBox(Offset(.5, -.5), Colors.green),
+    GameBox(Offset(-.5, -.5), Colors.yellow),
+    GameBox(Offset(-0.5, .5), Colors.blue),
   ];
 
   List<GameBox> getColumnMates(GameBox tappedBox) {
@@ -154,20 +163,58 @@ class _MyHomePageState extends State<MyHomePage> {
             if (delta.dy.abs() > delta.dx.abs()) {
               setState(() {
                 for (GameBox box in slidingColumn) {
-                  box.loc = box.loc
-                      .translate(0, deets.delta.dy / world_to_offset_ratio);
+                  box.loc = box.startLoc
+                      .translate(0, delta.dy / world_to_offset_ratio);
                 }
               });
             } else {
               setState(() {
                 for (GameBox box in slidingRow) {
-                  box.loc = box.loc
-                      .translate(deets.delta.dx / world_to_offset_ratio, 0);
+                  box.loc = box.startLoc
+                      .translate(delta.dx / world_to_offset_ratio, 0);
                 }
               });
             }
           },
-          onPanEnd: (DragEndDetails deets) {},
+          onPanEnd: (DragEndDetails deets) {
+            Offset delta = tapUpdateLoc - tapStartLoc;
+            if (delta.dy.abs() > delta.dx.abs()) {
+              setState(() {
+                for (GameBox box in slidingColumn) {
+                  Offset translatedOffset = box.startLoc
+                          .translate(0, delta.dy / world_to_offset_ratio) +
+                      roundOffset;
+
+                  Offset roundedOffset = Offset(
+                          translatedOffset.dx.roundToDouble(),
+                          translatedOffset.dy.roundToDouble()) -
+                      roundOffset;
+                  box.loc = roundedOffset;
+                  box.startLoc = roundedOffset;
+                }
+              });
+            } else {
+              setState(() {
+                for (GameBox box in slidingRow) {
+                  Offset translatedOffset = box.startLoc
+                          .translate(delta.dx / world_to_offset_ratio, 0) +
+                      roundOffset;
+
+                  Offset roundedOffset = Offset(
+                          translatedOffset.dx.roundToDouble(),
+                          translatedOffset.dy.roundToDouble()) -
+                      roundOffset;
+                  box.loc = roundedOffset;
+                  box.startLoc = roundedOffset;
+                }
+              });
+            }
+            tappedBox = null;
+            slidingColumn = null;
+            slidingRow = null;
+            // snap boxes
+            // update start locations
+          },
           child: Stack(
               alignment: Alignment.center,
               children: boxes.map((b) => GameBoxWidget(b)).toList()),
