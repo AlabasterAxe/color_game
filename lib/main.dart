@@ -66,6 +66,7 @@ class GameBox {
   Offset startLoc;
   Color color;
   bool userDragged = false;
+  Key key = UniqueKey();
 
   GameBox(this.loc, this.color) {
     startLoc = loc;
@@ -86,10 +87,18 @@ List<GameBox> generateGameBoxes() {
   Random r = Random();
   List<GameBox> result = [];
   List<Color> colors = [Colors.red, Colors.yellow, Colors.green, Colors.blue];
-  for (double x = -5.5; x <= 5.5; x++) {
-    for (double y = -5.5; y <= 5.5; y++) {
-      int colorIdx = r.nextInt(colors.length);
-      result.add(GameBox(Offset(x, y), colors[colorIdx]));
+  for (double x = -2.5; x <= 2.5; x++) {
+    for (double y = -2.5; y <= 2.5; y++) {
+      List<Color> availableColors = [...colors];
+      for (int i = result.length - 1; i >= 0; i--) {
+        if (result[i].loc.dx == x && result[i].loc.dy == y - 1) {
+          availableColors.remove(result[i].color);
+        } else if (result[i].loc.dy == y && result[i].loc.dx == x - 1) {
+          availableColors.remove(result[i].color);
+        }
+      }
+      int colorIdx = r.nextInt(availableColors.length);
+      result.add(GameBox(Offset(x, y), availableColors[colorIdx]));
     }
   }
 
@@ -106,7 +115,8 @@ class GameBoxWidget extends StatelessWidget {
     Rect boundsRect = box.getRect(screenSize);
 
     return AnimatedPositioned(
-      duration: Duration(milliseconds: box.userDragged ? 0 : 200),
+      key: box.key,
+      duration: Duration(milliseconds: box.userDragged ? 0 : 1000),
       curve: Curves.easeInOut,
       top: boundsRect.top,
       left: boundsRect.left,
@@ -159,6 +169,54 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
     return null;
+  }
+
+  Map<double, List<GameBox>> getRows() {
+    Map<double, List<GameBox>> result = Map();
+    for (GameBox box in boxes) {
+      List<GameBox> row = result.putIfAbsent(box.loc.dy, () => []);
+      row.add(box);
+      row.sort((a, b) => (a.loc.dx - b.loc.dx).ceil());
+    }
+
+    return result;
+  }
+
+  Map<double, List<GameBox>> getCols() {
+    Map<double, List<GameBox>> result = Map();
+    for (GameBox box in boxes) {
+      List<GameBox> col = result.putIfAbsent(box.loc.dx, () => []);
+      col.add(box);
+    }
+
+    return result;
+  }
+
+  void removeContiguousColors(Iterable<List<GameBox>> rowsorcols) {
+    // search for contiguous rows
+    // search for contiguous columns
+    Set<GameBox> boxesToRemove = Set();
+    for (List<GameBox> roworcol in rowsorcols) {
+      List<GameBox> streak = [];
+      Color streakColor;
+      for (GameBox box in roworcol) {
+        if (box.color != streakColor) {
+          if (streak.length >= 3) {
+            boxesToRemove.addAll(streak);
+          }
+          streak = [box];
+          streakColor = box.color;
+        } else {
+          streak.add(box);
+        }
+      }
+      if (streak.length >= 3) {
+        boxesToRemove.addAll(streak);
+      }
+      // check streak at the end
+    }
+
+    boxes.removeWhere((GameBox b) => boxesToRemove.contains(b));
   }
 
   @override
@@ -219,6 +277,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   box.loc = roundedOffset;
                   box.startLoc = roundedOffset;
                   box.userDragged = false;
+                  removeContiguousColors(getRows().values);
                 }
               });
             } else {
@@ -235,14 +294,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   box.loc = roundedOffset;
                   box.startLoc = roundedOffset;
                   box.userDragged = false;
+                  removeContiguousColors(getCols().values);
                 }
               });
             }
+            setState(() {});
             tappedBox = null;
             slidingColumn = null;
             slidingRow = null;
-            // snap boxes
-            // update start locations
           },
           child: Stack(
               alignment: Alignment.center,
