@@ -187,21 +187,29 @@ class _MyHomePageState extends State<MyHomePage> {
     for (GameBox box in boxes) {
       List<GameBox> col = result.putIfAbsent(box.loc.dx, () => []);
       col.add(box);
+      col.sort((a, b) => (a.loc.dy - b.loc.dy).ceil());
     }
 
     return result;
   }
 
-  void removeContiguousColors(Iterable<List<GameBox>> rowsorcols) {
-    // search for contiguous rows
-    // search for contiguous columns
+  // returns affected rows/columns
+  List<List<GameBox>> removeContiguousColors(
+      Iterable<List<GameBox>> rowsorcols) {
     Set<GameBox> boxesToRemove = Set();
+    List<List<GameBox>> affectedRowOrCols = [];
     for (List<GameBox> roworcol in rowsorcols) {
       List<GameBox> streak = [];
       Color streakColor;
+      bool hadStreak = false;
+      Offset lastBoxLoc;
       for (GameBox box in roworcol) {
-        if (box.color != streakColor) {
+        if (box.color != streakColor ||
+            // if there's a gap don't count it as a streak
+            (box.loc.dx - lastBoxLoc.dx).abs() > 1 ||
+            (box.loc.dy - lastBoxLoc.dy).abs() > 1) {
           if (streak.length >= 3) {
+            hadStreak = true;
             boxesToRemove.addAll(streak);
           }
           streak = [box];
@@ -209,14 +217,72 @@ class _MyHomePageState extends State<MyHomePage> {
         } else {
           streak.add(box);
         }
+        lastBoxLoc = box.loc;
       }
       if (streak.length >= 3) {
+        hadStreak = true;
         boxesToRemove.addAll(streak);
       }
-      // check streak at the end
+      if (hadStreak) {
+        affectedRowOrCols.add(roworcol);
+        roworcol.removeWhere((GameBox b) => boxesToRemove.contains(b));
+      }
     }
 
     boxes.removeWhere((GameBox b) => boxesToRemove.contains(b));
+    return affectedRowOrCols;
+  }
+
+  void collapseRowGaps(Iterable<List<GameBox>> rows) {
+    double minX;
+    double maxX;
+    double sumX = 0;
+    for (GameBox box in boxes) {
+      if (minX == null || minX > box.loc.dx) {
+        minX = box.loc.dx;
+      }
+      if (maxX == null || maxX < box.loc.dx) {
+        maxX = box.loc.dx;
+      }
+      sumX += box.loc.dx;
+    }
+    double centerPosition = (sumX / boxes.length).round() + .5;
+    for (List<GameBox> row in rows) {
+      if (row.isEmpty) {
+        continue;
+      }
+
+      double boxPosition = centerPosition - (row.length / 2).round();
+      for (GameBox box in row) {
+        box.loc = Offset(boxPosition, box.loc.dy);
+        box.startLoc = Offset(boxPosition, box.loc.dy);
+        boxPosition++;
+      }
+    }
+  }
+
+  void collapseColGaps(Iterable<List<GameBox>> cols) {
+    double minY;
+    double maxY;
+    double sumY = 0;
+    for (GameBox box in boxes) {
+      if (minY == null || minY > box.loc.dy) {
+        minY = box.loc.dy;
+      }
+      if (maxY == null || maxY < box.loc.dy) {
+        maxY = box.loc.dy;
+      }
+      sumY += box.loc.dy;
+    }
+    double centerPosition = (sumY / boxes.length).round() + .5;
+    for (List<GameBox> col in cols) {
+      double boxPosition = centerPosition - (col.length / 2).round();
+      for (GameBox box in col) {
+        box.loc = Offset(box.loc.dx, boxPosition);
+        box.startLoc = Offset(box.loc.dx, boxPosition);
+        boxPosition++;
+      }
+    }
   }
 
   @override
@@ -277,7 +343,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   box.loc = roundedOffset;
                   box.startLoc = roundedOffset;
                   box.userDragged = false;
-                  removeContiguousColors(getRows().values);
+                  var affectedRows = removeContiguousColors(getRows().values);
+                  collapseRowGaps(getRows().values);
+                  // collapseColGaps(getCols().values);
                 }
               });
             } else {
@@ -294,11 +362,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   box.loc = roundedOffset;
                   box.startLoc = roundedOffset;
                   box.userDragged = false;
-                  removeContiguousColors(getCols().values);
+                  var affectedCols = removeContiguousColors(getCols().values);
+                  // collapseRowGaps(getRows().values);
+                  collapseColGaps(getCols().values);
                 }
               });
             }
-            setState(() {});
             tappedBox = null;
             slidingColumn = null;
             slidingRow = null;
