@@ -88,8 +88,8 @@ List<GameBox> generateGameBoxes() {
   Random r = Random();
   List<GameBox> result = [];
   List<Color> colors = [Colors.red, Colors.yellow, Colors.green, Colors.blue];
-  for (double x = -1.5; x <= 1.5; x++) {
-    for (double y = -1.5; y <= 1.5; y++) {
+  for (double x = -2.5; x <= 2.5; x++) {
+    for (double y = -2.5; y <= 2.5; y++) {
       List<Color> availableColors = [...colors];
       for (int i = result.length - 1; i >= 0; i--) {
         if (result[i].loc.dx == x && result[i].loc.dy == y - 1) {
@@ -108,7 +108,7 @@ List<GameBox> generateGameBoxes() {
 
 class GameBoxWidget extends StatelessWidget {
   final GameBox box;
-  GameBoxWidget({key, this.box}) : super(key: key);
+  GameBoxWidget({this.box}) : super(key: box.key);
 
   @override
   Widget build(BuildContext context) {
@@ -142,6 +142,9 @@ class _MyHomePageState extends State<MyHomePage> {
   List<GameBox> slidingColumn;
   Timer boardUpdateTimer;
   bool _settled = true;
+
+  // if they're not dragging col, they're dragging row;
+  bool draggingCol;
 
   List<GameBox> boxes = generateGameBoxes();
 
@@ -190,33 +193,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<GameBox> _gravitize() {
-    double minX;
-    double maxX;
-    double sumX = 0;
-    double minY;
-    double maxY;
-    double sumY = 0;
+    Offset sum = Offset(0, 0);
     for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
-      if (minX == null || minX > box.loc.dx) {
-        minX = box.loc.dx;
-      }
-      if (maxX == null || maxX < box.loc.dx) {
-        maxX = box.loc.dx;
-      }
-
-      if (minY == null || minY > box.loc.dy) {
-        minY = box.loc.dy;
-      }
-      if (maxY == null || maxY < box.loc.dy) {
-        maxY = box.loc.dy;
-      }
-
-      sumX += box.loc.dx;
-      sumY += box.loc.dy;
+      sum += box.loc;
     }
 
-    Offset gravitationalCenter =
-        Offset(sumX / boxes.length, sumY / boxes.length);
+    Offset gravitationalCenter = sum / boxes.length.toDouble();
     List<GameBox> distSortedBoxes = [...boxes];
 
     distSortedBoxes.sort((a, b) => (gravitationalCenter - a.loc)
@@ -225,22 +207,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
     List<GameBox> affectedBoxes = [];
     for (GameBox box in distSortedBoxes) {
+      List<double> cardinals = [0, pi / 2, pi, (3 * pi) / 2, 2 * pi];
       Offset centerOffset = gravitationalCenter - box.loc;
 
-      // we implicitly pick one just because I don't want diagonal moves, for now
-      if (centerOffset.dx.abs() > centerOffset.dy.abs()) {
-        Offset desiredLoc = box.loc.translate(centerOffset.dx.sign, 0);
-        if (getBoxAtPosition(desiredLoc) == null) {
-          affectedBoxes.add(box);
-          box.loc = desiredLoc;
-          box.startLoc = desiredLoc;
+      List<double> candidateCardinals = [];
+      double prevDist = 0;
+      for (double cardinal in cardinals) {
+        double dist = (cardinal - centerOffset.direction).abs();
+        if (dist < pi / 3) {
+          candidateCardinals.add(cardinal);
+          if (dist < prevDist) {
+            candidateCardinals.insert(0, cardinal);
+          } else {
+            candidateCardinals.add(cardinal);
+          }
+          prevDist = dist;
         }
-      } else {
-        Offset desiredLoc = box.loc.translate(0, centerOffset.dy.sign);
+      }
+
+      for (double cardinal in candidateCardinals) {
+        Offset desiredLoc = box.loc + Offset.fromDirection(cardinal, 1);
         if (getBoxAtPosition(desiredLoc) == null) {
           affectedBoxes.add(box);
           box.loc = desiredLoc;
           box.startLoc = desiredLoc;
+          break;
         }
       }
     }
@@ -403,7 +394,16 @@ class _MyHomePageState extends State<MyHomePage> {
             onPanUpdate: (DragUpdateDetails deets) {
               tapUpdateLoc = deets.globalPosition;
               Offset delta = tapUpdateLoc - tapStartLoc;
-              if (delta.dy.abs() > delta.dx.abs()) {
+              // once the user is outside of a small window they can't change
+              // whether they're dragging the column or the row
+              if (delta.distance < box_size / 2) {
+                if (delta.dy.abs() > delta.dx.abs()) {
+                  draggingCol = true;
+                } else {
+                  draggingCol = false;
+                }
+              }
+              if (draggingCol) {
                 setState(() {
                   // put the other boxes back
                   for (GameBox box in slidingRow) {
@@ -433,7 +433,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             onPanEnd: (DragEndDetails deets) {
               Offset delta = tapUpdateLoc - tapStartLoc;
-              if (delta.dy.abs() > delta.dx.abs()) {
+              if (draggingCol) {
                 setState(() {
                   for (GameBox box in slidingColumn) {
                     Offset translatedOffset = box.startLoc
@@ -449,7 +449,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     box.userDragged = false;
                   }
                 });
-                updateBoardTillSettled();
               } else {
                 setState(() {
                   for (GameBox box in slidingRow) {
@@ -466,39 +465,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     box.userDragged = false;
                   }
                 });
-                updateBoardTillSettled();
               }
               tappedBox = null;
               slidingColumn = null;
               slidingRow = null;
+              updateBoardTillSettled();
             },
             child: Column(
               children: [
                 Expanded(
                   child: Stack(
                       alignment: Alignment.center,
-                      children: boxes
-                          .map((b) => GameBoxWidget(box: b, key: b.key))
-                          .toList()),
+                      children:
+                          boxes.map((b) => GameBoxWidget(box: b)).toList()),
                 ),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      RaisedButton(
-                          child: Text("Remove Contiguous"),
-                          onPressed: () {
-                            setState(() {
-                              _removeContiguous();
-                            });
-                          }),
-                      RaisedButton(
-                          child: Text("Gravitize"),
-                          onPressed: () {
-                            setState(() {
-                              _gravitize();
-                            });
-                          }),
-                    ])
               ],
             )),
       ),
