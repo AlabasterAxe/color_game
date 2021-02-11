@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -139,8 +140,16 @@ class _MyHomePageState extends State<MyHomePage> {
   GameBox tappedBox;
   List<GameBox> slidingRow;
   List<GameBox> slidingColumn;
+  Timer boardUpdateTimer;
+  bool _settled = true;
 
   List<GameBox> boxes = generateGameBoxes();
+
+  @override
+  void dispose() {
+    boardUpdateTimer.cancel();
+    super.dispose();
+  }
 
   List<GameBox> getColumnMates(GameBox tappedBox) {
     List<GameBox> result = [];
@@ -169,6 +178,92 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
     return null;
+  }
+
+  GameBox getBoxAtPosition(Offset loc) {
+    for (GameBox box in boxes) {
+      if ((box.loc - loc).distanceSquared < .1) {
+        return box;
+      }
+    }
+    return null;
+  }
+
+  List<GameBox> _gravitize() {
+    double minX;
+    double maxX;
+    double sumX = 0;
+    double minY;
+    double maxY;
+    double sumY = 0;
+    for (GameBox box in boxes) {
+      if (minX == null || minX > box.loc.dx) {
+        minX = box.loc.dx;
+      }
+      if (maxX == null || maxX < box.loc.dx) {
+        maxX = box.loc.dx;
+      }
+
+      if (minY == null || minY > box.loc.dy) {
+        minY = box.loc.dy;
+      }
+      if (maxY == null || maxY < box.loc.dy) {
+        maxY = box.loc.dy;
+      }
+
+      sumX += box.loc.dx;
+      sumY += box.loc.dy;
+    }
+
+    Offset gravitationalCenter =
+        Offset(sumX / boxes.length, sumY / boxes.length);
+    List<GameBox> distSortedBoxes = [...boxes];
+
+    distSortedBoxes.sort((a, b) => (gravitationalCenter - a.loc)
+        .distanceSquared
+        .compareTo((gravitationalCenter - b.loc).distanceSquared));
+
+    List<GameBox> affectedBoxes = [];
+    for (GameBox box in distSortedBoxes) {
+      Offset centerOffset = gravitationalCenter - box.loc;
+
+      // we implicitly pick one just because I don't want diagonal moves, for now
+      if (centerOffset.dx.abs() > centerOffset.dy.abs()) {
+        Offset desiredLoc = box.loc.translate(centerOffset.dx.sign, 0);
+        if (getBoxAtPosition(desiredLoc) == null) {
+          affectedBoxes.add(box);
+          box.loc = desiredLoc;
+          box.startLoc = desiredLoc;
+        }
+      } else {
+        Offset desiredLoc = box.loc.translate(0, centerOffset.dy.sign);
+        if (getBoxAtPosition(desiredLoc) == null) {
+          affectedBoxes.add(box);
+          box.loc = desiredLoc;
+          box.startLoc = desiredLoc;
+        }
+      }
+    }
+    return affectedBoxes;
+  }
+
+  void updateBoardTillSettled() {
+    boardUpdateTimer = Timer.periodic(Duration(milliseconds: 750), (t) {
+      setState(() {
+        var affectedRows = _removeContiguous();
+        if (affectedRows.isNotEmpty) {
+          _settled = false;
+        }
+        List<GameBox> affectedBoxes = [];
+        if (!_settled) {
+          affectedBoxes = _gravitize();
+        }
+        if (affectedRows.isEmpty && affectedBoxes.isEmpty) {
+          t.cancel();
+          _settled = true;
+        }
+      });
+    });
   }
 
   Map<double, List<GameBox>> getRows() {
@@ -285,97 +380,123 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  List<List<GameBox>> _removeContiguous() {
+    List<List<GameBox>> result = [];
+    result.addAll(removeContiguousColors(getRows().values));
+    result.addAll(removeContiguousColors(getCols().values));
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: GestureDetector(
-          onPanStart: (DragStartDetails deets) {
-            tapStartLoc = deets.globalPosition;
-            tappedBox = getTappedBox(tapStartLoc);
-            slidingColumn = getColumnMates(tappedBox);
-            slidingRow = getRowMates(tappedBox);
-          },
-          onPanUpdate: (DragUpdateDetails deets) {
-            tapUpdateLoc = deets.globalPosition;
-            Offset delta = tapUpdateLoc - tapStartLoc;
-            if (delta.dy.abs() > delta.dx.abs()) {
-              setState(() {
-                // put the other boxes back
-                for (GameBox box in slidingRow) {
-                  box.loc = box.startLoc;
-                  box.userDragged = false;
-                }
-                for (GameBox box in slidingColumn) {
-                  box.loc = box.startLoc
-                      .translate(0, delta.dy / world_to_offset_ratio);
-                  box.userDragged = true;
-                }
-              });
-            } else {
-              setState(() {
-                // put the other boxes back
-                for (GameBox box in slidingColumn) {
-                  box.loc = box.startLoc;
-                  box.userDragged = false;
-                }
-                for (GameBox box in slidingRow) {
-                  box.loc = box.startLoc
-                      .translate(delta.dx / world_to_offset_ratio, 0);
-                  box.userDragged = true;
-                }
-              });
-            }
-          },
-          onPanEnd: (DragEndDetails deets) {
-            Offset delta = tapUpdateLoc - tapStartLoc;
-            if (delta.dy.abs() > delta.dx.abs()) {
-              setState(() {
-                for (GameBox box in slidingColumn) {
-                  Offset translatedOffset = box.startLoc
-                          .translate(0, delta.dy / world_to_offset_ratio) +
-                      roundOffset;
+            onPanStart: (DragStartDetails deets) {
+              tapStartLoc = deets.globalPosition;
+              tappedBox = getTappedBox(tapStartLoc);
+              slidingColumn = getColumnMates(tappedBox);
+              slidingRow = getRowMates(tappedBox);
+            },
+            onPanUpdate: (DragUpdateDetails deets) {
+              tapUpdateLoc = deets.globalPosition;
+              Offset delta = tapUpdateLoc - tapStartLoc;
+              if (delta.dy.abs() > delta.dx.abs()) {
+                setState(() {
+                  // put the other boxes back
+                  for (GameBox box in slidingRow) {
+                    box.loc = box.startLoc;
+                    box.userDragged = false;
+                  }
+                  for (GameBox box in slidingColumn) {
+                    box.loc = box.startLoc
+                        .translate(0, delta.dy / world_to_offset_ratio);
+                    box.userDragged = true;
+                  }
+                });
+              } else {
+                setState(() {
+                  // put the other boxes back
+                  for (GameBox box in slidingColumn) {
+                    box.loc = box.startLoc;
+                    box.userDragged = false;
+                  }
+                  for (GameBox box in slidingRow) {
+                    box.loc = box.startLoc
+                        .translate(delta.dx / world_to_offset_ratio, 0);
+                    box.userDragged = true;
+                  }
+                });
+              }
+            },
+            onPanEnd: (DragEndDetails deets) {
+              Offset delta = tapUpdateLoc - tapStartLoc;
+              if (delta.dy.abs() > delta.dx.abs()) {
+                setState(() {
+                  for (GameBox box in slidingColumn) {
+                    Offset translatedOffset = box.startLoc
+                            .translate(0, delta.dy / world_to_offset_ratio) +
+                        roundOffset;
 
-                  Offset roundedOffset = Offset(
-                          translatedOffset.dx.roundToDouble(),
-                          translatedOffset.dy.roundToDouble()) -
-                      roundOffset;
-                  box.loc = roundedOffset;
-                  box.startLoc = roundedOffset;
-                  box.userDragged = false;
-                  var affectedRows = removeContiguousColors(getRows().values);
-                  collapseRowGaps(getRows().values);
-                  // collapseColGaps(getCols().values);
-                }
-              });
-            } else {
-              setState(() {
-                for (GameBox box in slidingRow) {
-                  Offset translatedOffset = box.startLoc
-                          .translate(delta.dx / world_to_offset_ratio, 0) +
-                      roundOffset;
+                    Offset roundedOffset = Offset(
+                            translatedOffset.dx.roundToDouble(),
+                            translatedOffset.dy.roundToDouble()) -
+                        roundOffset;
+                    box.loc = roundedOffset;
+                    box.startLoc = roundedOffset;
+                    box.userDragged = false;
+                  }
+                });
+                updateBoardTillSettled();
+              } else {
+                setState(() {
+                  for (GameBox box in slidingRow) {
+                    Offset translatedOffset = box.startLoc
+                            .translate(delta.dx / world_to_offset_ratio, 0) +
+                        roundOffset;
 
-                  Offset roundedOffset = Offset(
-                          translatedOffset.dx.roundToDouble(),
-                          translatedOffset.dy.roundToDouble()) -
-                      roundOffset;
-                  box.loc = roundedOffset;
-                  box.startLoc = roundedOffset;
-                  box.userDragged = false;
-                  var affectedCols = removeContiguousColors(getCols().values);
-                  // collapseRowGaps(getRows().values);
-                  collapseColGaps(getCols().values);
-                }
-              });
-            }
-            tappedBox = null;
-            slidingColumn = null;
-            slidingRow = null;
-          },
-          child: Stack(
-              alignment: Alignment.center,
-              children: boxes.map((b) => GameBoxWidget(b)).toList()),
-        ),
+                    Offset roundedOffset = Offset(
+                            translatedOffset.dx.roundToDouble(),
+                            translatedOffset.dy.roundToDouble()) -
+                        roundOffset;
+                    box.loc = roundedOffset;
+                    box.startLoc = roundedOffset;
+                    box.userDragged = false;
+                  }
+                });
+                updateBoardTillSettled();
+              }
+              tappedBox = null;
+              slidingColumn = null;
+              slidingRow = null;
+            },
+            child: Column(
+              children: [
+                Expanded(
+                  child: Stack(
+                      alignment: Alignment.center,
+                      children: boxes.map((b) => GameBoxWidget(b)).toList()),
+                ),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      RaisedButton(
+                          child: Text("Remove Contiguous"),
+                          onPressed: () {
+                            setState(() {
+                              _removeContiguous();
+                            });
+                          }),
+                      RaisedButton(
+                          child: Text("Gravitize"),
+                          onPressed: () {
+                            setState(() {
+                              _gravitize();
+                            });
+                          }),
+                    ])
+              ],
+            )),
       ),
     );
   }
