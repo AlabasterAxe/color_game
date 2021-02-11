@@ -88,8 +88,8 @@ List<GameBox> generateGameBoxes() {
   Random r = Random();
   List<GameBox> result = [];
   List<Color> colors = [Colors.red, Colors.yellow, Colors.green, Colors.blue];
-  for (double x = -2.5; x <= 2.5; x++) {
-    for (double y = -2.5; y <= 2.5; y++) {
+  for (double x = -1.5; x <= 1.5; x++) {
+    for (double y = -1.5; y <= 1.5; y++) {
       List<Color> availableColors = [...colors];
       for (int i = result.length - 1; i >= 0; i--) {
         if (result[i].loc.dx == x && result[i].loc.dy == y - 1) {
@@ -108,7 +108,7 @@ List<GameBox> generateGameBoxes() {
 
 class GameBoxWidget extends StatelessWidget {
   final GameBox box;
-  GameBoxWidget(this.box);
+  GameBoxWidget({key, this.box}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +116,7 @@ class GameBoxWidget extends StatelessWidget {
     Rect boundsRect = box.getRect(screenSize);
 
     return AnimatedPositioned(
-      key: box.key,
+      // key: box.key,
       duration: Duration(milliseconds: box.userDragged ? 0 : 1000),
       curve: Curves.easeInOut,
       top: boundsRect.top,
@@ -153,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<GameBox> getColumnMates(GameBox tappedBox) {
     List<GameBox> result = [];
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if (tappedBox.loc.dx == box.loc.dx) {
         result.add(box);
       }
@@ -163,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<GameBox> getRowMates(GameBox box) {
     List<GameBox> result = [];
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if (tappedBox.loc.dy == box.loc.dy) {
         result.add(box);
       }
@@ -172,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   GameBox getTappedBox(Offset globalTapCoords) {
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if (box.getRect(MediaQuery.of(context).size).contains(globalTapCoords)) {
         return box;
       }
@@ -181,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   GameBox getBoxAtPosition(Offset loc) {
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if ((box.loc - loc).distanceSquared < .1) {
         return box;
       }
@@ -196,7 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
     double minY;
     double maxY;
     double sumY = 0;
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if (minX == null || minX > box.loc.dx) {
         minX = box.loc.dx;
       }
@@ -248,7 +248,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void updateBoardTillSettled() {
-    boardUpdateTimer = Timer.periodic(Duration(milliseconds: 750), (t) {
+    boardUpdateTimer = Timer.periodic(Duration(milliseconds: 1000), (t) {
       setState(() {
         var affectedRows = _removeContiguous();
         if (affectedRows.isNotEmpty) {
@@ -268,7 +268,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Map<double, List<GameBox>> getRows() {
     Map<double, List<GameBox>> result = Map();
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       List<GameBox> row = result.putIfAbsent(box.loc.dy, () => []);
       row.add(box);
       row.sort((a, b) => (a.loc.dx - b.loc.dx).ceil());
@@ -279,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Map<double, List<GameBox>> getCols() {
     Map<double, List<GameBox>> result = Map();
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       List<GameBox> col = result.putIfAbsent(box.loc.dx, () => []);
       col.add(box);
       col.sort((a, b) => (a.loc.dy - b.loc.dy).ceil());
@@ -298,7 +298,8 @@ class _MyHomePageState extends State<MyHomePage> {
       Color streakColor;
       bool hadStreak = false;
       Offset lastBoxLoc;
-      for (GameBox box in roworcol) {
+      for (GameBox box
+          in roworcol.where((b) => b.color != Colors.transparent)) {
         if (box.color != streakColor ||
             // if there's a gap don't count it as a streak
             (box.loc.dx - lastBoxLoc.dx).abs() > 1 ||
@@ -324,6 +325,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
+    // boxesToRemove.forEach((GameBox b) => b.color = Colors.transparent);
     boxes.removeWhere((GameBox b) => boxesToRemove.contains(b));
     return affectedRowOrCols;
   }
@@ -332,7 +334,7 @@ class _MyHomePageState extends State<MyHomePage> {
     double minX;
     double maxX;
     double sumX = 0;
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if (minX == null || minX > box.loc.dx) {
         minX = box.loc.dx;
       }
@@ -360,7 +362,7 @@ class _MyHomePageState extends State<MyHomePage> {
     double minY;
     double maxY;
     double sumY = 0;
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if (minY == null || minY > box.loc.dy) {
         minY = box.loc.dy;
       }
@@ -475,7 +477,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 Expanded(
                   child: Stack(
                       alignment: Alignment.center,
-                      children: boxes.map((b) => GameBoxWidget(b)).toList()),
+                      children: boxes
+                          .map((b) => GameBoxWidget(box: b, key: b.key))
+                          .toList()),
                 ),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
