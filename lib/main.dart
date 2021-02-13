@@ -3,12 +3,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+const RELATIVE_GAP_SIZE = 1 / 12;
+const GRID_SIZE = 6;
+
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,13 +25,6 @@ class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
-
-const box_size = 60.0;
-const gap_size = 5.0;
-const world_to_offset_ratio = box_size + gap_size;
-
-// this offset is for rounding to the unit-sized .5 offset grid
-const Offset roundOffset = Offset(.5, .5);
 
 class GameBox {
   // this is the box's drawn location
@@ -46,7 +41,7 @@ class GameBox {
   }
 
   Rect getRect(Size screenSize) {
-    double totalBoxSize = box_size + gap_size;
+    double totalBoxSize = screenSize.shortestSide / GRID_SIZE;
     Offset screenCenterOffset =
         Offset(screenSize.width / 2, screenSize.height / 2);
     Offset boxCenterOffset = screenCenterOffset + (loc * totalBoxSize);
@@ -86,6 +81,7 @@ class GameBoxWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     Rect boundsRect = box.getRect(screenSize);
+    double gapSize = boundsRect.width * RELATIVE_GAP_SIZE;
 
     return AnimatedPositioned(
       // key: box.key,
@@ -94,10 +90,10 @@ class GameBoxWidget extends StatelessWidget {
       top: boundsRect.top,
       left: boundsRect.left,
       child: Padding(
-          padding: const EdgeInsets.all(gap_size),
+          padding: EdgeInsets.all(gapSize / 2),
           child: Container(
-              height: box_size,
-              width: box_size,
+              height: boundsRect.height - gapSize,
+              width: boundsRect.width - gapSize,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 color: box.color,
@@ -336,9 +332,10 @@ class _MyHomePageState extends State<MyHomePage> {
             onPanUpdate: (DragUpdateDetails deets) {
               tapUpdateLoc = deets.globalPosition;
               Offset delta = tapUpdateLoc - tapStartLoc;
+              Rect boxSize = tappedBox.getRect(MediaQuery.of(context).size);
               // once the user is outside of a small window they can't change
               // whether they're dragging the column or the row
-              if (delta.distance < box_size / 2) {
+              if (delta.distance < boxSize.width / 2) {
                 if (delta.dy.abs() > delta.dx.abs()) {
                   draggingCol = true;
                 } else {
@@ -348,22 +345,21 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 if (draggingCol) {
                   _updateSlidingCollection(slidingColumn,
-                      Offset(0, delta.dy / world_to_offset_ratio), slidingRow);
+                      Offset(0, delta.dy / boxSize.height), slidingRow);
                 } else {
-                  _updateSlidingCollection(
-                      slidingRow,
-                      Offset(delta.dx / world_to_offset_ratio, 0),
-                      slidingColumn);
+                  _updateSlidingCollection(slidingRow,
+                      Offset(delta.dx / boxSize.width, 0), slidingColumn);
                 }
               });
             },
             onPanEnd: (DragEndDetails deets) {
               Offset delta = tapUpdateLoc - tapStartLoc;
+              Rect boxSize = tappedBox.getRect(MediaQuery.of(context).size);
               if (draggingCol) {
                 setState(() {
                   for (GameBox box in slidingColumn) {
-                    Offset translatedOffset = box.startLoc
-                        .translate(0, delta.dy / world_to_offset_ratio);
+                    Offset translatedOffset =
+                        box.startLoc.translate(0, delta.dy / boxSize.height);
 
                     box.loc = translatedOffset;
                     box.startLoc = translatedOffset;
@@ -374,8 +370,8 @@ class _MyHomePageState extends State<MyHomePage> {
               } else {
                 setState(() {
                   for (GameBox box in slidingRow) {
-                    Offset translatedOffset = box.startLoc
-                        .translate(delta.dx / world_to_offset_ratio, 0);
+                    Offset translatedOffset =
+                        box.startLoc.translate(delta.dx / boxSize.width, 0);
                     box.loc = translatedOffset;
                     box.startLoc = translatedOffset;
                     box.userDragged = false;
