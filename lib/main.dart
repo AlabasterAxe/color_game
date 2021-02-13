@@ -12,7 +12,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       home: MyHomePage(),
     );
   }
@@ -313,12 +312,12 @@ class _MyHomePageState extends State<MyHomePage> {
     for (GameBox box in undraggedBoxes) {
       box.loc = box.startLoc;
       box.userDragged = false;
-      }
+    }
     for (GameBox box in draggedBoxes) {
       box.loc = box.startLoc + dragOffset;
       box.userDragged = true;
     }
-      }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -347,16 +346,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
               }
               setState(() {
-              if (draggingCol) {
+                if (draggingCol) {
                   _updateSlidingCollection(slidingColumn,
                       Offset(0, delta.dy / world_to_offset_ratio), slidingRow);
-              } else {
+                } else {
                   _updateSlidingCollection(
                       slidingRow,
                       Offset(delta.dx / world_to_offset_ratio, 0),
                       slidingColumn);
-                  }
-                });
+                }
+              });
             },
             onPanEnd: (DragEndDetails deets) {
               Offset delta = tapUpdateLoc - tapStartLoc;
