@@ -313,63 +313,22 @@ class _MyHomePageState extends State<MyHomePage> {
     return result;
   }
 
-  List<Widget> _grid() {
-    Size screenSize = MediaQuery.of(context).size;
-    // Get one of the game boxes for reference
-    Rect boxRect =
-        GameBox(Offset(0, 0), Colors.transparent).getRect(screenSize);
-    List<Widget> results = [];
-    double maxWidth = 0;
-    double minWidth = 0;
-    while (maxWidth - minWidth < screenSize.width) {
-      results.add(Positioned(
-          top: 0,
-          bottom: 0,
-          left: screenSize.width / 2 + maxWidth + 1,
-          width: 2,
-          child: Container(color: Colors.grey)));
-      if (minWidth != maxWidth) {
-        results.add(Positioned(
-            top: 0,
-            bottom: 0,
-            left: screenSize.width / 2 + minWidth + 1,
-            width: 2,
-            child: Container(color: Colors.grey)));
+  _updateSlidingCollection(List<GameBox> draggedBoxes, Offset dragOffset,
+      List<GameBox> undraggedBoxes) {
+    // put the other boxes back
+    for (GameBox box in undraggedBoxes) {
+      box.loc = box.startLoc;
+      box.userDragged = false;
       }
-
-      maxWidth += boxRect.width;
-      minWidth -= boxRect.width;
+    for (GameBox box in draggedBoxes) {
+      box.loc = box.startLoc + dragOffset;
+      box.userDragged = true;
     }
-
-    double maxHeight = 0;
-    double minHeight = 0;
-    while (maxHeight - minHeight < screenSize.height) {
-      results.add(Positioned(
-          left: 0,
-          right: 0,
-          top: screenSize.height / 2 + maxHeight + 1,
-          height: 2,
-          child: Container(color: Colors.grey)));
-      if (minHeight != maxHeight) {
-        results.add(Positioned(
-            left: 0,
-            right: 0,
-            top: screenSize.height / 2 + minHeight + 1,
-            height: 2,
-            child: Container(color: Colors.grey)));
       }
-
-      maxHeight += boxRect.height;
-      minHeight -= boxRect.height;
-    }
-
-    return results;
-  }
 
   @override
   Widget build(BuildContext context) {
     List<Widget> stackChildren = [];
-    stackChildren.addAll(_grid());
     stackChildren.addAll(boxes.map((b) => GameBoxWidget(box: b)).toList());
 
     return Scaffold(
