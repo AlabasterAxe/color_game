@@ -265,7 +265,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // returns affected rows/columns
-  List<List<GameBox>> removeContiguousColors(
+  List<List<GameBox>> _removeContiguousColors(
       Iterable<List<GameBox>> rowsorcols) {
     Set<GameBox> boxesToRemove = Set();
     List<List<GameBox>> affectedRowOrCols = [];
@@ -308,8 +308,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<List<GameBox>> _removeContiguous() {
     List<List<GameBox>> result = [];
-    result.addAll(removeContiguousColors(getRows().values));
-    result.addAll(removeContiguousColors(getCols().values));
+    result.addAll(_removeContiguousColors(getRows().values));
+    result.addAll(_removeContiguousColors(getCols().values));
     return result;
   }
 
