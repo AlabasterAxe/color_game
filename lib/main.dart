@@ -180,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
         .compareTo((gravitationalCenter - b.loc).distanceSquared));
 
     List<GameBox> affectedBoxes = [];
-    List<double> cardinals = [0, pi / 2, pi, (3 * pi) / 2, 2 * pi];
+    List<double> cardinals = [-pi, -pi / 2, 0, pi / 2, pi];
     for (GameBox box in distSortedBoxes) {
       Offset centerOffset = gravitationalCenter - box.loc;
 
