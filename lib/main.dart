@@ -13,40 +13,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  MyHomePage({Key key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -193,12 +166,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<GameBox> _gravitize() {
-    Offset sum = Offset(0, 0);
-    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
-      sum += box.loc;
-    }
+    // Offset sum = Offset(0, 0);
+    // for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
+    //   sum += box.loc;
+    // }
 
-    Offset gravitationalCenter = sum / boxes.length.toDouble();
+    // Offset gravitationalCenter = sum / boxes.length.toDouble();
+    Offset gravitationalCenter = Offset(0, 0);
     List<GameBox> distSortedBoxes = [...boxes];
 
     distSortedBoxes.sort((a, b) => (gravitationalCenter - a.loc)
@@ -206,8 +180,8 @@ class _MyHomePageState extends State<MyHomePage> {
         .compareTo((gravitationalCenter - b.loc).distanceSquared));
 
     List<GameBox> affectedBoxes = [];
+    List<double> cardinals = [0, pi / 2, pi, (3 * pi) / 2, 2 * pi];
     for (GameBox box in distSortedBoxes) {
-      List<double> cardinals = [0, pi / 2, pi, (3 * pi) / 2, 2 * pi];
       Offset centerOffset = gravitationalCenter - box.loc;
 
       List<double> candidateCardinals = [];
@@ -391,8 +365,65 @@ class _MyHomePageState extends State<MyHomePage> {
     return result;
   }
 
+  List<Widget> _grid() {
+    Size screenSize = MediaQuery.of(context).size;
+    // Get one of the game boxes for reference
+    Rect boxRect =
+        GameBox(Offset(0, 0), Colors.transparent).getRect(screenSize);
+    List<Widget> results = [];
+    double maxWidth = 0;
+    double minWidth = 0;
+    while (maxWidth - minWidth < screenSize.width) {
+      results.add(Positioned(
+          top: 0,
+          bottom: 0,
+          left: screenSize.width / 2 + maxWidth + 1,
+          width: 2,
+          child: Container(color: Colors.grey)));
+      if (minWidth != maxWidth) {
+        results.add(Positioned(
+            top: 0,
+            bottom: 0,
+            left: screenSize.width / 2 + minWidth + 1,
+            width: 2,
+            child: Container(color: Colors.grey)));
+      }
+
+      maxWidth += boxRect.width;
+      minWidth -= boxRect.width;
+    }
+
+    double maxHeight = 0;
+    double minHeight = 0;
+    while (maxHeight - minHeight < screenSize.height) {
+      results.add(Positioned(
+          left: 0,
+          right: 0,
+          top: screenSize.height / 2 + maxHeight + 1,
+          height: 2,
+          child: Container(color: Colors.grey)));
+      if (minHeight != maxHeight) {
+        results.add(Positioned(
+            left: 0,
+            right: 0,
+            top: screenSize.height / 2 + minHeight + 1,
+            height: 2,
+            child: Container(color: Colors.grey)));
+      }
+
+      maxHeight += boxRect.height;
+      minHeight -= boxRect.height;
+    }
+
+    return results;
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<Widget> stackChildren = [];
+    stackChildren.addAll(_grid());
+    stackChildren.addAll(boxes.map((b) => GameBoxWidget(box: b)).toList());
+
     return Scaffold(
       body: Center(
         child: GestureDetector(
@@ -477,9 +508,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Expanded(
                   child: Stack(
-                      alignment: Alignment.center,
-                      children:
-                          boxes.map((b) => GameBoxWidget(box: b)).toList()),
+                      alignment: Alignment.center, children: stackChildren),
                 ),
               ],
             )),
