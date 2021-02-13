@@ -352,33 +352,17 @@ class _MyHomePageState extends State<MyHomePage> {
                   draggingCol = false;
                 }
               }
+              setState(() {
               if (draggingCol) {
-                setState(() {
-                  // put the other boxes back
-                  for (GameBox box in slidingRow) {
-                    box.loc = box.startLoc;
-                    box.userDragged = false;
-                  }
-                  for (GameBox box in slidingColumn) {
-                    box.loc = box.startLoc
-                        .translate(0, delta.dy / world_to_offset_ratio);
-                    box.userDragged = true;
-                  }
-                });
+                  _updateSlidingCollection(slidingColumn,
+                      Offset(0, delta.dy / world_to_offset_ratio), slidingRow);
               } else {
-                setState(() {
-                  // put the other boxes back
-                  for (GameBox box in slidingColumn) {
-                    box.loc = box.startLoc;
-                    box.userDragged = false;
-                  }
-                  for (GameBox box in slidingRow) {
-                    box.loc = box.startLoc
-                        .translate(delta.dx / world_to_offset_ratio, 0);
-                    box.userDragged = true;
+                  _updateSlidingCollection(
+                      slidingRow,
+                      Offset(delta.dx / world_to_offset_ratio, 0),
+                      slidingColumn);
                   }
                 });
-              }
             },
             onPanEnd: (DragEndDetails deets) {
               Offset delta = tapUpdateLoc - tapStartLoc;
