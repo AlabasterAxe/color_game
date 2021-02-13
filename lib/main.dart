@@ -306,58 +306,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return affectedRowOrCols;
   }
 
-  void collapseRowGaps(Iterable<List<GameBox>> rows) {
-    double minX;
-    double maxX;
-    double sumX = 0;
-    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
-      if (minX == null || minX > box.loc.dx) {
-        minX = box.loc.dx;
-      }
-      if (maxX == null || maxX < box.loc.dx) {
-        maxX = box.loc.dx;
-      }
-      sumX += box.loc.dx;
-    }
-    double centerPosition = (sumX / boxes.length).round() + .5;
-    for (List<GameBox> row in rows) {
-      if (row.isEmpty) {
-        continue;
-      }
-
-      double boxPosition = centerPosition - (row.length / 2).round();
-      for (GameBox box in row) {
-        box.loc = Offset(boxPosition, box.loc.dy);
-        box.startLoc = Offset(boxPosition, box.loc.dy);
-        boxPosition++;
-      }
-    }
-  }
-
-  void collapseColGaps(Iterable<List<GameBox>> cols) {
-    double minY;
-    double maxY;
-    double sumY = 0;
-    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
-      if (minY == null || minY > box.loc.dy) {
-        minY = box.loc.dy;
-      }
-      if (maxY == null || maxY < box.loc.dy) {
-        maxY = box.loc.dy;
-      }
-      sumY += box.loc.dy;
-    }
-    double centerPosition = (sumY / boxes.length).round() + .5;
-    for (List<GameBox> col in cols) {
-      double boxPosition = centerPosition - (col.length / 2).round();
-      for (GameBox box in col) {
-        box.loc = Offset(box.loc.dx, boxPosition);
-        box.startLoc = Offset(box.loc.dx, boxPosition);
-        boxPosition++;
-      }
-    }
-  }
-
   List<List<GameBox>> _removeContiguous() {
     List<List<GameBox>> result = [];
     result.addAll(removeContiguousColors(getRows().values));
