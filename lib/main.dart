@@ -56,7 +56,7 @@ const box_size = 60.0;
 const gap_size = 5.0;
 const world_to_offset_ratio = box_size + gap_size;
 
-// this offset is rounding to the unit-sized .5 offset grid
+// this offset is for rounding to the unit-sized .5 offset grid
 const Offset roundOffset = Offset(.5, .5);
 
 class GameBox {
@@ -238,16 +238,27 @@ class _MyHomePageState extends State<MyHomePage> {
     return affectedBoxes;
   }
 
-  void updateBoardTillSettled() {
+  void _snapBoxes() {
+    for (GameBox box in boxes) {
+      Offset roundedOffset = Offset(
+          (box.loc.dx - .5).round() + .5, (box.loc.dy - .5).round() + .5);
+      box.loc = roundedOffset;
+      box.startLoc = roundedOffset;
+    }
+  }
+
+  void _updateBoardTillSettled() {
     boardUpdateTimer = Timer.periodic(Duration(milliseconds: 1000), (t) {
       setState(() {
         var affectedRows = _removeContiguous();
+        _snapBoxes();
         if (affectedRows.isNotEmpty) {
           _settled = false;
         }
         List<GameBox> affectedBoxes = [];
         if (!_settled) {
           affectedBoxes = _gravitize();
+          _snapBoxes();
         }
         if (affectedRows.isEmpty && affectedBoxes.isEmpty) {
           t.cancel();
@@ -437,39 +448,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 setState(() {
                   for (GameBox box in slidingColumn) {
                     Offset translatedOffset = box.startLoc
-                            .translate(0, delta.dy / world_to_offset_ratio) +
-                        roundOffset;
+                        .translate(0, delta.dy / world_to_offset_ratio);
 
-                    Offset roundedOffset = Offset(
-                            translatedOffset.dx.roundToDouble(),
-                            translatedOffset.dy.roundToDouble()) -
-                        roundOffset;
-                    box.loc = roundedOffset;
-                    box.startLoc = roundedOffset;
+                    box.loc = translatedOffset;
+                    box.startLoc = translatedOffset;
                     box.userDragged = false;
                   }
+                  _snapBoxes();
                 });
               } else {
                 setState(() {
                   for (GameBox box in slidingRow) {
                     Offset translatedOffset = box.startLoc
-                            .translate(delta.dx / world_to_offset_ratio, 0) +
-                        roundOffset;
-
-                    Offset roundedOffset = Offset(
-                            translatedOffset.dx.roundToDouble(),
-                            translatedOffset.dy.roundToDouble()) -
-                        roundOffset;
-                    box.loc = roundedOffset;
-                    box.startLoc = roundedOffset;
+                        .translate(delta.dx / world_to_offset_ratio, 0);
+                    box.loc = translatedOffset;
+                    box.startLoc = translatedOffset;
                     box.userDragged = false;
                   }
+                  _snapBoxes();
                 });
               }
               tappedBox = null;
               slidingColumn = null;
               slidingRow = null;
-              updateBoardTillSettled();
+              _updateBoardTillSettled();
             },
             child: Column(
               children: [
