@@ -166,12 +166,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<GameBox> _gravitize() {
-    // Offset sum = Offset(0, 0);
-    // for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
-    //   sum += box.loc;
-    // }
-
-    // Offset gravitationalCenter = sum / boxes.length.toDouble();
     Offset gravitationalCenter = Offset(0, 0);
     List<GameBox> distSortedBoxes = [...boxes];
 
