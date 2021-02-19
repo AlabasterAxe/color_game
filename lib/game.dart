@@ -7,15 +7,16 @@ import 'package:flutter/widgets.dart';
 import 'constants.dart';
 import 'generate-game-boxes.dart';
 import 'model.dart';
+import 'view-transform.dart';
 
 class GameBoxWidget extends StatelessWidget {
   final GameBox box;
-  GameBoxWidget({this.box}) : super(key: box.key);
+  final ViewTransformation vt;
+  GameBoxWidget({this.box, this.vt}) : super(key: box.key);
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-    Rect boundsRect = box.getRect(screenSize);
+    Rect boundsRect = box.getRect(vt);
     double gapSize = boundsRect.width * RELATIVE_GAP_SIZE;
 
     return AnimatedPositioned(
@@ -60,15 +61,6 @@ class _GameWidgetState extends State<GameWidget> {
   List<GameBox> boxes = generateGameBoxes(colors: COLORS);
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    for (GameBox box in boxes) {
-      double boxEdgeSize = MediaQuery.of(context).size.shortestSide / GRID_SIZE;
-      box.size = Size.square(boxEdgeSize);
-    }
-  }
-
-  @override
   void dispose() {
     boardUpdateTimer.cancel();
     super.dispose();
@@ -96,7 +88,14 @@ class _GameWidgetState extends State<GameWidget> {
 
   GameBox getTappedBox(Offset globalTapCoords) {
     for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
-      if (box.getRect(MediaQuery.of(context).size).contains(globalTapCoords)) {
+      ViewTransformation vt = ViewTransformation(
+          from: Rect.fromLTRB(
+              -widget.config.gridSize.width / 2,
+              -widget.config.gridSize.height / 2,
+              widget.config.gridSize.width / 2,
+              widget.config.gridSize.height / 2),
+          to: Offset(0, 0) & MediaQuery.of(context).size);
+      if (box.getRect(vt).contains(globalTapCoords)) {
         return box;
       }
     }
@@ -270,7 +269,15 @@ class _GameWidgetState extends State<GameWidget> {
   @override
   Widget build(BuildContext context) {
     List<Widget> stackChildren = [];
-    stackChildren.addAll(boxes.map((b) => GameBoxWidget(box: b)).toList());
+    ViewTransformation vt = ViewTransformation(
+        from: Rect.fromLTRB(
+            -widget.config.gridSize.width / 2,
+            -widget.config.gridSize.height / 2,
+            widget.config.gridSize.width / 2,
+            widget.config.gridSize.height / 2),
+        to: Offset(0, 0) & MediaQuery.of(context).size);
+    stackChildren
+        .addAll(boxes.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
 
     return Scaffold(
       body: Center(
@@ -284,7 +291,7 @@ class _GameWidgetState extends State<GameWidget> {
             onPanUpdate: (DragUpdateDetails deets) {
               tapUpdateLoc = deets.globalPosition;
               Offset delta = tapUpdateLoc - tapStartLoc;
-              Rect boxSize = tappedBox.getRect(MediaQuery.of(context).size);
+              Rect boxSize = tappedBox.getRect(vt);
               // once the user is outside of a small window they can't change
               // whether they're dragging the column or the row
               if (delta.distance < boxSize.width / 2) {
@@ -306,7 +313,7 @@ class _GameWidgetState extends State<GameWidget> {
             },
             onPanEnd: (DragEndDetails deets) {
               Offset delta = tapUpdateLoc - tapStartLoc;
-              Rect boxSize = tappedBox.getRect(MediaQuery.of(context).size);
+              Rect boxSize = tappedBox.getRect(vt);
               if (draggingCol) {
                 setState(() {
                   for (GameBox box in slidingColumn) {
