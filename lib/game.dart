@@ -226,6 +226,11 @@ class _GameWidgetState extends State<GameWidget> {
       if (streak.length >= 3) {
         hadStreak = true;
         boxesToRemove.addAll(streak);
+        widget.onGameEvent(GameEvent()
+          ..type = GameEventType.RUN
+          ..metadata = (RunEventMetadata()
+            ..runLength = streak.length
+            ..color = streakColor));
       }
       if (hadStreak) {
         affectedRowOrCols.add(roworcol);
