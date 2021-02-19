@@ -38,9 +38,24 @@ class GameBoxWidget extends StatelessWidget {
   }
 }
 
+enum GameEventType {
+  RUN,
+}
+
+class RunEventMetadata {
+  int runLength;
+  Color color;
+}
+
+class GameEvent {
+  GameEventType type;
+  dynamic metadata;
+}
+
 class GameWidget extends StatefulWidget {
   final ColorGameConfig config;
-  GameWidget({Key key, this.config}) : super(key: key);
+  final Function(GameEvent) onGameEvent;
+  GameWidget({Key key, this.config, this.onGameEvent}) : super(key: key);
 
   @override
   _GameWidgetState createState() => _GameWidgetState();
@@ -223,6 +238,11 @@ class _GameWidgetState extends State<GameWidget> {
           if (streak.length >= 3) {
             hadStreak = true;
             boxesToRemove.addAll(streak);
+            widget.onGameEvent(GameEvent()
+              ..type = GameEventType.RUN
+              ..metadata = (RunEventMetadata()
+                ..runLength = streak.length
+                ..color = streakColor));
           }
           streak = [box];
           streakColor = box.color;
@@ -241,7 +261,6 @@ class _GameWidgetState extends State<GameWidget> {
       }
     }
 
-    // boxesToRemove.forEach((GameBox b) => b.color = Colors.transparent);
     boxes.removeWhere((GameBox b) => boxesToRemove.contains(b));
     return affectedRowOrCols;
   }
