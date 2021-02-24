@@ -46,9 +46,12 @@ class _GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Stack(children: [
-        Positioned.fill(
+    return Container(
+      color: Colors.white,
+      child: SafeArea(
+        child: Stack(alignment: Alignment.center, children: [
+          AspectRatio(
+            aspectRatio: 1,
             child: GameWidget(
                 config: widget.config,
                 onGameEvent: (GameEvent e) {
@@ -56,9 +59,11 @@ class _GamePageState extends State<GamePage> {
                     case GameEventType.RUN:
                       _handleNewRun(e.metadata);
                   }
-                })),
-        Positioned.fill(child: Hud(score: score)),
-      ]),
+                }),
+          ),
+          Positioned.fill(child: Hud(score: score)),
+        ]),
+      ),
     );
   }
 }

@@ -75,16 +75,9 @@ class _GameWidgetState extends State<GameWidget> {
     return result;
   }
 
-  GameBox getTappedBox(Offset globalTapCoords) {
+  GameBox getTappedBox(Offset localTapCoords, ViewTransformation vt) {
     for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
-      ViewTransformation vt = ViewTransformation(
-          from: Rect.fromLTRB(
-              -widget.config.gridSize.width / 2,
-              -widget.config.gridSize.height / 2,
-              widget.config.gridSize.width / 2,
-              widget.config.gridSize.height / 2),
-          to: Offset(0, 0) & MediaQuery.of(context).size);
-      if (box.getRect(vt).contains(globalTapCoords)) {
+      if (box.getRect(vt).contains(localTapCoords)) {
         return box;
       }
     }
@@ -269,50 +262,57 @@ class _GameWidgetState extends State<GameWidget> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> stackChildren = [];
-    ViewTransformation vt = ViewTransformation(
-        from: Rect.fromLTRB(
-            -widget.config.gridSize.width / 2,
-            -widget.config.gridSize.height / 2,
-            widget.config.gridSize.width / 2,
-            widget.config.gridSize.height / 2),
-        to: Offset(0, 0) & MediaQuery.of(context).size);
-    stackChildren
-        .addAll(boxes.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
+    return LayoutBuilder(builder: (context, constraints) {
+      ViewTransformation vt = ViewTransformation(
+          from: Rect.fromLTRB(
+              -widget.config.gridSize.width / 2,
+              -widget.config.gridSize.height / 2,
+              widget.config.gridSize.width / 2,
+              widget.config.gridSize.height / 2),
+          to: Offset(0, 0) & constraints.biggest);
+      List<Widget> stackChildren = [];
 
-    return Scaffold(
-      body: Center(
-        child: GestureDetector(
-            onPanStart: (DragStartDetails deets) {
-              tapStartLoc = deets.globalPosition;
-              tappedBox = getTappedBox(tapStartLoc);
+      stackChildren
+          .addAll(boxes.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
+
+      return GestureDetector(
+          onPanStart: (DragStartDetails deets) {
+            tapStartLoc = deets.localPosition;
+            tappedBox = getTappedBox(tapStartLoc, vt);
+            if (tappedBox != null) {
               slidingColumn = getColumnMates(tappedBox);
               slidingRow = getRowMates(tappedBox);
-            },
-            onPanUpdate: (DragUpdateDetails deets) {
-              tapUpdateLoc = deets.globalPosition;
-              Offset delta = tapUpdateLoc - tapStartLoc;
-              Rect boxSize = tappedBox.getRect(vt);
-              // once the user is outside of a small window they can't change
-              // whether they're dragging the column or the row
-              if (delta.distance < boxSize.width / 2) {
-                if (delta.dy.abs() > delta.dx.abs()) {
-                  draggingCol = true;
-                } else {
-                  draggingCol = false;
-                }
+            }
+          },
+          onPanUpdate: (DragUpdateDetails deets) {
+            if (tappedBox == null) {
+              return;
+            }
+
+            tapUpdateLoc = deets.localPosition;
+            Offset delta = tapUpdateLoc - tapStartLoc;
+            Rect boxSize = tappedBox.getRect(vt);
+            // once the user is outside of a small window they can't change
+            // whether they're dragging the column or the row
+            if (delta.distance < boxSize.width / 2) {
+              if (delta.dy.abs() > delta.dx.abs()) {
+                draggingCol = true;
+              } else {
+                draggingCol = false;
               }
-              setState(() {
-                if (draggingCol) {
-                  _updateSlidingCollection(slidingColumn,
-                      Offset(0, delta.dy / boxSize.height), slidingRow);
-                } else {
-                  _updateSlidingCollection(slidingRow,
-                      Offset(delta.dx / boxSize.width, 0), slidingColumn);
-                }
-              });
-            },
-            onPanEnd: (DragEndDetails deets) {
+            }
+            setState(() {
+              if (draggingCol) {
+                _updateSlidingCollection(slidingColumn,
+                    Offset(0, delta.dy / boxSize.height), slidingRow);
+              } else {
+                _updateSlidingCollection(slidingRow,
+                    Offset(delta.dx / boxSize.width, 0), slidingColumn);
+              }
+            });
+          },
+          onPanEnd: (DragEndDetails deets) {
+            if (tappedBox != null) {
               Offset delta = tapUpdateLoc - tapStartLoc;
               Rect boxSize = tappedBox.getRect(vt);
               if (draggingCol) {
@@ -339,20 +339,21 @@ class _GameWidgetState extends State<GameWidget> {
                   _snapBoxes();
                 });
               }
-              tappedBox = null;
-              slidingColumn = null;
-              slidingRow = null;
-              _updateBoardTillSettled();
-            },
-            child: Column(
-              children: [
-                Expanded(
-                  child: Stack(
-                      alignment: Alignment.center, children: stackChildren),
-                ),
-              ],
-            )),
-      ),
-    );
+            }
+
+            tappedBox = null;
+            slidingColumn = null;
+            slidingRow = null;
+            _updateBoardTillSettled();
+          },
+          child: Column(
+            children: [
+              Expanded(
+                child:
+                    Stack(alignment: Alignment.center, children: stackChildren),
+              ),
+            ],
+          ));
+    });
   }
 }
