@@ -17,6 +17,7 @@ enum GameEventType {
 class RunEventMetadata {
   int runLength;
   Color color;
+  int runStreakLength;
 }
 
 class GameEvent {
@@ -41,6 +42,7 @@ class _GameWidgetState extends State<GameWidget> {
   List<GameBox> slidingColumn;
   Timer boardUpdateTimer;
   bool _settled = true;
+  int runStreakLength = 1;
 
   // if they're not dragging col, they're dragging row;
   bool draggingCol;
@@ -155,6 +157,7 @@ class _GameWidgetState extends State<GameWidget> {
         _snapBoxes();
         if (affectedRows.isNotEmpty) {
           _settled = false;
+          runStreakLength += 1;
         }
         List<GameBox> affectedBoxes = [];
         if (!_settled) {
@@ -164,6 +167,7 @@ class _GameWidgetState extends State<GameWidget> {
         if (affectedRows.isEmpty && affectedBoxes.isEmpty) {
           t.cancel();
           _settled = true;
+          runStreakLength = 1;
         }
       });
     });
@@ -196,43 +200,44 @@ class _GameWidgetState extends State<GameWidget> {
       Iterable<List<GameBox>> rowsorcols) {
     Set<GameBox> boxesToRemove = Set();
     List<List<GameBox>> affectedRowOrCols = [];
+
     for (List<GameBox> roworcol in rowsorcols) {
-      List<GameBox> streak = [];
-      Color streakColor;
-      bool hadStreak = false;
+      List<GameBox> run = [];
+      Color runColor;
+      bool hadRun = false;
       Offset lastBoxLoc;
-      for (GameBox box
-          in roworcol.where((b) => b.color != Colors.transparent)) {
-        if (box.color != streakColor ||
-            // if there's a gap don't count it as a streak
-            (box.loc.dx - lastBoxLoc.dx).abs() > 1 ||
-            (box.loc.dy - lastBoxLoc.dy).abs() > 1) {
-          if (streak.length >= 3) {
-            hadStreak = true;
-            boxesToRemove.addAll(streak);
-            widget.onGameEvent(GameEvent()
-              ..type = GameEventType.RUN
-              ..metadata = (RunEventMetadata()
-                ..runLength = streak.length
-                ..color = streakColor));
-          }
-          streak = [box];
-          streakColor = box.color;
-        } else {
-          streak.add(box);
-        }
-        lastBoxLoc = box.loc;
-      }
-      if (streak.length >= 3) {
-        hadStreak = true;
-        boxesToRemove.addAll(streak);
+
+      Function(List<GameBox>) handleStreak = (run) {
+        hadRun = true;
+        boxesToRemove.addAll(run);
         widget.onGameEvent(GameEvent()
           ..type = GameEventType.RUN
           ..metadata = (RunEventMetadata()
-            ..runLength = streak.length
-            ..color = streakColor));
+            ..runLength = run.length
+            ..runStreakLength = runStreakLength
+            ..color = runColor));
+      };
+
+      for (GameBox box
+          in roworcol.where((b) => b.color != Colors.transparent)) {
+        if (box.color != runColor ||
+            // if there's a gap don't count it as a streak
+            (box.loc.dx - lastBoxLoc.dx).abs() > 1 ||
+            (box.loc.dy - lastBoxLoc.dy).abs() > 1) {
+          if (run.length >= 3) {
+            handleStreak(run);
+          }
+          run = [box];
+          runColor = box.color;
+        } else {
+          run.add(box);
+        }
+        lastBoxLoc = box.loc;
       }
-      if (hadStreak) {
+      if (run.length >= 3) {
+        handleStreak(run);
+      }
+      if (hadRun) {
         affectedRowOrCols.add(roworcol);
         roworcol.removeWhere((GameBox b) => boxesToRemove.contains(b));
       }

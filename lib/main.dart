@@ -35,11 +35,11 @@ class _GamePageState extends State<GamePage> {
   void _handleNewRun(RunEventMetadata metadata) {
     setState(() {
       if (metadata.runLength == 3) {
-        score += 100;
+        score += 100 * metadata.runStreakLength;
       } else if (metadata.runLength == 4) {
-        score += 200;
+        score += 200 * metadata.runStreakLength;
       } else {
-        score += 400;
+        score += 400 * metadata.runStreakLength;
       }
     });
   }
