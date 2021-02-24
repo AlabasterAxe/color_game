@@ -30,7 +30,9 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   int score = 0;
+  bool gameOver = false;
   Tween<int> scoreTween;
+  Key gameKey = UniqueKey();
 
   void _handleNewRun(RunEventMetadata metadata) {
     setState(() {
@@ -46,23 +48,45 @@ class _GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> stackChildren = [
+      AspectRatio(
+        aspectRatio: 1,
+        child: GameWidget(
+            key: gameKey,
+            config: widget.config,
+            onGameEvent: (GameEvent e) {
+              switch (e.type) {
+                case GameEventType.RUN:
+                  _handleNewRun(e.metadata);
+                  break;
+                case GameEventType.NO_MOVES:
+                  // TODO: Handle this case.
+                  setState(() {
+                    gameOver = true;
+                  });
+                  break;
+              }
+            }),
+      ),
+      Positioned.fill(child: Hud(score: score)),
+    ];
+
+    if (gameOver) {
+      stackChildren.add(Center(
+          child: RaisedButton(
+              child: Text("New Game"),
+              onPressed: () {
+                setState(() {
+                  gameOver = false;
+                  gameKey = UniqueKey();
+                  score = 0;
+                });
+              })));
+    }
     return Container(
-      color: Colors.white,
+      color: Colors.grey[800],
       child: SafeArea(
-        child: Stack(alignment: Alignment.center, children: [
-          AspectRatio(
-            aspectRatio: 1,
-            child: GameWidget(
-                config: widget.config,
-                onGameEvent: (GameEvent e) {
-                  switch (e.type) {
-                    case GameEventType.RUN:
-                      _handleNewRun(e.metadata);
-                  }
-                }),
-          ),
-          Positioned.fill(child: Hud(score: score)),
-        ]),
+        child: Stack(alignment: Alignment.center, children: stackChildren),
       ),
     );
   }

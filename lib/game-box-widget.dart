@@ -1,5 +1,6 @@
 import 'package:color_game/model.dart';
 import 'package:color_game/view-transform.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'constants.dart';
@@ -31,10 +32,17 @@ class GameBoxWidgetState extends State<GameBoxWidget> {
               height: boundsRect.height - gapSize,
               width: boundsRect.width - gapSize,
               decoration: BoxDecoration(
-                borderRadius:
-                    BorderRadius.all(Radius.circular(BOX_BORDER_RADIUS)),
-                color: widget.box.color,
-              ))),
+                  borderRadius:
+                      BorderRadius.all(Radius.circular(BOX_BORDER_RADIUS)),
+                  color: widget.box.color,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 10,
+                      offset: Offset(0, 0), // changes position of shadow
+                    ),
+                  ]))),
     );
   }
 }

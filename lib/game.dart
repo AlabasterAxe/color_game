@@ -12,6 +12,7 @@ import 'view-transform.dart';
 
 enum GameEventType {
   RUN,
+  NO_MOVES,
 }
 
 class RunEventMetadata {
@@ -43,6 +44,7 @@ class _GameWidgetState extends State<GameWidget> {
   Timer boardUpdateTimer;
   bool _settled = true;
   int runStreakLength = 1;
+  bool sentNoMovesEvent = false;
 
   // if they're not dragging col, they're dragging row;
   bool draggingCol;
@@ -106,29 +108,57 @@ class _GameWidgetState extends State<GameWidget> {
     for (GameBox box in distSortedBoxes) {
       Offset centerOffset = gravitationalCenter - box.loc;
 
-      List<double> candidateCardinals = [];
-      double prevDist = 0;
+      double primaryOption;
+      double secondaryOption;
+      double primaryDist = 0;
       for (double cardinal in cardinals) {
         double dist = (cardinal - centerOffset.direction).abs();
         if (dist < pi / 3) {
-          candidateCardinals.add(cardinal);
-          if (dist < prevDist) {
-            candidateCardinals.insert(0, cardinal);
+          if (primaryOption == null) {
+            primaryOption = cardinal;
+            primaryDist = dist;
           } else {
-            candidateCardinals.add(cardinal);
+            if (dist < primaryDist) {
+              secondaryOption = primaryOption;
+              primaryOption = cardinal;
+              primaryDist = dist;
+            } else {
+              secondaryOption = cardinal;
+            }
           }
-          prevDist = dist;
         }
       }
 
-      for (double cardinal in candidateCardinals) {
-        Offset desiredLoc = box.loc + Offset.fromDirection(cardinal, 1);
-        if (getBoxAtPosition(desiredLoc) == null) {
-          affectedBoxes.add(box);
-          box.loc = desiredLoc;
-          box.startLoc = desiredLoc;
-          break;
+      Offset primaryLoc = box.loc + Offset.fromDirection(primaryOption);
+      GameBox primaryBox = getBoxAtPosition(primaryLoc);
+      Offset secondaryLoc;
+      GameBox secondaryBox;
+      if (secondaryOption != null) {
+        secondaryLoc = box.loc + Offset.fromDirection(secondaryOption);
+        secondaryBox = getBoxAtPosition(secondaryLoc);
+      }
+      if (primaryBox == null) {
+        affectedBoxes.add(box);
+        if (secondaryOption != null) {
+          Offset diagonalLoc = box.loc +
+              Offset.fromDirection(primaryOption) +
+              Offset.fromDirection(secondaryOption);
+          GameBox diagonalBox = getBoxAtPosition(diagonalLoc);
+          if (secondaryBox == null && diagonalBox == null) {
+            box.loc = diagonalLoc;
+            box.startLoc = diagonalLoc;
+          } else {
+            box.loc = primaryLoc;
+            box.startLoc = primaryLoc;
+          }
+        } else {
+          box.loc = primaryLoc;
+          box.startLoc = primaryLoc;
         }
+      } else if (secondaryOption != null && secondaryBox == null) {
+        affectedBoxes.add(box);
+        box.loc = secondaryLoc;
+        box.startLoc = secondaryLoc;
       }
     }
     return affectedBoxes;
@@ -143,10 +173,30 @@ class _GameWidgetState extends State<GameWidget> {
     }
   }
 
+  bool _playerHasValidMoves() {
+    if (boxes.length < 3) {
+      return false;
+    }
+
+    Map<Color, int> colorMap = Map();
+    for (GameBox box in boxes) {
+      colorMap.putIfAbsent(box.color, () => 0);
+      colorMap[box.color]++;
+      if (colorMap[box.color] >= 3) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void _updateBoardTillSettled() {
     boardUpdateTimer = Timer.periodic(Duration(milliseconds: 1000), (t) {
       setState(() {
         var affectedRows = _removeContiguous();
+        if (!_playerHasValidMoves() && !sentNoMovesEvent) {
+          widget.onGameEvent(GameEvent()..type = GameEventType.NO_MOVES);
+          sentNoMovesEvent = true;
+        }
         _snapBoxes();
         if (affectedRows.isNotEmpty) {
           _settled = false;

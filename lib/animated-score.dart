@@ -36,7 +36,8 @@ class _AnimatedScoreState extends State<AnimatedScore>
         builder: (context, _) {
           return Text(
               "${((widget.score - prevScore) * controller.value + prevScore).round()}",
-              style: TextStyle(color: Colors.black));
+              style: TextStyle(
+                  color: Colors.grey[200], decoration: TextDecoration.none));
         });
   }
 }
