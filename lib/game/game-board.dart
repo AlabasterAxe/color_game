@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:color_game/game-box-widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'constants.dart';
+import '../constants.dart';
+import '../model.dart';
+import '../view-transform.dart';
+import 'game-box-widget.dart';
 import 'generate-game-boxes.dart';
-import 'model.dart';
-import 'view-transform.dart';
 
 enum GameEventType {
   RUN,
@@ -27,16 +27,16 @@ class GameEvent {
   dynamic metadata;
 }
 
-class GameWidget extends StatefulWidget {
+class GameBoardWidget extends StatefulWidget {
   final ColorGameConfig config;
   final Function(GameEvent) onGameEvent;
-  GameWidget({Key key, this.config, this.onGameEvent}) : super(key: key);
+  GameBoardWidget({Key key, this.config, this.onGameEvent}) : super(key: key);
 
   @override
-  _GameWidgetState createState() => _GameWidgetState();
+  _GameBoardWidgetState createState() => _GameBoardWidgetState();
 }
 
-class _GameWidgetState extends State<GameWidget> {
+class _GameBoardWidgetState extends State<GameBoardWidget> {
   Offset tapStartLoc;
   Offset tapUpdateLoc;
   GameBox tappedBox;

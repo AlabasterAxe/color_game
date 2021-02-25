@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import 'model.dart';
+import '../model.dart';
 
 List<GameBox> generateGameBoxes({List<Color> colors}) {
   Random r = Random();

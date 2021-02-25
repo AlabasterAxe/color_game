@@ -3,7 +3,7 @@ import 'package:color_game/view-transform.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'constants.dart';
+import '../constants.dart';
 
 class GameBoxWidget extends StatefulWidget {
   final GameBox box;
