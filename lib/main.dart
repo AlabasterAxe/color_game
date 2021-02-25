@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'game.dart';
@@ -36,13 +38,8 @@ class _GamePageState extends State<GamePage> {
 
   void _handleNewRun(RunEventMetadata metadata) {
     setState(() {
-      if (metadata.runLength == 3) {
-        score += 100 * metadata.runStreakLength;
-      } else if (metadata.runLength == 4) {
-        score += 200 * metadata.runStreakLength;
-      } else {
-        score += 400 * metadata.runStreakLength;
-      }
+      score += pow(metadata.runLength, metadata.multiples) *
+          metadata.runStreakLength;
     });
   }
 

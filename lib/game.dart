@@ -19,6 +19,7 @@ class RunEventMetadata {
   int runLength;
   Color color;
   int runStreakLength;
+  int multiples;
 }
 
 class GameEvent {
@@ -239,26 +240,22 @@ class _GameWidgetState extends State<GameWidget> {
   }
 
   // returns affected rows/columns
-  List<List<GameBox>> _removeContiguousColors(
+  List<RunEventMetadata> _removeContiguousColors(
       Iterable<List<GameBox>> rowsorcols) {
     Set<GameBox> boxesToRemove = Set();
-    List<List<GameBox>> affectedRowOrCols = [];
+    List<RunEventMetadata> runs = [];
 
     for (List<GameBox> roworcol in rowsorcols) {
       List<GameBox> run = [];
       Color runColor;
-      bool hadRun = false;
       Offset lastBoxLoc;
 
       Function(List<GameBox>) handleStreak = (run) {
-        hadRun = true;
         boxesToRemove.addAll(run);
-        widget.onGameEvent(GameEvent()
-          ..type = GameEventType.RUN
-          ..metadata = (RunEventMetadata()
-            ..runLength = run.length
-            ..runStreakLength = runStreakLength
-            ..color = runColor));
+        runs.add(RunEventMetadata()
+          ..runLength = run.length
+          ..runStreakLength = runStreakLength
+          ..color = runColor);
       };
 
       for (GameBox box
@@ -280,20 +277,22 @@ class _GameWidgetState extends State<GameWidget> {
       if (run.length >= 3) {
         handleStreak(run);
       }
-      if (hadRun) {
-        affectedRowOrCols.add(roworcol);
-        roworcol.removeWhere((GameBox b) => boxesToRemove.contains(b));
-      }
     }
 
     boxes.removeWhere((GameBox b) => boxesToRemove.contains(b));
-    return affectedRowOrCols;
+    return runs;
   }
 
-  List<List<GameBox>> _removeContiguous() {
-    List<List<GameBox>> result = [];
+  List<RunEventMetadata> _removeContiguous() {
+    List<RunEventMetadata> result = [];
     result.addAll(_removeContiguousColors(getRows().values));
     result.addAll(_removeContiguousColors(getCols().values));
+    for (RunEventMetadata run in result) {
+      run.multiples = result.length;
+      widget.onGameEvent(GameEvent()
+        ..type = GameEventType.RUN
+        ..metadata = run);
+    }
     return result;
   }
 
@@ -399,8 +398,10 @@ class _GameWidgetState extends State<GameWidget> {
           child: Column(
             children: [
               Expanded(
-                child:
-                    Stack(alignment: Alignment.center, children: stackChildren),
+                child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: stackChildren),
               ),
             ],
           ));
