@@ -7,6 +7,8 @@ const BOX_BORDER_RADIUS = 20.0;
 const GRID_SIZE = 6;
 const COLLAPSE_DURATION_MILLISECONDS = 750;
 
+const BOARD_BACKGROUND_COLOR = Color(0xff505560);
+
 const List<Color> COLORS = [
   Colors.red,
   Colors.yellow,

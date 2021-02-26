@@ -47,7 +47,7 @@ class GameBoxWidgetState extends State<GameBoxWidget> {
                   color: widget.box.color,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withOpacity(0.1),
                       spreadRadius: 2,
                       blurRadius: 10,
                       offset: Offset(0, 0), // changes position of shadow
