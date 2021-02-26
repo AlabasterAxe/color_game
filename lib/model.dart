@@ -20,6 +20,7 @@ class GameBox {
   Color color;
 
   bool userDragged = false;
+  bool collapsing = false;
   Key key = UniqueKey();
 
   GameBox(this.loc, this.color) {
@@ -28,5 +29,10 @@ class GameBox {
 
   Rect getRect(ViewTransformation vt) {
     return vt.rectForward(Rect.fromCenter(center: loc, width: 1, height: 1));
+  }
+
+  Rect getStartRect(ViewTransformation vt) {
+    return vt
+        .rectForward(Rect.fromCenter(center: startLoc, width: 1, height: 1));
   }
 }

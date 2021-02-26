@@ -16,13 +16,23 @@ class GameBoxWidget extends StatefulWidget {
 }
 
 class GameBoxWidgetState extends State<GameBoxWidget> {
+  int getSnapDuration() {
+    if (widget.box.userDragged) {
+      return 0;
+    } else if (widget.box.collapsing) {
+      return COLLAPSE_DURATION_MILLISECONDS;
+    } else {
+      return 200;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Rect boundsRect = widget.box.getRect(widget.vt);
     double gapSize = boundsRect.width * RELATIVE_GAP_SIZE;
 
     return AnimatedPositioned(
-      duration: Duration(milliseconds: widget.box.userDragged ? 0 : 1000),
+      duration: Duration(milliseconds: getSnapDuration()),
       curve: Curves.easeInOut,
       top: boundsRect.top,
       left: boundsRect.left,

@@ -49,6 +49,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   // if they're not dragging col, they're dragging row;
   bool draggingCol;
+  bool outsideSnap = false;
 
   List<GameBox> boxes = generateGameBoxes(colors: COLORS);
 
@@ -148,18 +149,22 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           if (secondaryBox == null && diagonalBox == null) {
             box.loc = diagonalLoc;
             box.startLoc = diagonalLoc;
+            box.collapsing = true;
           } else {
             box.loc = primaryLoc;
             box.startLoc = primaryLoc;
+            box.collapsing = true;
           }
         } else {
           box.loc = primaryLoc;
           box.startLoc = primaryLoc;
+          box.collapsing = true;
         }
       } else if (secondaryOption != null && secondaryBox == null) {
         affectedBoxes.add(box);
         box.loc = secondaryLoc;
         box.startLoc = secondaryLoc;
+        box.collapsing = true;
       }
     }
     return affectedBoxes;
@@ -190,30 +195,36 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     return false;
   }
 
-  void _updateBoardTillSettled() {
-    boardUpdateTimer = Timer.periodic(Duration(milliseconds: 1000), (t) {
-      setState(() {
-        var affectedRows = _removeContiguous();
-        if (!_playerHasValidMoves() && !sentNoMovesEvent) {
-          widget.onGameEvent(GameEvent()..type = GameEventType.NO_MOVES);
-          sentNoMovesEvent = true;
-        }
+  void _updateBoard(Timer t) {
+    setState(() {
+      var affectedRows = _removeContiguous();
+      if (!_playerHasValidMoves() && !sentNoMovesEvent) {
+        widget.onGameEvent(GameEvent()..type = GameEventType.NO_MOVES);
+        sentNoMovesEvent = true;
+      }
+      _snapBoxes();
+      if (affectedRows.isNotEmpty) {
+        _settled = false;
+        runStreakLength += 1;
+      }
+      List<GameBox> affectedBoxes = [];
+      if (!_settled) {
+        affectedBoxes = _gravitize();
         _snapBoxes();
-        if (affectedRows.isNotEmpty) {
-          _settled = false;
-          runStreakLength += 1;
-        }
-        List<GameBox> affectedBoxes = [];
-        if (!_settled) {
-          affectedBoxes = _gravitize();
-          _snapBoxes();
-        }
-        if (affectedRows.isEmpty && affectedBoxes.isEmpty) {
-          t.cancel();
-          _settled = true;
-          runStreakLength = 1;
-        }
-      });
+      }
+      if (affectedRows.isEmpty && affectedBoxes.isEmpty) {
+        t.cancel();
+        _settled = true;
+        runStreakLength = 1;
+      }
+    });
+  }
+
+  void _updateBoardTillSettled() {
+    boardUpdateTimer = Timer(Duration(milliseconds: 200), () {
+      boardUpdateTimer = Timer.periodic(
+          Duration(milliseconds: COLLAPSE_DURATION_MILLISECONDS), _updateBoard);
+      _updateBoard(boardUpdateTimer);
     });
   }
 
@@ -302,10 +313,12 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     for (GameBox box in undraggedBoxes) {
       box.loc = box.startLoc;
       box.userDragged = false;
+      box.collapsing = false;
     }
     for (GameBox box in draggedBoxes) {
       box.loc = box.startLoc + dragOffset;
       box.userDragged = true;
+      box.collapsing = false;
     }
   }
 
@@ -339,26 +352,34 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
             }
 
             tapUpdateLoc = deets.localPosition;
-            Offset delta = tapUpdateLoc - tapStartLoc;
-            Rect boxSize = tappedBox.getRect(vt);
+            Rect boxSize = tappedBox.getStartRect(vt);
+            Offset directionDelta = tapUpdateLoc - boxSize.center;
+            Offset dragDelta = tapUpdateLoc - tapStartLoc;
             // once the user is outside of a small window they can't change
             // whether they're dragging the column or the row
-            if (delta.distance < boxSize.width / 2) {
-              if (delta.dy.abs() > delta.dx.abs()) {
+            if (boxSize.deflate(5).contains(tapUpdateLoc) && !outsideSnap) {
+              if (directionDelta.dy.abs() > directionDelta.dx.abs()) {
                 draggingCol = true;
               } else {
                 draggingCol = false;
               }
-            }
-            setState(() {
-              if (draggingCol) {
-                _updateSlidingCollection(slidingColumn,
-                    Offset(0, delta.dy / boxSize.height), slidingRow);
-              } else {
-                _updateSlidingCollection(slidingRow,
-                    Offset(delta.dx / boxSize.width, 0), slidingColumn);
+              for (GameBox box in [...slidingColumn, ...slidingRow]) {
+                box.loc = box.startLoc;
+                box.userDragged = false;
+                box.collapsing = false;
               }
-            });
+            } else {
+              outsideSnap = true;
+              setState(() {
+                if (draggingCol) {
+                  _updateSlidingCollection(slidingColumn,
+                      Offset(0, dragDelta.dy / boxSize.height), slidingRow);
+                } else {
+                  _updateSlidingCollection(slidingRow,
+                      Offset(dragDelta.dx / boxSize.width, 0), slidingColumn);
+                }
+              });
+            }
           },
           onPanEnd: (DragEndDetails deets) {
             if (tappedBox != null) {
@@ -393,6 +414,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
             tappedBox = null;
             slidingColumn = null;
             slidingRow = null;
+            outsideSnap = false;
             _updateBoardTillSettled();
           },
           child: Column(

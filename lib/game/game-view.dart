@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -6,6 +7,22 @@ import 'package:flutter/widgets.dart';
 import 'game-board.dart';
 import 'hud.dart';
 import '../model.dart';
+
+class InvertedRectClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    return new Path()
+      ..addRect(Rect.fromCenter(
+          center: new Offset(size.width / 2, size.height / 2),
+          width: size.shortestSide,
+          height: size.shortestSide))
+      ..addRect(new Rect.fromLTWH(0.0, 0.0, size.width, size.height))
+      ..fillType = PathFillType.evenOdd;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
 
 class GameView extends StatefulWidget {
   final ColorGameConfig config;
@@ -23,8 +40,8 @@ class _GameViewState extends State<GameView> {
 
   void _handleNewRun(RunEventMetadata metadata) {
     setState(() {
-      score += pow(metadata.runLength, metadata.multiples) *
-          metadata.runStreakLength;
+      score += pow(metadata.runLength, metadata.runStreakLength) *
+          metadata.multiples;
     });
   }
 
@@ -49,6 +66,27 @@ class _GameViewState extends State<GameView> {
                   break;
               }
             }),
+      ),
+      ClipPath(
+        clipper: InvertedRectClipper(),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 5,
+            sigmaY: 5,
+          ),
+          child: Container(
+            color: Colors.transparent,
+          ),
+        ),
+      ),
+      ClipPath(
+        clipper: InvertedRectClipper(),
+        child: Opacity(
+          opacity: .1,
+          child: Container(
+            color: Colors.black,
+          ),
+        ),
       ),
       Positioned.fill(child: Hud(score: score)),
     ];
