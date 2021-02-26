@@ -1,8 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
-import 'model.dart';
 import 'routes.dart';
 
 const RELATIVE_GAP_SIZE = 1 / 12;
