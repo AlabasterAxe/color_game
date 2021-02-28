@@ -77,22 +77,29 @@ class _GameViewState extends State<GameView> {
         child: FractionallySizedBox(
           heightFactor: .9,
           widthFactor: .9,
-          child: GameBoardWidget(
-              key: gameKey,
-              config: widget.config,
-              onGameEvent: (GameEvent e) {
-                switch (e.type) {
-                  case GameEventType.RUN:
-                    _handleNewRun(e.metadata);
-                    break;
-                  case GameEventType.NO_MOVES:
-                    // TODO: Handle this case.
-                    setState(() {
-                      gameOver = true;
-                    });
-                    break;
-                }
-              }),
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: GameBoardWidget(
+                key: gameKey,
+                config: widget.config,
+                onGameEvent: (GameEvent e) {
+                  switch (e.type) {
+                    case GameEventType.RUN:
+                      _handleNewRun(e.metadata);
+                      break;
+                    case GameEventType.NO_MOVES:
+                      setState(() {
+                        gameOver = true;
+                      });
+                      break;
+                    case GameEventType.LEFT_OVER_BOX:
+                      setState(() {
+                        score = (score * .9).round();
+                      });
+                      break;
+                  }
+                }),
+          ),
         ),
       ),
       ClipPath(
