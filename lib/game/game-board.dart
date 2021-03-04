@@ -392,8 +392,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                       Offset(dragDelta.dx / boxSize.width, 0), slidingColumn);
                 }
               });
-            }
-          },
+            },
           onPanEnd: (DragEndDetails deets) {
             if (tappedBox != null) {
               Offset delta = tapUpdateLoc - tapStartLoc;
