@@ -278,11 +278,13 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       Offset lastBoxLoc;
 
       Function(List<GameBox>) handleStreak = (run) {
+        if (run.length >= 3) {
         boxesToRemove.addAll(run);
         runs.add(RunEventMetadata()
           ..runLength = run.length
           ..runStreakLength = runStreakLength
           ..color = runColor);
+        }
       };
 
       for (GameBox box
@@ -291,9 +293,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
             // if there's a gap don't count it as a streak
             (box.loc.dx - lastBoxLoc.dx).abs() > 1 ||
             (box.loc.dy - lastBoxLoc.dy).abs() > 1) {
-          if (run.length >= 3) {
             handleStreak(run);
-          }
           run = [box];
           runColor = box.color;
         } else {
@@ -301,10 +301,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         }
         lastBoxLoc = box.loc;
       }
-      if (run.length >= 3) {
         handleStreak(run);
       }
-    }
 
     boxes.removeWhere((GameBox b) => boxesToRemove.contains(b));
     return runs;
