@@ -135,8 +135,14 @@ class _GameViewState extends State<GameView> {
                       _handleNewSquare(e.metadata);
                       break;
                     case GameEventType.NO_MOVES:
-                      setState(() {
-                        gameOver = true;
+                      addScore(score).then((_) {
+                        getScores().then((scores) {
+                          setState(() {
+                            gameOver = true;
+                            highScores = [...scores];
+                            highScores.sort((a, b) => b.score!.compareTo(a.score!));
+                          });
+                        });
                       });
                       break;
                     case GameEventType.LEFT_OVER_BOX:
@@ -184,35 +190,25 @@ class _GameViewState extends State<GameView> {
                 Text(
                   "Your High Scores",
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headline4,
+                  style: Theme.of(context).textTheme.headline5,
                 ),
                 SizedBox(height: 20),
-                Flexible(
-                    child: Column(
-                        children: highScores
-                            .map((score) => Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text("${score.score}"),
-                                    SizedBox(width: 20),
-                                    Text("(${_getAgoString(score.date)})",
-                                        style: TextStyle(
-                                            fontSize: 12, color: Colors.grey[800], fontStyle: FontStyle.italic))
-                                  ],
-                                ))
-                            .toList())),
-                SizedBox(height: 20),
+                DataTable(
+                    headingRowHeight: 0,
+                    columns: [DataColumn(label: Container()), DataColumn(label: Container())],
+                    rows: highScores
+                        .map((score) => DataRow(
+                              cells: [
+                                DataCell(Text("${score.score}", style: TextStyle(fontSize: 24))),
+                                DataCell(Text("(${_getAgoString(score.date)})",
+                                    style:
+                                        TextStyle(fontSize: 12, color: Colors.grey[800], fontStyle: FontStyle.italic))),
+                              ],
+                            ))
+                        .toList()),
                 ElevatedButton(
                     child: Text("New Game"),
                     onPressed: () {
-                      addScore(score).then((_) {
-                        getScores().then((scores) {
-                          setState(() {
-                            this.highScores = [...scores];
-                            this.highScores.sort((a, b) => b.score!.compareTo(a.score!));
-                          });
-                        });
-                      });
                       setState(() {
                         gameOver = false;
                         gameKey = UniqueKey();
