@@ -40,4 +40,6 @@ class GameBox {
   }
 
   bool get eligibleForInclusionInSquare => runs.isEmpty && squares.isEmpty;
+
+  GameBox clone() => GameBox(loc, color);
 }

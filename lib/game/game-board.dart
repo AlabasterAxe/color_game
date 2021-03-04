@@ -58,8 +58,18 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   bool draggingCol = false;
   bool outsideSnap = false;
 
-  List<GameBox> boxes = generateGameBoxes(colors: COLORS);
+  List<GameBox> boxes;
   List<GameBox> toRemove = [];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.config.predefinedGrid != null && widget.config.predefinedGrid.isNotEmpty) {
+      boxes = widget.config.predefinedGrid.map((e) => e.clone()).toList();
+    } else {
+      boxes = generateGameBoxes(colors: COLORS);
+    }
+  }
 
   @override
   void dispose() {
