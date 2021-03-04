@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:color_game/views/disappearing-dots-block.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -37,7 +38,8 @@ class GameBoardWidget extends StatefulWidget {
   _GameBoardWidgetState createState() => _GameBoardWidgetState();
 }
 
-class _GameBoardWidgetState extends State<GameBoardWidget> {
+class _GameBoardWidgetState extends State<GameBoardWidget> with SingleTickerProviderStateMixin {
+  AnimationController controller;
   Offset tapStartLoc;
   Offset tapUpdateLoc;
   GameBox tappedBox;
@@ -53,6 +55,13 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   bool outsideSnap = false;
 
   List<GameBox> boxes = generateGameBoxes(colors: COLORS);
+  List<GameBox> toRemove = [];
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(vsync: this);
+  }
 
   @override
   void dispose() {
@@ -208,7 +217,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   void _updateBoard(Timer t) {
     setState(() {
-      var affectedRows = _markAllRuns();
+      List<RunEventMetadata> affectedRows = _markAllRuns();
       if (!_playerHasValidMoves() && !sentNoMovesEvent) {
         widget.onGameEvent(GameEvent()..type = GameEventType.NO_MOVES);
         sentNoMovesEvent = true;
@@ -268,8 +277,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       for (int i = 0; i < boxes.length; i++) {
         List<GameBox> run = [boxes[i]];
         for (int k = (i + 1); k < boxes.length; k++) {
-          if (boxes[k].color == run.last.color &&
-              (boxes[k].loc - run.last.loc).distanceSquared < 1.01) {
+          if (boxes[k].color == run.last.color && (boxes[k].loc - run.last.loc).distanceSquared < 1.01) {
             run.add(boxes[k]);
           } else {
             i = k - 1;
@@ -299,6 +307,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         ..type = GameEventType.RUN
         ..metadata = run);
     }
+    toRemove = boxes.where((box) => box.runs.isNotEmpty).toList();
     boxes.removeWhere((box) => box.runs.isNotEmpty);
     return result;
   }
@@ -325,6 +334,21 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
               widget.config.gridSize.width / 2, widget.config.gridSize.height / 2),
           to: Offset(0, 0) & constraints.biggest);
       List<Widget> stackChildren = [];
+
+      stackChildren.addAll(toRemove.map((b) {
+        Rect boundsRect = b.getRect(vt);
+        double gapSize = boundsRect.width * RELATIVE_GAP_SIZE;
+        return Positioned(
+            top: boundsRect.top,
+            left: boundsRect.left,
+            child: Container(
+              height: boundsRect.height - gapSize,
+              width: boundsRect.width - gapSize,
+              child: DisappearingDotsBlock(
+          color: b.color,
+          onFullyDisappeared: () {},
+        )));
+      }));
 
       stackChildren.addAll(boxes.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
 
