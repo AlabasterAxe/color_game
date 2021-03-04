@@ -3,7 +3,7 @@ import 'package:color_game/game/generate-game-boxes.dart';
 import 'package:color_game/model.dart';
 import 'package:flutter/material.dart';
 
-ColorGameConfig defaultConfig() => ColorGameConfig()..gridSize = Size(4, 4);
+ColorGameConfig defaultConfig() => ColorGameConfig()..gridSize = Size(6, 6);
 
 ColorGameConfig easyToMakePlus() {
   List<GameBox> game = generateGameBoxes(colors: COLORS);

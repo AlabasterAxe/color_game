@@ -64,10 +64,12 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   @override
   void initState() {
     super.initState();
-    if (widget.config.predefinedGrid != null && widget.config.predefinedGrid.isNotEmpty) {
+    if (widget.config.predefinedGrid != null &&
+        widget.config.predefinedGrid.isNotEmpty) {
       boxes = widget.config.predefinedGrid.map((e) => e.clone()).toList();
     } else {
-      boxes = generateGameBoxes(colors: COLORS);
+      boxes = generateGameBoxes(
+          colors: COLORS, size: widget.config.gridSize.width.round());
     }
   }
 
