@@ -38,8 +38,7 @@ class GameBoardWidget extends StatefulWidget {
   _GameBoardWidgetState createState() => _GameBoardWidgetState();
 }
 
-class _GameBoardWidgetState extends State<GameBoardWidget> with SingleTickerProviderStateMixin {
-  AnimationController controller;
+class _GameBoardWidgetState extends State<GameBoardWidget> {
   Offset tapStartLoc;
   Offset tapUpdateLoc;
   GameBox tappedBox;
@@ -56,12 +55,6 @@ class _GameBoardWidgetState extends State<GameBoardWidget> with SingleTickerProv
 
   List<GameBox> boxes = generateGameBoxes(colors: COLORS);
   List<GameBox> toRemove = [];
-
-  @override
-  void initState() {
-    super.initState();
-    controller = AnimationController(vsync: this);
-  }
 
   @override
   void dispose() {
