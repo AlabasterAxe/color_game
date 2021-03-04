@@ -374,19 +374,15 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
             Offset dragDelta = tapUpdateLoc - tapStartLoc;
             // once the user is outside of a small window they can't change
             // whether they're dragging the column or the row
-            if (boxSize.deflate(5).contains(tapUpdateLoc) && !outsideSnap) {
+            if (boxSize.contains(tapUpdateLoc) && !outsideSnap) {
               if (directionDelta.dy.abs() > directionDelta.dx.abs()) {
                 draggingCol = true;
               } else {
                 draggingCol = false;
               }
-              for (GameBox box in [...slidingColumn, ...slidingRow]) {
-                box.loc = box.startLoc;
-                box.userDragged = false;
-                box.collapsing = false;
-              }
             } else {
               outsideSnap = true;
+            }
               setState(() {
                 if (draggingCol) {
                   _updateSlidingCollection(slidingColumn,
