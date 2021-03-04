@@ -13,6 +13,7 @@ import 'generate-game-boxes.dart';
 enum GameEventType {
   RUN,
   NO_MOVES,
+  LEFT_OVER_BOX,
 }
 
 class RunEventMetadata {
@@ -48,7 +49,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   bool sentNoMovesEvent = false;
 
   // if they're not dragging col, they're dragging row;
-  bool draggingCol;
+  bool draggingCol = false;
   bool outsideSnap = false;
 
   List<GameBox> boxes = generateGameBoxes(colors: COLORS);
@@ -179,6 +180,20 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     }
   }
 
+  void _penalizeRemainingBoxes() {
+    Timer.periodic(Duration(milliseconds: 1000), (Timer t) {
+      if (boxes.isEmpty) {
+        t.cancel();
+        return;
+      }
+
+      setState(() {
+        boxes.remove(boxes.first);
+        widget.onGameEvent(GameEvent()..type = GameEventType.LEFT_OVER_BOX);
+      });
+    });
+  }
+
   bool _playerHasValidMoves() {
     if (boxes.length < 3) {
       return false;
@@ -201,6 +216,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       if (!_playerHasValidMoves() && !sentNoMovesEvent) {
         widget.onGameEvent(GameEvent()..type = GameEventType.NO_MOVES);
         sentNoMovesEvent = true;
+        _penalizeRemainingBoxes();
       }
       _snapBoxes();
       if (affectedRows.isNotEmpty) {
@@ -340,6 +356,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       return GestureDetector(
           onPanStart: (DragStartDetails deets) {
             tapStartLoc = deets.localPosition;
+            tapUpdateLoc = deets.localPosition;
             tappedBox = getTappedBox(tapStartLoc, vt);
             if (tappedBox != null) {
               slidingColumn = getColumnMates(tappedBox);
@@ -415,6 +432,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
             slidingColumn = null;
             slidingRow = null;
             outsideSnap = false;
+            tapStartLoc = null;
+            tapUpdateLoc = null;
             _updateBoardTillSettled();
           },
           child: Column(

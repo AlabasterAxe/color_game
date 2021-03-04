@@ -12,6 +12,7 @@ class AnimatedScore extends StatefulWidget {
 class _AnimatedScoreState extends State<AnimatedScore>
     with SingleTickerProviderStateMixin {
   AnimationController controller;
+  Animation<Color> colorAnimation = AlwaysStoppedAnimation(Colors.grey[200]);
   int prevScore = 0;
 
   @override
@@ -26,6 +27,13 @@ class _AnimatedScoreState extends State<AnimatedScore>
   void didUpdateWidget(AnimatedScore oldWidget) {
     super.didUpdateWidget(oldWidget);
     prevScore = oldWidget.score;
+    if (prevScore > widget.score) {
+      colorAnimation = ColorTween(begin: Colors.red, end: Colors.grey[200])
+          .chain(CurveTween(curve: Curves.easeInExpo))
+          .animate(controller);
+    } else {
+      colorAnimation = AlwaysStoppedAnimation(Colors.grey[200]);
+    }
     controller.forward(from: 0);
   }
 
@@ -37,7 +45,8 @@ class _AnimatedScoreState extends State<AnimatedScore>
           return Text(
               "${((widget.score - prevScore) * controller.value + prevScore).round()}",
               style: TextStyle(
-                  color: Colors.grey[200], decoration: TextDecoration.none));
+                  color: colorAnimation.value,
+                  decoration: TextDecoration.none));
         });
   }
 }
