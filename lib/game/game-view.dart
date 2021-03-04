@@ -46,15 +46,19 @@ class _GameViewState extends State<GameView> {
 
   void _handleNewRun(RunEventMetadata metadata) {
     setState(() {
-      score += pow(metadata.runLength, metadata.runStreakLength) *
-          metadata.multiples;
+      score += pow(metadata.runLength, metadata.runStreakLength) * metadata.multiples;
+    });
+  }
+
+  void _handleNewSquare(SquareEventMetadata metadata) {
+    setState(() {
+      score += 25;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    double boxSize =
-        (MediaQuery.of(context).size.shortestSide * .9) / GRID_SIZE;
+    double boxSize = (MediaQuery.of(context).size.shortestSide * .9) / GRID_SIZE;
     List<Widget> stackChildren = [
       AspectRatio(
         aspectRatio: 1,
@@ -63,19 +67,17 @@ class _GameViewState extends State<GameView> {
           widthFactor: .9,
           child: Center(
               child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.circular(BOX_BORDER_RADIUS * boxSize),
-                      boxShadow: [
-                BoxShadow(
-                  color: Color(0xff404040),
-                ),
-                BoxShadow(
-                  color: BOARD_BACKGROUND_COLOR,
-                  spreadRadius: -5,
-                  blurRadius: 10,
-                )
-              ]))),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(BOX_BORDER_RADIUS * boxSize), boxShadow: [
+            BoxShadow(
+              color: Color(0xff404040),
+            ),
+            BoxShadow(
+              color: BOARD_BACKGROUND_COLOR,
+              spreadRadius: -5,
+              blurRadius: 10,
+            )
+          ]))),
         ),
       ),
       AspectRatio(
@@ -92,6 +94,9 @@ class _GameViewState extends State<GameView> {
                   switch (e.type) {
                     case GameEventType.RUN:
                       _handleNewRun(e.metadata);
+                      break;
+                    case GameEventType.SQUARE:
+                      _handleNewSquare(e.metadata);
                       break;
                     case GameEventType.NO_MOVES:
                       setState(() {
@@ -144,11 +149,7 @@ class _GameViewState extends State<GameView> {
                   "Your High Scores",
                   style: Theme.of(context).textTheme.headline2,
                 ),
-                Flexible(
-                    child: Column(
-                        children: highScores.reversed
-                            .map((score) => Text("$score"))
-                            .toList())),
+                Flexible(child: Column(children: highScores.reversed.map((score) => Text("$score")).toList())),
                 ElevatedButton(
                     child: Text("New Game"),
                     onPressed: () {

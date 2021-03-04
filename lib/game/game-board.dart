@@ -13,6 +13,7 @@ import 'generate-game-boxes.dart';
 
 enum GameEventType {
   RUN,
+  SQUARE,
   NO_MOVES,
   LEFT_OVER_BOX,
 }
@@ -22,6 +23,10 @@ class RunEventMetadata {
   Color color;
   int runStreakLength;
   int multiples;
+}
+
+class SquareEventMetadata {
+  Color color;
 }
 
 class GameEvent {
@@ -210,14 +215,14 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   void _updateBoard(Timer t) {
     setState(() {
-      List<RunEventMetadata> affectedRows = _markAllRuns();
+      List<dynamic> features = _removeFeatures();
       if (!_playerHasValidMoves() && !sentNoMovesEvent) {
         widget.onGameEvent(GameEvent()..type = GameEventType.NO_MOVES);
         sentNoMovesEvent = true;
         _penalizeRemainingBoxes();
       }
       _snapBoxes();
-      if (affectedRows.isNotEmpty) {
+      if (features.isNotEmpty) {
         _settled = false;
         runStreakLength += 1;
       }
@@ -226,7 +231,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         affectedBoxes = _gravitize();
         _snapBoxes();
       }
-      if (affectedRows.isEmpty && affectedBoxes.isEmpty) {
+      if (features.isEmpty && affectedBoxes.isEmpty) {
         t.cancel();
         _settled = true;
         runStreakLength = 1;
@@ -290,18 +295,55 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     return runs;
   }
 
-  List<RunEventMetadata> _markAllRuns() {
-    List<RunEventMetadata> result = [];
+  List<SquareEventMetadata> _getSquares() {
+    List<SquareEventMetadata> squares = [];
+    for (GameBox box in boxes) {
+      if (box.eligibleForInclusionInSquare) {
+        // only eligible if not part of run
+        GameBox r = getBoxAtPosition(box.loc + Offset(1.0, 0));
+        if (r != null && r.eligibleForInclusionInSquare && r.color == box.color) {
+          GameBox b = getBoxAtPosition(box.loc + Offset(0.0, 1.0));
+          if (b != null && b.eligibleForInclusionInSquare && b.color == box.color) {
+            GameBox rb = getBoxAtPosition(box.loc + Offset(1.0, 1.0));
+            if (rb != null && rb.eligibleForInclusionInSquare && rb.color == box.color) {
+              SquareEventMetadata e = SquareEventMetadata()..color = box.color;
+              [box, r, b, rb].forEach((element) => element.squares.add(e));
+              squares.add(e);
+            }
+          }
+        }
+      }
+    }
+    return squares;
+  }
+
+  List<dynamic> _removeFeatures() {
+    List<dynamic> result = [];
     result.addAll(_markRuns(getRows().values));
     result.addAll(_markRuns(getCols().values));
+    List<SquareEventMetadata> squares = _getSquares();
+    // remove all squares and corresponding colors.
+    toRemove = boxes.where((box) => box.runs.isNotEmpty || box.squares.isNotEmpty).toList();
+    for (SquareEventMetadata s in squares) {
+      for (GameBox gb in boxes) {
+        if (!toRemove.contains(gb) && gb.color == s.color) {
+          toRemove.add(gb);
+        }
+      }
+    }
+    boxes.removeWhere((box) => toRemove.contains(box));
     for (RunEventMetadata run in result) {
       run.multiples = result.length;
       widget.onGameEvent(GameEvent()
         ..type = GameEventType.RUN
         ..metadata = run);
     }
-    toRemove = boxes.where((box) => box.runs.isNotEmpty).toList();
-    boxes.removeWhere((box) => box.runs.isNotEmpty);
+    for (SquareEventMetadata square in squares) {
+      widget.onGameEvent(GameEvent()
+        ..type = GameEventType.SQUARE
+        ..metadata = square);
+    }
+    result.addAll(squares);
     return result;
   }
 
@@ -332,18 +374,18 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         Rect boundsRect = b.getRect(vt);
         double gapSize = boundsRect.width * RELATIVE_GAP_SIZE;
         return Positioned(
-          key: b.key,
-          top: boundsRect.top,
-          left: boundsRect.left,
-          child: Padding(
-          padding: EdgeInsets.all(gapSize / 2),
-          child: Container(
-              height: boundsRect.height - gapSize,
-              width: boundsRect.width - gapSize,
-              child: DisappearingDotsBlock(
-                color: b.color,
-                onFullyDisappeared: () {},
-        ))));
+            key: b.key,
+            top: boundsRect.top,
+            left: boundsRect.left,
+            child: Padding(
+                padding: EdgeInsets.all(gapSize / 2),
+                child: Container(
+                    height: boundsRect.height - gapSize,
+                    width: boundsRect.width - gapSize,
+                    child: DisappearingDotsBlock(
+                      color: b.color,
+                      onFullyDisappeared: () {},
+                    ))));
       }));
 
       stackChildren.addAll(boxes.map((b) => GameBoxWidget(box: b, vt: vt)).toList());

@@ -36,14 +36,14 @@ class DisappearingDotsBlockState extends State<DisappearingDotsBlock>
     super.initState();
 
     dots = [];
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 4; i++) {
       dots.add(_Dot(
           Offset(-1.0 + r.nextDouble() * 2.0, -1.0 + r.nextDouble() * 2.0),
-          r.nextDouble() * .75));
+          .75 + r.nextDouble() * .25));
     }
 
     controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 750));
+        AnimationController(vsync: this, duration: Duration(milliseconds: 1250));
 
     dotsPctGone = Tween(begin: 0.0, end: 1.0)
         .animate(CurvedAnimation(parent: controller, curve: Curves.easeOut));
