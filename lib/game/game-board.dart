@@ -246,7 +246,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   Map<double, List<GameBox>> getRows() {
     Map<double, List<GameBox>> result = Map();
-    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
+    for (GameBox box in boxes) {
       List<GameBox> row = result.putIfAbsent(box.loc.dy, () => []);
       row.add(box);
       row.sort((a, b) => (a.loc.dx - b.loc.dx).ceil());
@@ -257,7 +257,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   Map<double, List<GameBox>> getCols() {
     Map<double, List<GameBox>> result = Map();
-    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
+    for (GameBox box in boxes) {
       List<GameBox> col = result.putIfAbsent(box.loc.dx, () => []);
       col.add(box);
       col.sort((a, b) => (a.loc.dy - b.loc.dy).ceil());
@@ -287,8 +287,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         }
       };
 
-      for (GameBox box
-          in roworcol.where((b) => b.color != Colors.transparent)) {
+      for (GameBox box in roworcol) {
         if (box.color != runColor ||
             // if there's a gap don't count it as a streak
             (box.loc.dx - lastBoxLoc.dx).abs() > 1 ||

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'game/game-view.dart';
-import 'home-view.dart';
+import 'views/home-view.dart';
 
 enum RouteId {
   homeView,
