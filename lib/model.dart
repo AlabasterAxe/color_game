@@ -7,17 +7,17 @@ import 'view-transform.dart';
 
 class ColorGameConfig {
   // the number of squares on each side of the board
-  Size gridSize;
+  late Size gridSize;
 
-  List<GameBox> predefinedGrid;
+  List<GameBox>? predefinedGrid;
 }
 
 class GameBox {
   // this is the box's drawn location
-  Offset loc;
+  Offset? loc;
 
   // this stores the original location of the box during a drag
-  Offset startLoc;
+  Offset? startLoc;
   Color color;
 
   bool userDragged = false;
@@ -32,11 +32,11 @@ class GameBox {
   }
 
   Rect getRect(ViewTransformation vt) {
-    return vt.rectForward(Rect.fromCenter(center: loc, width: 1, height: 1));
+    return vt.rectForward(Rect.fromCenter(center: loc!, width: 1, height: 1));
   }
 
   Rect getStartRect(ViewTransformation vt) {
-    return vt.rectForward(Rect.fromCenter(center: startLoc, width: 1, height: 1));
+    return vt.rectForward(Rect.fromCenter(center: startLoc!, width: 1, height: 1));
   }
 
   bool get eligibleForInclusionInSquare => runs.isEmpty && squares.isEmpty;

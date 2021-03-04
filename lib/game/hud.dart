@@ -4,7 +4,7 @@ import 'animated-score.dart';
 
 class Hud extends StatelessWidget {
   final int score;
-  const Hud({Key key, this.score}) : super(key: key);
+  const Hud({Key? key, required this.score}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -5,8 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 const String SCORES_KEY = "co.thkp.color_collapse.scores";
 
 class Score {
-  int score;
-  DateTime date;
+  int? score;
+  late DateTime date;
 
   Score();
 
@@ -40,7 +40,7 @@ Future<void> addScore(int score) {
 
 Future<List<Score>> getScores() {
   return SharedPreferences.getInstance().then((prefs) {
-    List<String> scores = prefs.getStringList(SCORES_KEY);
+    List<String>? scores = prefs.getStringList(SCORES_KEY);
     if (scores == null) {
       return [];
     }
