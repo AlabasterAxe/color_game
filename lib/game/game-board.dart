@@ -64,10 +64,11 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   @override
   void initState() {
     super.initState();
-    if (widget.config!.predefinedGrid != null && widget.config!.predefinedGrid!.isNotEmpty) {
-      boxes = widget.config!.predefinedGrid!.map((e) => e.clone()).toList();
+    if (widget.config!.predefinedGrid.isNotEmpty) {
+      boxes = widget.config!.predefinedGrid.map((e) => e.clone()).toList();
     } else {
-      boxes = generateGameBoxes(colors: COLORS, size: widget.config!.gridSize.width.round());
+      boxes = generateGameBoxes(
+          colors: COLORS, size: widget.config!.gridSize.width.round());
     }
   }
 
@@ -119,8 +120,9 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     Offset gravitationalCenter = Offset(0, 0);
     List<GameBox> distSortedBoxes = [...boxes!];
 
-    distSortedBoxes.sort((a, b) =>
-        (gravitationalCenter - a.loc!).distanceSquared.compareTo((gravitationalCenter - b.loc!).distanceSquared));
+    distSortedBoxes.sort((a, b) => (gravitationalCenter - a.loc!)
+        .distanceSquared
+        .compareTo((gravitationalCenter - b.loc!).distanceSquared));
 
     List<GameBox> affectedBoxes = [];
     List<double> cardinals = [-pi, -pi / 2, 0, pi / 2, pi];
@@ -159,7 +161,9 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       if (primaryBox == null) {
         affectedBoxes.add(box);
         if (secondaryOption != null) {
-          Offset diagonalLoc = box.loc! + Offset.fromDirection(primaryOption) + Offset.fromDirection(secondaryOption);
+          Offset diagonalLoc = box.loc! +
+              Offset.fromDirection(primaryOption) +
+              Offset.fromDirection(secondaryOption);
           GameBox? diagonalBox = getBoxAtPosition(diagonalLoc);
           if (secondaryBox == null && diagonalBox == null) {
             box.loc = diagonalLoc;
@@ -187,7 +191,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   void _snapBoxes() {
     for (GameBox box in boxes!) {
-      Offset roundedOffset = Offset((box.loc!.dx - .5).round() + .5, (box.loc!.dy - .5).round() + .5);
+      Offset roundedOffset = Offset(
+          (box.loc!.dx - .5).round() + .5, (box.loc!.dy - .5).round() + .5);
       box.loc = roundedOffset;
       box.startLoc = roundedOffset;
     }
@@ -251,7 +256,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   void _updateBoardTillSettled() {
     boardUpdateTimer = Timer(Duration(milliseconds: 200), () {
-      boardUpdateTimer = Timer.periodic(Duration(milliseconds: COLLAPSE_DURATION_MILLISECONDS), _updateBoard);
+      boardUpdateTimer = Timer.periodic(
+          Duration(milliseconds: COLLAPSE_DURATION_MILLISECONDS), _updateBoard);
       _updateBoard(boardUpdateTimer);
     });
   }
@@ -285,7 +291,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       for (int i = 0; i < boxes.length; i++) {
         List<GameBox> run = [boxes[i]];
         for (int k = (i + 1); k < boxes.length; k++) {
-          if (boxes[k].color == run.last.color && (boxes[k].loc! - run.last.loc!).distanceSquared < 1.01) {
+          if (boxes[k].color == run.last.color &&
+              (boxes[k].loc! - run.last.loc!).distanceSquared < 1.01) {
             run.add(boxes[k]);
           } else {
             i = k - 1;
@@ -311,11 +318,17 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       if (box.eligibleForInclusionInSquare) {
         // only eligible if not part of run
         GameBox? r = getBoxAtPosition(box.loc! + Offset(1.0, 0));
-        if (r != null && r.eligibleForInclusionInSquare && r.color == box.color) {
+        if (r != null &&
+            r.eligibleForInclusionInSquare &&
+            r.color == box.color) {
           GameBox? b = getBoxAtPosition(box.loc! + Offset(0.0, 1.0));
-          if (b != null && b.eligibleForInclusionInSquare && b.color == box.color) {
+          if (b != null &&
+              b.eligibleForInclusionInSquare &&
+              b.color == box.color) {
             GameBox? rb = getBoxAtPosition(box.loc! + Offset(1.0, 1.0));
-            if (rb != null && rb.eligibleForInclusionInSquare && rb.color == box.color) {
+            if (rb != null &&
+                rb.eligibleForInclusionInSquare &&
+                rb.color == box.color) {
               SquareEventMetadata e = SquareEventMetadata()..color = box.color;
               [box, r, b, rb].forEach((element) => element.squares.add(e));
               squares.add(e);
@@ -333,7 +346,9 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     runs.addAll(_markRuns(getCols().values));
     List<SquareEventMetadata> squares = _getSquares();
     // remove all squares and corresponding colors.
-    toRemove = boxes!.where((box) => box.runs.isNotEmpty || box.squares.isNotEmpty).toList();
+    toRemove = boxes!
+        .where((box) => box.runs.isNotEmpty || box.squares.isNotEmpty)
+        .toList();
     for (SquareEventMetadata s in squares) {
       for (GameBox gb in boxes!) {
         if (!toRemove.contains(gb) && gb.color == s.color) {
@@ -356,7 +371,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     return runs.isNotEmpty || squares.isNotEmpty;
   }
 
-  _updateSlidingCollection(List<GameBox> draggedBoxes, Offset dragOffset, List<GameBox> undraggedBoxes) {
+  _updateSlidingCollection(List<GameBox> draggedBoxes, Offset dragOffset,
+      List<GameBox> undraggedBoxes) {
     // put the other boxes back
     for (GameBox box in undraggedBoxes) {
       box.loc = box.startLoc;
@@ -374,8 +390,11 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       ViewTransformation vt = ViewTransformation(
-          from: Rect.fromLTRB(-widget.config!.gridSize.width / 2, -widget.config!.gridSize.height / 2,
-              widget.config!.gridSize.width / 2, widget.config!.gridSize.height / 2),
+          from: Rect.fromLTRB(
+              -widget.config!.gridSize.width / 2,
+              -widget.config!.gridSize.height / 2,
+              widget.config!.gridSize.width / 2,
+              widget.config!.gridSize.height / 2),
           to: Offset(0, 0) & constraints.biggest);
       List<Widget> stackChildren = [];
 
@@ -397,7 +416,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                     ))));
       }));
 
-      stackChildren.addAll(boxes!.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
+      stackChildren
+          .addAll(boxes!.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
 
       return GestureDetector(
           onPanStart: (DragStartDetails deets) {
@@ -431,9 +451,11 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
             }
             setState(() {
               if (draggingCol) {
-                _updateSlidingCollection(slidingColumn!, Offset(0, dragDelta.dy / boxSize.height), slidingRow!);
+                _updateSlidingCollection(slidingColumn!,
+                    Offset(0, dragDelta.dy / boxSize.height), slidingRow!);
               } else {
-                _updateSlidingCollection(slidingRow!, Offset(dragDelta.dx / boxSize.width, 0), slidingColumn!);
+                _updateSlidingCollection(slidingRow!,
+                    Offset(dragDelta.dx / boxSize.width, 0), slidingColumn!);
               }
             });
           },
@@ -444,7 +466,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
               if (draggingCol) {
                 setState(() {
                   for (GameBox box in slidingColumn!) {
-                    Offset translatedOffset = box.startLoc!.translate(0, delta.dy / boxSize.height);
+                    Offset translatedOffset =
+                        box.startLoc!.translate(0, delta.dy / boxSize.height);
 
                     box.loc = translatedOffset;
                     box.startLoc = translatedOffset;
@@ -455,7 +478,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
               } else {
                 setState(() {
                   for (GameBox box in slidingRow!) {
-                    Offset translatedOffset = box.startLoc!.translate(delta.dx / boxSize.width, 0);
+                    Offset translatedOffset =
+                        box.startLoc!.translate(delta.dx / boxSize.width, 0);
                     box.loc = translatedOffset;
                     box.startLoc = translatedOffset;
                     box.userDragged = false;
@@ -476,7 +500,10 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           child: Column(
             children: [
               Expanded(
-                child: Stack(clipBehavior: Clip.none, alignment: Alignment.center, children: stackChildren),
+                child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: stackChildren),
               ),
             ],
           ));

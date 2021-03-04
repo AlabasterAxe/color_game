@@ -23,16 +23,22 @@ Route<dynamic> _staticRoute(Widget child) {
 }
 
 Map<RouteId, _RouteConfig> _routeConfiguration = {
-  RouteId.homeView: _RouteConfig(name: '/', routeBuilder: (settings) => _staticRoute(HomeView())),
+  RouteId.homeView: _RouteConfig(
+      name: '/', routeBuilder: (settings) => _staticRoute(HomeView())),
   RouteId.gameView: _RouteConfig(
       name: '/game',
-      routeBuilder: (settings) =>
-          MaterialPageRoute(builder: (context) => GameView(config: settings.arguments as ColorGameConfig?))),
+      routeBuilder: (settings) => MaterialPageRoute(builder: (context) {
+            if (settings.arguments != null) {
+              return GameView(config: settings.arguments as ColorGameConfig);
+            }
+            return GameView();
+          })),
 };
 
 extension RouteIdUtils on RouteId? {
   String? get name => _routeConfiguration[this!]!.name;
-  Route<dynamic> generateRoute(RouteSettings settings) => _routeConfiguration[this!]!.routeBuilder!(settings);
+  Route<dynamic> generateRoute(RouteSettings settings) =>
+      _routeConfiguration[this!]!.routeBuilder!(settings);
 }
 
 RouteId? getRouteIdByName(String? name) {

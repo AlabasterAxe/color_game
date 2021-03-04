@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       onGenerateRoute: (RouteSettings settings) =>
           getRouteIdByName(settings.name).generateRoute(settings),
-      initialRoute: "/",
+      initialRoute: "/game",
     );
   }
 }

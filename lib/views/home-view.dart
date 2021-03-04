@@ -1,5 +1,4 @@
 import 'package:color_game/constants.dart';
-import 'package:color_game/game/predefined-configs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,7 +29,7 @@ class HomeView extends StatelessWidget {
                     ),
                     onPressed: () {
                       Navigator.pushNamed(context, "/game",
-                          arguments: defaultConfig());
+                          arguments: ColorGameConfig());
                     }),
               ]),
         ));

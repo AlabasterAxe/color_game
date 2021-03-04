@@ -7,9 +7,12 @@ import 'view-transform.dart';
 
 class ColorGameConfig {
   // the number of squares on each side of the board
-  late Size gridSize;
+  final Size gridSize;
 
-  List<GameBox>? predefinedGrid;
+  final List<GameBox> predefinedGrid;
+
+  const ColorGameConfig(
+      {this.gridSize = const Size(6, 6), this.predefinedGrid = const []});
 }
 
 class GameBox {
@@ -36,7 +39,8 @@ class GameBox {
   }
 
   Rect getStartRect(ViewTransformation vt) {
-    return vt.rectForward(Rect.fromCenter(center: startLoc!, width: 1, height: 1));
+    return vt
+        .rectForward(Rect.fromCenter(center: startLoc!, width: 1, height: 1));
   }
 
   bool get eligibleForInclusionInSquare => runs.isEmpty && squares.isEmpty;

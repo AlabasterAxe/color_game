@@ -3,8 +3,6 @@ import 'package:color_game/game/generate-game-boxes.dart';
 import 'package:color_game/model.dart';
 import 'package:flutter/material.dart';
 
-ColorGameConfig defaultConfig() => ColorGameConfig()..gridSize = Size(6, 6);
-
 ColorGameConfig easyToMakePlus() {
   List<GameBox> game = generateGameBoxes(colors: COLORS);
   GameBox box = game.removeAt(21);
@@ -17,7 +15,5 @@ ColorGameConfig easyToMakePlus() {
   game.insert(14, GameBox(box.loc, Colors.orange));
   box = game.removeAt(7);
   game.insert(7, GameBox(box.loc, Colors.orange));
-  return ColorGameConfig()
-    ..gridSize = Size(4, 4)
-    ..predefinedGrid = game;
+  return ColorGameConfig(gridSize: Size(4, 4), predefinedGrid: game);
 }
