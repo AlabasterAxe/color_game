@@ -30,8 +30,8 @@ class InvertedRectClipper extends CustomClipper<Path> {
 }
 
 class GameView extends StatefulWidget {
-  final ColorGameConfig config;
-  GameView({Key key, this.config}) : super(key: key);
+  final ColorGameConfig? config;
+  GameView({Key? key, this.config}) : super(key: key);
 
   @override
   _GameViewState createState() => _GameViewState();
@@ -40,7 +40,7 @@ class GameView extends StatefulWidget {
 class _GameViewState extends State<GameView> {
   int score = 0;
   bool gameOver = false;
-  Tween<int> scoreTween;
+  Tween<int>? scoreTween;
   Key gameKey = UniqueKey();
 
   List<Score> highScores = [];
@@ -50,18 +50,17 @@ class _GameViewState extends State<GameView> {
     super.initState();
     getScores().then((scores) {
       this.highScores = scores;
-      this.highScores.sort((a, b) => b.score.compareTo(a.score));
+      this.highScores.sort((a, b) => b.score!.compareTo(a.score!));
     });
   }
 
-  void _handleNewRun(RunEventMetadata metadata) {
+  void _handleNewRun(RunEventMetadata? metadata) {
     setState(() {
-      score += pow(metadata.runLength, metadata.runStreakLength) *
-          metadata.multiples;
+      score += pow(metadata!.runLength, metadata.runStreakLength) * metadata.multiples as int;
     });
   }
 
-  void _handleNewSquare(SquareEventMetadata metadata) {
+  void _handleNewSquare(SquareEventMetadata? metadata) {
     setState(() {
       score += 25;
     });
@@ -69,8 +68,7 @@ class _GameViewState extends State<GameView> {
 
   String _getAgoString(DateTime date) {
     DateTime now = DateTime.now();
-    var delta = Duration(
-        milliseconds: now.millisecondsSinceEpoch - date.millisecondsSinceEpoch);
+    var delta = Duration(milliseconds: now.millisecondsSinceEpoch - date.millisecondsSinceEpoch);
     if (delta.inDays > 365) {
       int numYears = (delta.inDays / 365).round();
       return "${numYears} ${numYears == 1 ? "year" : "years"} ago";
@@ -96,8 +94,7 @@ class _GameViewState extends State<GameView> {
 
   @override
   Widget build(BuildContext context) {
-    double boxSize =
-        (MediaQuery.of(context).size.shortestSide * .9) / GRID_SIZE;
+    double boxSize = (MediaQuery.of(context).size.shortestSide * .9) / GRID_SIZE;
     List<Widget> stackChildren = [
       AspectRatio(
         aspectRatio: 1,
@@ -106,19 +103,17 @@ class _GameViewState extends State<GameView> {
           widthFactor: .9,
           child: Center(
               child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.circular(BOX_BORDER_RADIUS * boxSize),
-                      boxShadow: [
-                BoxShadow(
-                  color: Color(0xff404040),
-                ),
-                BoxShadow(
-                  color: BOARD_BACKGROUND_COLOR,
-                  spreadRadius: -5,
-                  blurRadius: 10,
-                )
-              ]))),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(BOX_BORDER_RADIUS * boxSize), boxShadow: [
+            BoxShadow(
+              color: Color(0xff404040),
+            ),
+            BoxShadow(
+              color: BOARD_BACKGROUND_COLOR,
+              spreadRadius: -5,
+              blurRadius: 10,
+            )
+          ]))),
         ),
       ),
       AspectRatio(
@@ -202,9 +197,7 @@ class _GameViewState extends State<GameView> {
                                     SizedBox(width: 20),
                                     Text("(${_getAgoString(score.date)})",
                                         style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[800],
-                                            fontStyle: FontStyle.italic))
+                                            fontSize: 12, color: Colors.grey[800], fontStyle: FontStyle.italic))
                                   ],
                                 ))
                             .toList())),
@@ -216,9 +209,7 @@ class _GameViewState extends State<GameView> {
                         getScores().then((scores) {
                           setState(() {
                             this.highScores = [...scores];
-                            this
-                                .highScores
-                                .sort((a, b) => b.score.compareTo(a.score));
+                            this.highScores.sort((a, b) => b.score!.compareTo(a.score!));
                           });
                         });
                       });

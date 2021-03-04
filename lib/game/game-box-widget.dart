@@ -7,9 +7,9 @@ import '../constants.dart';
 
 class GameBoxWidget extends StatefulWidget {
   final GameBox box;
-  final ViewTransformation vt;
+  final ViewTransformation? vt;
 
-  GameBoxWidget({this.box, this.vt}) : super(key: box.key);
+  GameBoxWidget({required this.box, this.vt}) : super(key: box.key);
 
   @override
   State<StatefulWidget> createState() => GameBoxWidgetState();
@@ -28,7 +28,7 @@ class GameBoxWidgetState extends State<GameBoxWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Rect boundsRect = widget.box.getRect(widget.vt);
+    Rect boundsRect = widget.box.getRect(widget.vt!);
     double gapSize = boundsRect.width * RELATIVE_GAP_SIZE;
 
     return AnimatedPositioned(

@@ -19,37 +19,37 @@ enum GameEventType {
 }
 
 class RunEventMetadata {
-  int runLength;
-  Color color;
-  int runStreakLength;
-  int multiples;
+  late int runLength;
+  Color? color;
+  late int runStreakLength;
+  late int multiples;
 }
 
 class SquareEventMetadata {
-  Color color;
+  Color? color;
 }
 
 class GameEvent {
-  GameEventType type;
+  GameEventType? type;
   dynamic metadata;
 }
 
 class GameBoardWidget extends StatefulWidget {
-  final ColorGameConfig config;
-  final Function(GameEvent) onGameEvent;
-  GameBoardWidget({Key key, this.config, this.onGameEvent}) : super(key: key);
+  final ColorGameConfig? config;
+  final Function(GameEvent)? onGameEvent;
+  GameBoardWidget({Key? key, this.config, this.onGameEvent}) : super(key: key);
 
   @override
   _GameBoardWidgetState createState() => _GameBoardWidgetState();
 }
 
 class _GameBoardWidgetState extends State<GameBoardWidget> {
-  Offset tapStartLoc;
-  Offset tapUpdateLoc;
-  GameBox tappedBox;
-  List<GameBox> slidingRow;
-  List<GameBox> slidingColumn;
-  Timer boardUpdateTimer;
+  Offset? tapStartLoc;
+  Offset? tapUpdateLoc;
+  GameBox? tappedBox;
+  List<GameBox>? slidingRow;
+  List<GameBox>? slidingColumn;
+  Timer? boardUpdateTimer;
   bool _settled = true;
   int runStreakLength = 1;
   bool sentNoMovesEvent = false;
@@ -58,59 +58,57 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   bool draggingCol = false;
   bool outsideSnap = false;
 
-  List<GameBox> boxes;
+  List<GameBox>? boxes;
   List<GameBox> toRemove = [];
 
   @override
   void initState() {
     super.initState();
-    if (widget.config.predefinedGrid != null &&
-        widget.config.predefinedGrid.isNotEmpty) {
-      boxes = widget.config.predefinedGrid.map((e) => e.clone()).toList();
+    if (widget.config!.predefinedGrid != null && widget.config!.predefinedGrid!.isNotEmpty) {
+      boxes = widget.config!.predefinedGrid!.map((e) => e.clone()).toList();
     } else {
-      boxes = generateGameBoxes(
-          colors: COLORS, size: widget.config.gridSize.width.round());
+      boxes = generateGameBoxes(colors: COLORS, size: widget.config!.gridSize.width.round());
     }
   }
 
   @override
   void dispose() {
-    boardUpdateTimer.cancel();
+    boardUpdateTimer!.cancel();
     super.dispose();
   }
 
-  List<GameBox> getColumnMates(GameBox tappedBox) {
+  List<GameBox> getColumnMates(GameBox? tappedBox) {
     List<GameBox> result = [];
-    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
-      if (tappedBox.loc.dx == box.loc.dx) {
+    for (GameBox box in boxes!.where((b) => b.color != Colors.transparent)) {
+      if (tappedBox!.loc!.dx == box.loc!.dx) {
         result.add(box);
       }
     }
     return result;
   }
 
-  List<GameBox> getRowMates(GameBox box) {
+  List<GameBox> getRowMates(GameBox? box) {
     List<GameBox> result = [];
-    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
-      if (tappedBox.loc.dy == box.loc.dy) {
+    for (GameBox box in boxes!.where((b) => b.color != Colors.transparent)) {
+      if (tappedBox!.loc!.dy == box.loc!.dy) {
         result.add(box);
       }
     }
     return result;
   }
 
-  GameBox getTappedBox(Offset localTapCoords, ViewTransformation vt) {
-    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
-      if (box.getRect(vt).contains(localTapCoords)) {
+  GameBox? getTappedBox(Offset? localTapCoords, ViewTransformation vt) {
+    for (GameBox box in boxes!.where((b) => b.color != Colors.transparent)) {
+      if (box.getRect(vt).contains(localTapCoords!)) {
         return box;
       }
     }
     return null;
   }
 
-  GameBox getBoxAtPosition(Offset loc) {
-    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
-      if ((box.loc - loc).distanceSquared < .1) {
+  GameBox? getBoxAtPosition(Offset? loc) {
+    for (GameBox box in boxes!.where((b) => b.color != Colors.transparent)) {
+      if ((box.loc! - loc!).distanceSquared < .1) {
         return box;
       }
     }
@@ -119,19 +117,18 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   List<GameBox> _gravitize() {
     Offset gravitationalCenter = Offset(0, 0);
-    List<GameBox> distSortedBoxes = [...boxes];
+    List<GameBox> distSortedBoxes = [...boxes!];
 
-    distSortedBoxes.sort((a, b) => (gravitationalCenter - a.loc)
-        .distanceSquared
-        .compareTo((gravitationalCenter - b.loc).distanceSquared));
+    distSortedBoxes.sort((a, b) =>
+        (gravitationalCenter - a.loc!).distanceSquared.compareTo((gravitationalCenter - b.loc!).distanceSquared));
 
     List<GameBox> affectedBoxes = [];
     List<double> cardinals = [-pi, -pi / 2, 0, pi / 2, pi];
     for (GameBox box in distSortedBoxes) {
-      Offset centerOffset = gravitationalCenter - box.loc;
+      Offset centerOffset = gravitationalCenter - box.loc!;
 
-      double primaryOption;
-      double secondaryOption;
+      double? primaryOption;
+      double? secondaryOption;
       double primaryDist = 0;
       for (double cardinal in cardinals) {
         double dist = (cardinal - centerOffset.direction).abs();
@@ -151,21 +148,19 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         }
       }
 
-      Offset primaryLoc = box.loc + Offset.fromDirection(primaryOption);
-      GameBox primaryBox = getBoxAtPosition(primaryLoc);
-      Offset secondaryLoc;
-      GameBox secondaryBox;
+      Offset primaryLoc = box.loc! + Offset.fromDirection(primaryOption!);
+      GameBox? primaryBox = getBoxAtPosition(primaryLoc);
+      Offset? secondaryLoc;
+      GameBox? secondaryBox;
       if (secondaryOption != null) {
-        secondaryLoc = box.loc + Offset.fromDirection(secondaryOption);
+        secondaryLoc = box.loc! + Offset.fromDirection(secondaryOption);
         secondaryBox = getBoxAtPosition(secondaryLoc);
       }
       if (primaryBox == null) {
         affectedBoxes.add(box);
         if (secondaryOption != null) {
-          Offset diagonalLoc = box.loc +
-              Offset.fromDirection(primaryOption) +
-              Offset.fromDirection(secondaryOption);
-          GameBox diagonalBox = getBoxAtPosition(diagonalLoc);
+          Offset diagonalLoc = box.loc! + Offset.fromDirection(primaryOption) + Offset.fromDirection(secondaryOption);
+          GameBox? diagonalBox = getBoxAtPosition(diagonalLoc);
           if (secondaryBox == null && diagonalBox == null) {
             box.loc = diagonalLoc;
             box.startLoc = diagonalLoc;
@@ -191,9 +186,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   }
 
   void _snapBoxes() {
-    for (GameBox box in boxes) {
-      Offset roundedOffset = Offset(
-          (box.loc.dx - .5).round() + .5, (box.loc.dy - .5).round() + .5);
+    for (GameBox box in boxes!) {
+      Offset roundedOffset = Offset((box.loc!.dx - .5).round() + .5, (box.loc!.dy - .5).round() + .5);
       box.loc = roundedOffset;
       box.startLoc = roundedOffset;
     }
@@ -201,36 +195,36 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   void _penalizeRemainingBoxes() {
     Timer.periodic(Duration(milliseconds: 1000), (Timer t) {
-      if (boxes.isEmpty) {
-        widget.onGameEvent(GameEvent()..type = GameEventType.NO_MOVES);
+      if (boxes!.isEmpty) {
+        widget.onGameEvent!(GameEvent()..type = GameEventType.NO_MOVES);
         t.cancel();
         return;
       }
 
       setState(() {
-        boxes.remove(boxes.first);
-        widget.onGameEvent(GameEvent()..type = GameEventType.LEFT_OVER_BOX);
+        boxes!.remove(boxes!.first);
+        widget.onGameEvent!(GameEvent()..type = GameEventType.LEFT_OVER_BOX);
       });
     });
   }
 
   bool _playerHasValidMoves() {
-    if (boxes.length < 3) {
+    if (boxes!.length < 3) {
       return false;
     }
 
     Map<Color, int> colorMap = Map();
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes!) {
       colorMap.putIfAbsent(box.color, () => 0);
-      colorMap[box.color]++;
-      if (colorMap[box.color] >= 3) {
+      colorMap[box.color] = colorMap[box.color]! + 1;
+      if (colorMap[box.color]! >= 3) {
         return true;
       }
     }
     return false;
   }
 
-  void _updateBoard(Timer t) {
+  void _updateBoard(Timer? t) {
     setState(() {
       List<dynamic> features = _removeFeatures();
       if (!_playerHasValidMoves() && !sentNoMovesEvent) {
@@ -248,7 +242,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         _snapBoxes();
       }
       if (features.isEmpty && affectedBoxes.isEmpty) {
-        t.cancel();
+        t!.cancel();
         _settled = true;
         runStreakLength = 1;
       }
@@ -257,18 +251,17 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   void _updateBoardTillSettled() {
     boardUpdateTimer = Timer(Duration(milliseconds: 200), () {
-      boardUpdateTimer = Timer.periodic(
-          Duration(milliseconds: COLLAPSE_DURATION_MILLISECONDS), _updateBoard);
+      boardUpdateTimer = Timer.periodic(Duration(milliseconds: COLLAPSE_DURATION_MILLISECONDS), _updateBoard);
       _updateBoard(boardUpdateTimer);
     });
   }
 
   Map<double, List<GameBox>> getRows() {
     Map<double, List<GameBox>> result = Map();
-    for (GameBox box in boxes) {
-      List<GameBox> row = result.putIfAbsent(box.loc.dy, () => []);
+    for (GameBox box in boxes!) {
+      List<GameBox> row = result.putIfAbsent(box.loc!.dy, () => []);
       row.add(box);
-      row.sort((a, b) => (a.loc.dx - b.loc.dx).ceil());
+      row.sort((a, b) => (a.loc!.dx - b.loc!.dx).ceil());
     }
 
     return result;
@@ -276,10 +269,10 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   Map<double, List<GameBox>> getCols() {
     Map<double, List<GameBox>> result = Map();
-    for (GameBox box in boxes) {
-      List<GameBox> col = result.putIfAbsent(box.loc.dx, () => []);
+    for (GameBox box in boxes!) {
+      List<GameBox> col = result.putIfAbsent(box.loc!.dx, () => []);
       col.add(box);
-      col.sort((a, b) => (a.loc.dy - b.loc.dy).ceil());
+      col.sort((a, b) => (a.loc!.dy - b.loc!.dy).ceil());
     }
 
     return result;
@@ -292,8 +285,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       for (int i = 0; i < boxes.length; i++) {
         List<GameBox> run = [boxes[i]];
         for (int k = (i + 1); k < boxes.length; k++) {
-          if (boxes[k].color == run.last.color &&
-              (boxes[k].loc - run.last.loc).distanceSquared < 1.01) {
+          if (boxes[k].color == run.last.color && (boxes[k].loc! - run.last.loc!).distanceSquared < 1.01) {
             run.add(boxes[k]);
           } else {
             i = k - 1;
@@ -315,21 +307,15 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   List<SquareEventMetadata> _getSquares() {
     List<SquareEventMetadata> squares = [];
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes!) {
       if (box.eligibleForInclusionInSquare) {
         // only eligible if not part of run
-        GameBox r = getBoxAtPosition(box.loc + Offset(1.0, 0));
-        if (r != null &&
-            r.eligibleForInclusionInSquare &&
-            r.color == box.color) {
-          GameBox b = getBoxAtPosition(box.loc + Offset(0.0, 1.0));
-          if (b != null &&
-              b.eligibleForInclusionInSquare &&
-              b.color == box.color) {
-            GameBox rb = getBoxAtPosition(box.loc + Offset(1.0, 1.0));
-            if (rb != null &&
-                rb.eligibleForInclusionInSquare &&
-                rb.color == box.color) {
+        GameBox? r = getBoxAtPosition(box.loc! + Offset(1.0, 0));
+        if (r != null && r.eligibleForInclusionInSquare && r.color == box.color) {
+          GameBox? b = getBoxAtPosition(box.loc! + Offset(0.0, 1.0));
+          if (b != null && b.eligibleForInclusionInSquare && b.color == box.color) {
+            GameBox? rb = getBoxAtPosition(box.loc! + Offset(1.0, 1.0));
+            if (rb != null && rb.eligibleForInclusionInSquare && rb.color == box.color) {
               SquareEventMetadata e = SquareEventMetadata()..color = box.color;
               [box, r, b, rb].forEach((element) => element.squares.add(e));
               squares.add(e);
@@ -347,25 +333,23 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     result.addAll(_markRuns(getCols().values));
     List<SquareEventMetadata> squares = _getSquares();
     // remove all squares and corresponding colors.
-    toRemove = boxes
-        .where((box) => box.runs.isNotEmpty || box.squares.isNotEmpty)
-        .toList();
+    toRemove = boxes!.where((box) => box.runs.isNotEmpty || box.squares.isNotEmpty).toList();
     for (SquareEventMetadata s in squares) {
-      for (GameBox gb in boxes) {
+      for (GameBox gb in boxes!) {
         if (!toRemove.contains(gb) && gb.color == s.color) {
           toRemove.add(gb);
         }
       }
     }
-    boxes.removeWhere((box) => toRemove.contains(box));
-    for (RunEventMetadata run in result) {
+    boxes!.removeWhere((box) => toRemove.contains(box));
+    for (RunEventMetadata run in result as Iterable<RunEventMetadata>) {
       run.multiples = result.length;
-      widget.onGameEvent(GameEvent()
+      widget.onGameEvent!(GameEvent()
         ..type = GameEventType.RUN
         ..metadata = run);
     }
     for (SquareEventMetadata square in squares) {
-      widget.onGameEvent(GameEvent()
+      widget.onGameEvent!(GameEvent()
         ..type = GameEventType.SQUARE
         ..metadata = square);
     }
@@ -373,8 +357,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     return result;
   }
 
-  _updateSlidingCollection(List<GameBox> draggedBoxes, Offset dragOffset,
-      List<GameBox> undraggedBoxes) {
+  _updateSlidingCollection(List<GameBox> draggedBoxes, Offset dragOffset, List<GameBox> undraggedBoxes) {
     // put the other boxes back
     for (GameBox box in undraggedBoxes) {
       box.loc = box.startLoc;
@@ -382,7 +365,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       box.collapsing = false;
     }
     for (GameBox box in draggedBoxes) {
-      box.loc = box.startLoc + dragOffset;
+      box.loc = box.startLoc! + dragOffset;
       box.userDragged = true;
       box.collapsing = false;
     }
@@ -392,11 +375,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       ViewTransformation vt = ViewTransformation(
-          from: Rect.fromLTRB(
-              -widget.config.gridSize.width / 2,
-              -widget.config.gridSize.height / 2,
-              widget.config.gridSize.width / 2,
-              widget.config.gridSize.height / 2),
+          from: Rect.fromLTRB(-widget.config!.gridSize.width / 2, -widget.config!.gridSize.height / 2,
+              widget.config!.gridSize.width / 2, widget.config!.gridSize.height / 2),
           to: Offset(0, 0) & constraints.biggest);
       List<Widget> stackChildren = [];
 
@@ -418,8 +398,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                     ))));
       }));
 
-      stackChildren
-          .addAll(boxes.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
+      stackChildren.addAll(boxes!.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
 
       return GestureDetector(
           onPanStart: (DragStartDetails deets) {
@@ -437,12 +416,12 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
             }
 
             tapUpdateLoc = deets.localPosition;
-            Rect boxSize = tappedBox.getStartRect(vt);
-            Offset directionDelta = tapUpdateLoc - boxSize.center;
-            Offset dragDelta = tapUpdateLoc - tapStartLoc;
+            Rect boxSize = tappedBox!.getStartRect(vt);
+            Offset directionDelta = tapUpdateLoc! - boxSize.center;
+            Offset dragDelta = tapUpdateLoc! - tapStartLoc!;
             // once the user is outside of a small window they can't change
             // whether they're dragging the column or the row
-            if (boxSize.contains(tapUpdateLoc) && !outsideSnap) {
+            if (boxSize.contains(tapUpdateLoc!) && !outsideSnap) {
               if (directionDelta.dy.abs() > directionDelta.dx.abs()) {
                 draggingCol = true;
               } else {
@@ -453,23 +432,20 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
             }
             setState(() {
               if (draggingCol) {
-                _updateSlidingCollection(slidingColumn,
-                    Offset(0, dragDelta.dy / boxSize.height), slidingRow);
+                _updateSlidingCollection(slidingColumn!, Offset(0, dragDelta.dy / boxSize.height), slidingRow!);
               } else {
-                _updateSlidingCollection(slidingRow,
-                    Offset(dragDelta.dx / boxSize.width, 0), slidingColumn);
+                _updateSlidingCollection(slidingRow!, Offset(dragDelta.dx / boxSize.width, 0), slidingColumn!);
               }
             });
           },
           onPanEnd: (DragEndDetails deets) {
             if (tappedBox != null) {
-              Offset delta = tapUpdateLoc - tapStartLoc;
-              Rect boxSize = tappedBox.getRect(vt);
+              Offset delta = tapUpdateLoc! - tapStartLoc!;
+              Rect boxSize = tappedBox!.getRect(vt);
               if (draggingCol) {
                 setState(() {
-                  for (GameBox box in slidingColumn) {
-                    Offset translatedOffset =
-                        box.startLoc.translate(0, delta.dy / boxSize.height);
+                  for (GameBox box in slidingColumn!) {
+                    Offset translatedOffset = box.startLoc!.translate(0, delta.dy / boxSize.height);
 
                     box.loc = translatedOffset;
                     box.startLoc = translatedOffset;
@@ -479,9 +455,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                 });
               } else {
                 setState(() {
-                  for (GameBox box in slidingRow) {
-                    Offset translatedOffset =
-                        box.startLoc.translate(delta.dx / boxSize.width, 0);
+                  for (GameBox box in slidingRow!) {
+                    Offset translatedOffset = box.startLoc!.translate(delta.dx / boxSize.width, 0);
                     box.loc = translatedOffset;
                     box.startLoc = translatedOffset;
                     box.userDragged = false;
@@ -502,10 +477,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           child: Column(
             children: [
               Expanded(
-                child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: stackChildren),
+                child: Stack(clipBehavior: Clip.none, alignment: Alignment.center, children: stackChildren),
               ),
             ],
           ));

@@ -1,3 +1,4 @@
+import 'package:color_game/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -10,9 +11,9 @@ enum RouteId {
 }
 
 class _RouteConfig {
-  final String name;
+  final String? name;
   // if null, dynamic route must be specified
-  final Route<dynamic> Function(RouteSettings) routeBuilder;
+  final Route<dynamic> Function(RouteSettings)? routeBuilder;
 
   _RouteConfig({this.name, this.routeBuilder});
 }
@@ -22,21 +23,19 @@ Route<dynamic> _staticRoute(Widget child) {
 }
 
 Map<RouteId, _RouteConfig> _routeConfiguration = {
-  RouteId.homeView: _RouteConfig(
-      name: '/', routeBuilder: (settings) => _staticRoute(HomeView())),
+  RouteId.homeView: _RouteConfig(name: '/', routeBuilder: (settings) => _staticRoute(HomeView())),
   RouteId.gameView: _RouteConfig(
       name: '/game',
-      routeBuilder: (settings) => MaterialPageRoute(
-          builder: (context) => GameView(config: settings.arguments))),
+      routeBuilder: (settings) =>
+          MaterialPageRoute(builder: (context) => GameView(config: settings.arguments as ColorGameConfig?))),
 };
 
-extension RouteIdUtils on RouteId {
-  String get name => _routeConfiguration[this].name;
-  Route<dynamic> generateRoute(RouteSettings settings) =>
-      _routeConfiguration[this].routeBuilder(settings);
+extension RouteIdUtils on RouteId? {
+  String? get name => _routeConfiguration[this!]!.name;
+  Route<dynamic> generateRoute(RouteSettings settings) => _routeConfiguration[this!]!.routeBuilder!(settings);
 }
 
-RouteId getRouteIdByName(String name) {
+RouteId? getRouteIdByName(String? name) {
   for (RouteId id in RouteId.values) {
     if (id.name == name) {
       return id;

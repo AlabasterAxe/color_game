@@ -4,10 +4,10 @@ import 'package:color_game/constants.dart';
 import 'package:flutter/widgets.dart';
 
 class DisappearingDotsBlock extends StatefulWidget {
-  final Color color;
-  final void Function() onFullyDisappeared;
+  final Color? color;
+  final void Function()? onFullyDisappeared;
 
-  const DisappearingDotsBlock({Key key, this.color, this.onFullyDisappeared})
+  const DisappearingDotsBlock({Key? key, this.color, this.onFullyDisappeared})
       : super(key: key);
 
   @override
@@ -24,12 +24,12 @@ class _Dot {
 class DisappearingDotsBlockState extends State<DisappearingDotsBlock>
     with SingleTickerProviderStateMixin {
   Random r = Random();
-  AnimationController controller;
+  AnimationController? controller;
 
-  List<_Dot> dots;
+  List<_Dot>? dots;
 
-  Animation<double> dotsPctGone;
-  Animation<double> overallSize;
+  late Animation<double> dotsPctGone;
+  late Animation<double> overallSize;
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class DisappearingDotsBlockState extends State<DisappearingDotsBlock>
 
     dots = [];
     for (int i = 0; i < 4; i++) {
-      dots.add(_Dot(
+      dots!.add(_Dot(
           Offset(-1.0 + r.nextDouble() * 2.0, -1.0 + r.nextDouble() * 2.0),
           .75 + r.nextDouble() * .25));
     }
@@ -46,23 +46,23 @@ class DisappearingDotsBlockState extends State<DisappearingDotsBlock>
         AnimationController(vsync: this, duration: Duration(milliseconds: 1250));
 
     dotsPctGone = Tween(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: controller, curve: Curves.easeOut));
+        .animate(CurvedAnimation(parent: controller!, curve: Curves.easeOut));
     overallSize = TweenSequence([
       TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.05), weight: .1),
       TweenSequenceItem(tween: Tween(begin: 1.05, end: .5), weight: .9),
-    ]).animate(CurvedAnimation(parent: controller, curve: Curves.easeOut));
-    controller.addStatusListener((status) {
+    ]).animate(CurvedAnimation(parent: controller!, curve: Curves.easeOut));
+    controller!.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        widget.onFullyDisappeared();
+        widget.onFullyDisappeared!();
       }
     });
-    controller.forward();
+    controller!.forward();
   }
 
   @override
   void dispose() {
     if (controller != null) {
-      controller.dispose();
+      controller!.dispose();
     }
     super.dispose();
   }
@@ -70,7 +70,7 @@ class DisappearingDotsBlockState extends State<DisappearingDotsBlock>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: controller,
+      animation: controller!,
       builder: (context, child) => CustomPaint(
         painter: DisappearingDotsBlockPainter(
             dots, dotsPctGone.value, overallSize.value, widget.color),
@@ -80,10 +80,10 @@ class DisappearingDotsBlockState extends State<DisappearingDotsBlock>
 }
 
 class DisappearingDotsBlockPainter extends CustomPainter {
-  final List<_Dot> dots;
+  final List<_Dot>? dots;
   final double pctGone;
   final double sizeMultiplier;
-  final Color color;
+  final Color? color;
 
   DisappearingDotsBlockPainter(
       this.dots, this.pctGone, this.sizeMultiplier, this.color);
@@ -98,11 +98,11 @@ class DisappearingDotsBlockPainter extends CustomPainter {
     canvas.clipRRect(
         RRect.fromRectAndRadius(rect, Radius.circular(BOX_BORDER_RADIUS * radius)));
 
-    for (_Dot d in dots) {
+    for (_Dot d in dots!) {
       canvas.drawCircle(
           Offset(center.dx + d.c.dx * radius, center.dy + d.c.dy * radius),
           radius * d.r * (1.0 - pctGone),
-          Paint()..color = color);
+          Paint()..color = color!);
     }
     canvas.restore();
   }
