@@ -1,4 +1,4 @@
-package com.example.color_game
+package co.thkp.color_collapse
 
 import io.flutter.embedding.android.FlutterActivity
 
