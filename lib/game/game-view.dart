@@ -5,6 +5,7 @@ import 'package:color_game/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import '../shared-pref-helper.dart';
 import 'game-board.dart';
 import 'hud.dart';
 import '../model.dart';
@@ -42,7 +43,16 @@ class _GameViewState extends State<GameView> {
   Tween<int> scoreTween;
   Key gameKey = UniqueKey();
 
-  List<int> highScores = [];
+  List<Score> highScores = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getScores().then((scores) {
+      this.highScores = scores;
+      this.highScores.sort((a, b) => b.score.compareTo(a.score));
+    });
+  }
 
   void _handleNewRun(RunEventMetadata metadata) {
     setState(() {
@@ -142,18 +152,27 @@ class _GameViewState extends State<GameView> {
               children: [
                 Text(
                   "Your High Scores",
-                  style: Theme.of(context).textTheme.headline2,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headline3,
                 ),
                 Flexible(
                     child: Column(
-                        children: highScores.reversed
-                            .map((score) => Text("$score"))
+                        children: highScores
+                            .map((score) => Text("${score.score}"))
                             .toList())),
                 ElevatedButton(
                     child: Text("New Game"),
                     onPressed: () {
-                      highScores.add(score);
-                      highScores.sort();
+                      addScore(score).then((_) {
+                        getScores().then((scores) {
+                          setState(() {
+                            this.highScores = [...scores];
+                            this
+                                .highScores
+                                .sort((a, b) => b.score.compareTo(a.score));
+                          });
+                        });
+                      });
                       setState(() {
                         gameOver = false;
                         gameKey = UniqueKey();
