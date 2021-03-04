@@ -23,13 +23,13 @@ class HomeView extends StatelessWidget {
                         fontSize: 64,
                         color: Colors.grey[200],
                         decoration: TextDecoration.none)),
-                RaisedButton(
+                ElevatedButton(
                     child: Text(
                       "Play",
                     ),
                     onPressed: () {
                       Navigator.pushNamed(context, "/game",
-                          arguments: ColorGameConfig()..gridSize = Size(6, 6));
+                          arguments: ColorGameConfig()..gridSize = Size(4, 4));
                     }),
               ]),
         ));

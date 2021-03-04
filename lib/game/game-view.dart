@@ -67,6 +67,33 @@ class _GameViewState extends State<GameView> {
     });
   }
 
+  String _getAgoString(DateTime date) {
+    DateTime now = DateTime.now();
+    var delta = Duration(
+        milliseconds: now.millisecondsSinceEpoch - date.millisecondsSinceEpoch);
+    if (delta.inDays > 365) {
+      int numYears = (delta.inDays / 365).round();
+      return "${numYears} ${numYears == 1 ? "year" : "years"} ago";
+    } else if (delta.inDays > 30) {
+      int numMonths = (delta.inDays / 30).round();
+      return "${numMonths} ${numMonths == 1 ? "month" : "months"} ago";
+    } else if (delta.inDays > 7) {
+      int numWeeks = (delta.inDays / 7).round();
+      return "${numWeeks} ${numWeeks == 1 ? "week" : "weeks"} ago";
+    } else if (delta.inDays > 0) {
+      int numDays = delta.inDays;
+      return "${numDays} ${numDays == 1 ? "day" : "days"} ago";
+    } else if (delta.inHours > 0) {
+      return "${delta.inHours} ${delta.inHours == 1 ? "hour" : "hours"} ago";
+    } else if (delta.inMinutes > 0) {
+      return "${delta.inMinutes} ${delta.inMinutes == 1 ? "minute" : "minutes"} ago";
+    } else if (delta.inSeconds > 30) {
+      return "${delta.inSeconds} minutes ago";
+    } else {
+      return "just now";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double boxSize =
@@ -162,13 +189,26 @@ class _GameViewState extends State<GameView> {
                 Text(
                   "Your High Scores",
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headline3,
+                  style: Theme.of(context).textTheme.headline4,
                 ),
+                SizedBox(height: 20),
                 Flexible(
                     child: Column(
                         children: highScores
-                            .map((score) => Text("${score.score}"))
+                            .map((score) => Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text("${score.score}"),
+                                    SizedBox(width: 20),
+                                    Text("(${_getAgoString(score.date)})",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[800],
+                                            fontStyle: FontStyle.italic))
+                                  ],
+                                ))
                             .toList())),
+                SizedBox(height: 20),
                 ElevatedButton(
                     child: Text("New Game"),
                     onPressed: () {
