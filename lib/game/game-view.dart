@@ -42,15 +42,19 @@ class _GameViewState extends State<GameView> {
   Tween<int> scoreTween;
   Key gameKey = UniqueKey();
 
+  List<int> highScores = [];
+
   void _handleNewRun(RunEventMetadata metadata) {
     setState(() {
-      score += pow(metadata.runLength, metadata.runStreakLength) * metadata.multiples;
+      score += pow(metadata.runLength, metadata.runStreakLength) *
+          metadata.multiples;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    double boxSize = (MediaQuery.of(context).size.shortestSide * .9)/ GRID_SIZE;
+    double boxSize =
+        (MediaQuery.of(context).size.shortestSide * .9) / GRID_SIZE;
     List<Widget> stackChildren = [
       AspectRatio(
         aspectRatio: 1,
@@ -59,16 +63,19 @@ class _GameViewState extends State<GameView> {
           widthFactor: .9,
           child: Center(
               child: Container(
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(BOX_BORDER_RADIUS * boxSize), boxShadow: [
-            BoxShadow(
-              color: Color(0xff404040),
-            ),
-            BoxShadow(
-              color: BOARD_BACKGROUND_COLOR,
-              spreadRadius: -5,
-              blurRadius: 10,
-            )
-          ]))),
+                  decoration: BoxDecoration(
+                      borderRadius:
+                          BorderRadius.circular(BOX_BORDER_RADIUS * boxSize),
+                      boxShadow: [
+                BoxShadow(
+                  color: Color(0xff404040),
+                ),
+                BoxShadow(
+                  color: BOARD_BACKGROUND_COLOR,
+                  spreadRadius: -5,
+                  blurRadius: 10,
+                )
+              ]))),
         ),
       ),
       AspectRatio(
@@ -127,15 +134,26 @@ class _GameViewState extends State<GameView> {
 
     if (gameOver) {
       stackChildren.add(Center(
-          child: RaisedButton(
+          child: Column(
+        children: [
+          Text("Your High Scores"),
+          Flexible(
+              child: Column(
+                  children:
+                      highScores.map((score) => Text("$score")).toList())),
+          ElevatedButton(
               child: Text("New Game"),
               onPressed: () {
+                highScores.add(score);
+                highScores.sort();
                 setState(() {
                   gameOver = false;
                   gameKey = UniqueKey();
                   score = 0;
                 });
-              })));
+              }),
+        ],
+      )));
     }
     return Container(
       color: BOARD_BACKGROUND_COLOR,
