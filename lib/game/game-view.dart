@@ -134,25 +134,33 @@ class _GameViewState extends State<GameView> {
 
     if (gameOver) {
       stackChildren.add(Center(
-          child: Column(
-        children: [
-          Text("Your High Scores"),
-          Flexible(
-              child: Column(
-                  children:
-                      highScores.map((score) => Text("$score")).toList())),
-          ElevatedButton(
-              child: Text("New Game"),
-              onPressed: () {
-                highScores.add(score);
-                highScores.sort();
-                setState(() {
-                  gameOver = false;
-                  gameKey = UniqueKey();
-                  score = 0;
-                });
-              }),
-        ],
+          child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: IntrinsicHeight(
+            child: Column(
+              children: [
+                Text("Your High Scores"),
+                Flexible(
+                    child: Column(
+                        children: highScores.reversed
+                            .map((score) => Text("$score"))
+                            .toList())),
+                ElevatedButton(
+                    child: Text("New Game"),
+                    onPressed: () {
+                      highScores.add(score);
+                      highScores.sort();
+                      setState(() {
+                        gameOver = false;
+                        gameKey = UniqueKey();
+                        score = 0;
+                      });
+                    }),
+              ],
+            ),
+          ),
+        ),
       )));
     }
     return Container(
