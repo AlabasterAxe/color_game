@@ -140,7 +140,10 @@ class _GameViewState extends State<GameView> {
           child: IntrinsicHeight(
             child: Column(
               children: [
-                Text("Your High Scores"),
+                Text(
+                  "Your High Scores",
+                  style: Theme.of(context).textTheme.headline2,
+                ),
                 Flexible(
                     child: Column(
                         children: highScores.reversed
