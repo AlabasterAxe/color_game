@@ -96,7 +96,7 @@ class DisappearingDotsBlockPainter extends CustomPainter {
         center: center, width: actualSize.width, height: actualSize.height);
     canvas.saveLayer(rect, Paint());
     canvas.clipRRect(
-        RRect.fromRectAndRadius(rect, Radius.circular(BOX_BORDER_RADIUS)));
+        RRect.fromRectAndRadius(rect, Radius.circular(BOX_BORDER_RADIUS * radius)));
 
     for (_Dot d in dots) {
       canvas.drawCircle(
