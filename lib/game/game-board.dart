@@ -226,13 +226,13 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   void _updateBoard(Timer? t) {
     setState(() {
-      List<dynamic> features = _removeFeatures();
+      bool featuresExist = _removeFeatures();
       if (!_playerHasValidMoves() && !sentNoMovesEvent) {
         sentNoMovesEvent = true;
         _penalizeRemainingBoxes();
       }
       _snapBoxes();
-      if (features.isNotEmpty) {
+      if (featuresExist) {
         _settled = false;
         runStreakLength += 1;
       }
@@ -241,7 +241,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         affectedBoxes = _gravitize();
         _snapBoxes();
       }
-      if (features.isEmpty && affectedBoxes.isEmpty) {
+      if (!featuresExist && affectedBoxes.isEmpty) {
         t!.cancel();
         _settled = true;
         runStreakLength = 1;
@@ -327,10 +327,10 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     return squares;
   }
 
-  List<dynamic> _removeFeatures() {
-    List<dynamic> result = [];
-    result.addAll(_markRuns(getRows().values));
-    result.addAll(_markRuns(getCols().values));
+  bool _removeFeatures() {
+    List<RunEventMetadata> runs = [];
+    runs.addAll(_markRuns(getRows().values));
+    runs.addAll(_markRuns(getCols().values));
     List<SquareEventMetadata> squares = _getSquares();
     // remove all squares and corresponding colors.
     toRemove = boxes!.where((box) => box.runs.isNotEmpty || box.squares.isNotEmpty).toList();
@@ -342,8 +342,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       }
     }
     boxes!.removeWhere((box) => toRemove.contains(box));
-    for (RunEventMetadata run in result as Iterable<RunEventMetadata>) {
-      run.multiples = result.length;
+    for (RunEventMetadata run in runs) {
+      run.multiples = runs.length;
       widget.onGameEvent!(GameEvent()
         ..type = GameEventType.RUN
         ..metadata = run);
@@ -353,8 +353,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         ..type = GameEventType.SQUARE
         ..metadata = square);
     }
-    result.addAll(squares);
-    return result;
+    return runs.isNotEmpty || squares.isNotEmpty;
   }
 
   _updateSlidingCollection(List<GameBox> draggedBoxes, Offset dragOffset, List<GameBox> undraggedBoxes) {
