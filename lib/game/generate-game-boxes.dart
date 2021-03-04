@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 
 import '../model.dart';
 
-List<GameBox> generateGameBoxes({List<Color> colors}) {
+List<GameBox> generateGameBoxes({List<Color> colors, int size = 5}) {
   Random r = Random();
   List<GameBox> result = [];
-  for (double x = -2.5; x <= 2.5; x++) {
-    for (double y = -2.5; y <= 2.5; y++) {
+  double halfSize = size / 2.0;
+  for (double x = -halfSize; x <= halfSize; x++) {
+    for (double y = -halfSize; y <= halfSize; y++) {
       List<Color> availableColors = [...colors];
       for (int i = result.length - 1; i >= 0; i--) {
         if (result[i].loc.dx == x && result[i].loc.dy == y - 1) {
