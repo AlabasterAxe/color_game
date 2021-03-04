@@ -12,13 +12,14 @@ import '../model.dart';
 class InvertedRectClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
+    double boxSize = size.shortestSide / GRID_SIZE;
     return new Path()
       ..addRRect(RRect.fromRectAndRadius(
           Rect.fromCenter(
               center: new Offset(size.width / 2, size.height / 2),
               width: size.shortestSide * .9,
               height: size.shortestSide * .9),
-          Radius.circular(BOX_BORDER_RADIUS)))
+          Radius.circular(BOX_BORDER_RADIUS * boxSize)))
       ..addRect(new Rect.fromLTWH(0.0, 0.0, size.width, size.height))
       ..fillType = PathFillType.evenOdd;
   }
@@ -43,13 +44,13 @@ class _GameViewState extends State<GameView> {
 
   void _handleNewRun(RunEventMetadata metadata) {
     setState(() {
-      score += pow(metadata.runLength, metadata.runStreakLength) *
-          metadata.multiples;
+      score += pow(metadata.runLength, metadata.runStreakLength) * metadata.multiples;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    double boxSize = (MediaQuery.of(context).size.shortestSide * .9)/ GRID_SIZE;
     List<Widget> stackChildren = [
       AspectRatio(
         aspectRatio: 1,
@@ -58,18 +59,16 @@ class _GameViewState extends State<GameView> {
           widthFactor: .9,
           child: Center(
               child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(BOX_BORDER_RADIUS),
-                      boxShadow: [
-                BoxShadow(
-                  color: Color(0xff404040),
-                ),
-                BoxShadow(
-                  color: BOARD_BACKGROUND_COLOR,
-                  spreadRadius: -5,
-                  blurRadius: 10,
-                )
-              ]))),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(BOX_BORDER_RADIUS * boxSize), boxShadow: [
+            BoxShadow(
+              color: Color(0xff404040),
+            ),
+            BoxShadow(
+              color: BOARD_BACKGROUND_COLOR,
+              spreadRadius: -5,
+              blurRadius: 10,
+            )
+          ]))),
         ),
       ),
       AspectRatio(
