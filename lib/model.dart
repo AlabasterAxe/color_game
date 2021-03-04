@@ -25,6 +25,7 @@ class GameBox {
   Key key = UniqueKey();
 
   List<RunEventMetadata> runs = [];
+  List<SquareEventMetadata> squares = [];
 
   GameBox(this.loc, this.color) {
     startLoc = loc;
@@ -37,4 +38,6 @@ class GameBox {
   Rect getStartRect(ViewTransformation vt) {
     return vt.rectForward(Rect.fromCenter(center: startLoc, width: 1, height: 1));
   }
+
+  bool get eligibleForInclusionInSquare => runs.isEmpty && squares.isEmpty;
 }

@@ -61,6 +61,12 @@ class _GameViewState extends State<GameView> {
     });
   }
 
+  void _handleNewSquare(SquareEventMetadata metadata) {
+    setState(() {
+      score += 25;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double boxSize =
@@ -102,6 +108,9 @@ class _GameViewState extends State<GameView> {
                   switch (e.type) {
                     case GameEventType.RUN:
                       _handleNewRun(e.metadata);
+                      break;
+                    case GameEventType.SQUARE:
+                      _handleNewSquare(e.metadata);
                       break;
                     case GameEventType.NO_MOVES:
                       setState(() {
