@@ -332,15 +332,18 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         Rect boundsRect = b.getRect(vt);
         double gapSize = boundsRect.width * RELATIVE_GAP_SIZE;
         return Positioned(
-            top: boundsRect.top,
-            left: boundsRect.left,
-            child: Container(
+          key: b.key,
+          top: boundsRect.top,
+          left: boundsRect.left,
+          child: Padding(
+          padding: EdgeInsets.all(gapSize / 2),
+          child: Container(
               height: boundsRect.height - gapSize,
               width: boundsRect.width - gapSize,
               child: DisappearingDotsBlock(
-          color: b.color,
-          onFullyDisappeared: () {},
-        )));
+                color: b.color,
+                onFullyDisappeared: () {},
+        ))));
       }));
 
       stackChildren.addAll(boxes.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
