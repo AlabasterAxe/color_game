@@ -88,7 +88,7 @@ class _GameViewState extends State<GameView> {
     } else if (delta.inMinutes > 0) {
       return "${delta.inMinutes} ${delta.inMinutes == 1 ? "minute" : "minutes"} ago";
     } else if (delta.inSeconds > 30) {
-      return "${delta.inSeconds} minutes ago";
+      return "${delta.inSeconds} seconds ago";
     } else {
       return "just now";
     }
