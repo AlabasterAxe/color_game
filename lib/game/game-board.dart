@@ -102,9 +102,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     Offset gravitationalCenter = Offset(0, 0);
     List<GameBox> distSortedBoxes = [...boxes];
 
-    distSortedBoxes.sort((a, b) => (gravitationalCenter - a.loc)
-        .distanceSquared
-        .compareTo((gravitationalCenter - b.loc).distanceSquared));
+    distSortedBoxes.sort((a, b) =>
+        (gravitationalCenter - a.loc).distanceSquared.compareTo((gravitationalCenter - b.loc).distanceSquared));
 
     List<GameBox> affectedBoxes = [];
     List<double> cardinals = [-pi, -pi / 2, 0, pi / 2, pi];
@@ -143,9 +142,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       if (primaryBox == null) {
         affectedBoxes.add(box);
         if (secondaryOption != null) {
-          Offset diagonalLoc = box.loc +
-              Offset.fromDirection(primaryOption) +
-              Offset.fromDirection(secondaryOption);
+          Offset diagonalLoc = box.loc + Offset.fromDirection(primaryOption) + Offset.fromDirection(secondaryOption);
           GameBox diagonalBox = getBoxAtPosition(diagonalLoc);
           if (secondaryBox == null && diagonalBox == null) {
             box.loc = diagonalLoc;
@@ -173,8 +170,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   void _snapBoxes() {
     for (GameBox box in boxes) {
-      Offset roundedOffset = Offset(
-          (box.loc.dx - .5).round() + .5, (box.loc.dy - .5).round() + .5);
+      Offset roundedOffset = Offset((box.loc.dx - .5).round() + .5, (box.loc.dy - .5).round() + .5);
       box.loc = roundedOffset;
       box.startLoc = roundedOffset;
     }
@@ -212,7 +208,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   void _updateBoard(Timer t) {
     setState(() {
-      var affectedRows = _removeContiguous();
+      var affectedRows = _markAllRuns();
       if (!_playerHasValidMoves() && !sentNoMovesEvent) {
         widget.onGameEvent(GameEvent()..type = GameEventType.NO_MOVES);
         sentNoMovesEvent = true;
@@ -238,8 +234,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   void _updateBoardTillSettled() {
     boardUpdateTimer = Timer(Duration(milliseconds: 200), () {
-      boardUpdateTimer = Timer.periodic(
-          Duration(milliseconds: COLLAPSE_DURATION_MILLISECONDS), _updateBoard);
+      boardUpdateTimer = Timer.periodic(Duration(milliseconds: COLLAPSE_DURATION_MILLISECONDS), _updateBoard);
       _updateBoard(boardUpdateTimer);
     });
   }
@@ -267,61 +262,48 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   }
 
   // returns affected rows/columns
-  List<RunEventMetadata> _removeContiguousColors(
-      Iterable<List<GameBox>> rowsorcols) {
-    Set<GameBox> boxesToRemove = Set();
+  List<RunEventMetadata> _markRuns(Iterable<List<GameBox>> allBoxes) {
     List<RunEventMetadata> runs = [];
-
-    for (List<GameBox> roworcol in rowsorcols) {
-      List<GameBox> run = [];
-      Color runColor;
-      Offset lastBoxLoc;
-
-      Function(List<GameBox>) handleStreak = (run) {
+    for (List<GameBox> boxes in allBoxes) {
+      for (int i = 0; i < boxes.length; i++) {
+        List<GameBox> run = [boxes[i]];
+        for (int k = (i + 1); k < boxes.length; k++) {
+          if (boxes[k].color == run.last.color &&
+              (boxes[k].loc - run.last.loc).distanceSquared < 1.01) {
+            run.add(boxes[k]);
+          } else {
+            i = k - 1;
+            break;
+          }
+        }
         if (run.length >= 3) {
-        boxesToRemove.addAll(run);
-        runs.add(RunEventMetadata()
-          ..runLength = run.length
-          ..runStreakLength = runStreakLength
-          ..color = runColor);
+          RunEventMetadata runData = RunEventMetadata()
+            ..runLength = run.length
+            ..runStreakLength = runStreakLength
+            ..color = run.last.color;
+          run.forEach((element) => element.runs.add(runData));
+          runs.add(runData);
         }
-      };
-
-      for (GameBox box in roworcol) {
-        if (box.color != runColor ||
-            // if there's a gap don't count it as a streak
-            (box.loc.dx - lastBoxLoc.dx).abs() > 1 ||
-            (box.loc.dy - lastBoxLoc.dy).abs() > 1) {
-            handleStreak(run);
-          run = [box];
-          runColor = box.color;
-        } else {
-          run.add(box);
-        }
-        lastBoxLoc = box.loc;
       }
-        handleStreak(run);
-      }
-
-    boxes.removeWhere((GameBox b) => boxesToRemove.contains(b));
+    }
     return runs;
   }
 
-  List<RunEventMetadata> _removeContiguous() {
+  List<RunEventMetadata> _markAllRuns() {
     List<RunEventMetadata> result = [];
-    result.addAll(_removeContiguousColors(getRows().values));
-    result.addAll(_removeContiguousColors(getCols().values));
+    result.addAll(_markRuns(getRows().values));
+    result.addAll(_markRuns(getCols().values));
     for (RunEventMetadata run in result) {
       run.multiples = result.length;
       widget.onGameEvent(GameEvent()
         ..type = GameEventType.RUN
         ..metadata = run);
     }
+    boxes.removeWhere((box) => box.runs.isNotEmpty);
     return result;
   }
 
-  _updateSlidingCollection(List<GameBox> draggedBoxes, Offset dragOffset,
-      List<GameBox> undraggedBoxes) {
+  _updateSlidingCollection(List<GameBox> draggedBoxes, Offset dragOffset, List<GameBox> undraggedBoxes) {
     // put the other boxes back
     for (GameBox box in undraggedBoxes) {
       box.loc = box.startLoc;
@@ -339,16 +321,12 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       ViewTransformation vt = ViewTransformation(
-          from: Rect.fromLTRB(
-              -widget.config.gridSize.width / 2,
-              -widget.config.gridSize.height / 2,
-              widget.config.gridSize.width / 2,
-              widget.config.gridSize.height / 2),
+          from: Rect.fromLTRB(-widget.config.gridSize.width / 2, -widget.config.gridSize.height / 2,
+              widget.config.gridSize.width / 2, widget.config.gridSize.height / 2),
           to: Offset(0, 0) & constraints.biggest);
       List<Widget> stackChildren = [];
 
-      stackChildren
-          .addAll(boxes.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
+      stackChildren.addAll(boxes.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
 
       return GestureDetector(
           onPanStart: (DragStartDetails deets) {
@@ -380,16 +358,14 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
             } else {
               outsideSnap = true;
             }
-              setState(() {
-                if (draggingCol) {
-                  _updateSlidingCollection(slidingColumn,
-                      Offset(0, dragDelta.dy / boxSize.height), slidingRow);
-                } else {
-                  _updateSlidingCollection(slidingRow,
-                      Offset(dragDelta.dx / boxSize.width, 0), slidingColumn);
-                }
-              });
-            },
+            setState(() {
+              if (draggingCol) {
+                _updateSlidingCollection(slidingColumn, Offset(0, dragDelta.dy / boxSize.height), slidingRow);
+              } else {
+                _updateSlidingCollection(slidingRow, Offset(dragDelta.dx / boxSize.width, 0), slidingColumn);
+              }
+            });
+          },
           onPanEnd: (DragEndDetails deets) {
             if (tappedBox != null) {
               Offset delta = tapUpdateLoc - tapStartLoc;
@@ -397,8 +373,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
               if (draggingCol) {
                 setState(() {
                   for (GameBox box in slidingColumn) {
-                    Offset translatedOffset =
-                        box.startLoc.translate(0, delta.dy / boxSize.height);
+                    Offset translatedOffset = box.startLoc.translate(0, delta.dy / boxSize.height);
 
                     box.loc = translatedOffset;
                     box.startLoc = translatedOffset;
@@ -409,8 +384,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
               } else {
                 setState(() {
                   for (GameBox box in slidingRow) {
-                    Offset translatedOffset =
-                        box.startLoc.translate(delta.dx / boxSize.width, 0);
+                    Offset translatedOffset = box.startLoc.translate(delta.dx / boxSize.width, 0);
                     box.loc = translatedOffset;
                     box.startLoc = translatedOffset;
                     box.userDragged = false;
@@ -431,10 +405,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           child: Column(
             children: [
               Expanded(
-                child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: stackChildren),
+                child: Stack(clipBehavior: Clip.none, alignment: Alignment.center, children: stackChildren),
               ),
             ],
           ));

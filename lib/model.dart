@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:color_game/game/game-board.dart';
 import 'package:flutter/widgets.dart';
 
 import 'view-transform.dart';
@@ -23,6 +24,8 @@ class GameBox {
   bool collapsing = false;
   Key key = UniqueKey();
 
+  List<RunEventMetadata> runs = [];
+
   GameBox(this.loc, this.color) {
     startLoc = loc;
   }
@@ -32,7 +35,6 @@ class GameBox {
   }
 
   Rect getStartRect(ViewTransformation vt) {
-    return vt
-        .rectForward(Rect.fromCenter(center: startLoc, width: 1, height: 1));
+    return vt.rectForward(Rect.fromCenter(center: startLoc, width: 1, height: 1));
   }
 }
