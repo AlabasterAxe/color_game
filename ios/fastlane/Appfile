@@ -1,5 +1,5 @@
-app_identifier("com.example.colorGame") # The bundle identifier of your app
-apple_id("matt@thkp.co") # Your Apple email address
+app_identifier("co.thkp.colorcollapseapp") # The bundle identifier of your app
+apple_id("team@thkp.co") # Your Apple email address
 
 itc_team_id("122772206") # App Store Connect Team ID
 team_id("D5F3HT2T9C") # Developer Portal Team ID

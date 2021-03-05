@@ -1,2 +1,2 @@
 json_key_file("../../color_game_private/color_collapse_creds.json") # Path to the json secret file - Follow https://docs.fastlane.tools/actions/supply/#setup to get one
-package_name("co.thkp.color_collapse") # e.g. com.krausefx.app
+package_name("co.thkp.colorcollapse") # e.g. com.krausefx.app

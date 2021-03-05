@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-const String SCORES_KEY = "co.thkp.color_collapse.scores";
+const String SCORES_KEY = "co.thkp.colorcollapse.scores";
 
 class Score {
   int? score;
