@@ -30,8 +30,10 @@ dependencies:
 
   # google_fonts: ^2.0.0
   shared_preferences: ^2.0.3
-  audioplayers:
-    git: https://github.com/stonekase/audioplayers.git
+  audioplayers: ^0.17.4
+
+dependency_overrides: 
+  path_provider: ^2.0.1
 
 dev_dependencies:
   flutter_test:
