@@ -13,7 +13,6 @@ class HomeView extends StatelessWidget {
         color: BOARD_BACKGROUND_COLOR,
         child: Padding(
           padding: EdgeInsets.all(32),
-<<<<<<< HEAD
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -31,19 +30,6 @@ class HomeView extends StatelessWidget {
                           arguments: ColorGameConfig());
                     }),
               ]),
-=======
-          child: Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-            Text("Color Collapse",
-                style: TextStyle(fontSize: 64, color: Colors.grey[200], decoration: TextDecoration.none)),
-            ElevatedButton(
-                child: Text(
-                  "Play",
-                ),
-                onPressed: () {
-                  Navigator.pushNamed(context, "/game", arguments: ColorGameConfig());
-                }),
-          ]),
->>>>>>> working on firebase setup
         ));
   }
 }

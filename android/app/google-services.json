@@ -1,57 +1,33 @@
 {
   "project_info": {
-<<<<<<< HEAD
     "project_number": "316712147136",
     "project_id": "thkp-339ed",
     "storage_bucket": "thkp-339ed.appspot.com"
-=======
-    "project_number": "1001452620040",
-    "project_id": "color-collapse-3f34d",
-    "storage_bucket": "color-collapse-3f34d.appspot.com"
->>>>>>> working on firebase setup
   },
   "client": [
     {
       "client_info": {
-<<<<<<< HEAD
         "mobilesdk_app_id": "1:316712147136:android:8fc7c5c11df943f3707525",
         "android_client_info": {
           "package_name": "co.thkp.colorcollapse"
-=======
-        "mobilesdk_app_id": "1:1001452620040:android:8254a8ffac40d7c04d44bd",
-        "android_client_info": {
-          "package_name": "co.thkp.color_collapse"
->>>>>>> working on firebase setup
         }
       },
       "oauth_client": [
         {
-<<<<<<< HEAD
           "client_id": "316712147136-p98t1f168sphi9q0j1u22s5cu1m9bevm.apps.googleusercontent.com",
-=======
-          "client_id": "1001452620040-nqugpqcal9102c28gkdhmqfbu9g8m1de.apps.googleusercontent.com",
->>>>>>> working on firebase setup
           "client_type": 3
         }
       ],
       "api_key": [
         {
-<<<<<<< HEAD
           "current_key": "AIzaSyD9ZywfR94ZpDYGesTVL-MB5mK3fUg2CCw"
-=======
-          "current_key": "AIzaSyBl6PHDqjAatuIP5MLbWnqx9Z42rGsMr0M"
->>>>>>> working on firebase setup
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-<<<<<<< HEAD
               "client_id": "316712147136-p98t1f168sphi9q0j1u22s5cu1m9bevm.apps.googleusercontent.com",
-=======
-              "client_id": "1001452620040-nqugpqcal9102c28gkdhmqfbu9g8m1de.apps.googleusercontent.com",
->>>>>>> working on firebase setup
               "client_type": 3
             }
           ]
