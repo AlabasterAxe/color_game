@@ -13,7 +13,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    FirebaseAdMob.instance.initialize(appId: "appid");
+    FirebaseAdMob.instance.initialize(appId: "ca-app-pub-3940256099942544~3347511713");
     return MaterialApp(
       onGenerateRoute: (RouteSettings settings) => getRouteIdByName(settings.name).generateRoute(settings),
       initialRoute: "/game",
