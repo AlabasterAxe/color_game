@@ -1,3 +1,4 @@
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 
 import 'routes.dart';
@@ -12,9 +13,9 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    FirebaseAdMob.instance.initialize(appId: "appid");
     return MaterialApp(
-      onGenerateRoute: (RouteSettings settings) =>
-          getRouteIdByName(settings.name).generateRoute(settings),
+      onGenerateRoute: (RouteSettings settings) => getRouteIdByName(settings.name).generateRoute(settings),
       initialRoute: "/game",
     );
   }
