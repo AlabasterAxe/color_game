@@ -2,9 +2,11 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:color_game/constants.dart';
+import 'package:color_game/services/audio-service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import '../main.dart';
 import '../model.dart';
 import '../shared-pref-helper.dart';
 import 'game-board.dart';
@@ -58,10 +60,26 @@ class _GameViewState extends State<GameView> {
     setState(() {
       score += pow(metadata!.runLength, metadata.runStreakLength) *
           metadata.multiples as int;
+      if (metadata.runStreakLength == 1) {
+        AppContext.of(context)
+            ?.audioService
+            .playSoundEffect(SoundEffectType.SMALL_POOF);
+      } else if (metadata.runStreakLength == 2) {
+        AppContext.of(context)
+            ?.audioService
+            .playSoundEffect(SoundEffectType.MEDIUM_POOF);
+      } else if (metadata.runStreakLength >= 3) {
+        AppContext.of(context)
+            ?.audioService
+            .playSoundEffect(SoundEffectType.LARGE_POOF);
+      }
     });
   }
 
   void _handleNewSquare(SquareEventMetadata? metadata) {
+    AppContext.of(context)
+        ?.audioService
+        .playSoundEffect(SoundEffectType.LARGE_POOF);
     setState(() {
       score += 25;
     });
