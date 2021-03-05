@@ -28,10 +28,16 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
+<<<<<<< HEAD
   # google_fonts: ^2.0.0
   shared_preferences: ^2.0.3
   audioplayers:
     git: https://github.com/stonekase/audioplayers.git
+=======
+  shared_preferences: ^2.0.3
+  firebase_core: ^0.7.0
+  firebase_admob: ^0.11.0+1
+>>>>>>> working on firebase setup
 
 dev_dependencies:
   flutter_test:
