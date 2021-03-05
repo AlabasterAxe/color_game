@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:color_game/constants.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -52,12 +53,28 @@ class _GameViewState extends State<GameView> {
       this.highScores = scores;
       this.highScores.sort((a, b) => b.score!.compareTo(a.score!));
     });
+
+    BannerAd bannerAd = BannerAd(
+      // Replace the testAdUnitId with an ad unit id from the AdMob dash.
+      // https://developers.google.com/admob/android/test-ads
+      // https://developers.google.com/admob/ios/test-ads
+      adUnitId: BannerAd.testAdUnitId,
+      size: AdSize.smartBanner,
+      targetingInfo: MobileAdTargetingInfo(),
+      listener: (MobileAdEvent event) {
+        print("BannerAd event is $event");
+      },
+    );
+    bannerAd.load().then((value) {
+      if (value) {
+        bannerAd.show();
+      }
+    });
   }
 
   void _handleNewRun(RunEventMetadata? metadata) {
     setState(() {
-      score += pow(metadata!.runLength, metadata.runStreakLength) *
-          metadata.multiples as int;
+      score += pow(metadata!.runLength, metadata.runStreakLength) * metadata.multiples as int;
     });
   }
 
@@ -69,8 +86,7 @@ class _GameViewState extends State<GameView> {
 
   String _getAgoString(DateTime date) {
     DateTime now = DateTime.now();
-    var delta = Duration(
-        milliseconds: now.millisecondsSinceEpoch - date.millisecondsSinceEpoch);
+    var delta = Duration(milliseconds: now.millisecondsSinceEpoch - date.millisecondsSinceEpoch);
     if (delta.inDays > 365) {
       int numYears = (delta.inDays / 365).round();
       return "${numYears} ${numYears == 1 ? "year" : "years"} ago";
@@ -96,8 +112,7 @@ class _GameViewState extends State<GameView> {
 
   @override
   Widget build(BuildContext context) {
-    double boxSize =
-        (MediaQuery.of(context).size.shortestSide * .9) / GRID_SIZE;
+    double boxSize = (MediaQuery.of(context).size.shortestSide * .9) / GRID_SIZE;
     List<Widget> stackChildren = [
       AspectRatio(
         aspectRatio: 1,
@@ -106,19 +121,17 @@ class _GameViewState extends State<GameView> {
           widthFactor: .9,
           child: Center(
               child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.circular(BOX_BORDER_RADIUS * boxSize),
-                      boxShadow: [
-                BoxShadow(
-                  color: Color(0xff404040),
-                ),
-                BoxShadow(
-                  color: BOARD_BACKGROUND_COLOR,
-                  spreadRadius: -5,
-                  blurRadius: 10,
-                )
-              ]))),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(BOX_BORDER_RADIUS * boxSize), boxShadow: [
+            BoxShadow(
+              color: Color(0xff404040),
+            ),
+            BoxShadow(
+              color: BOARD_BACKGROUND_COLOR,
+              spreadRadius: -5,
+              blurRadius: 10,
+            )
+          ]))),
         ),
       ),
       AspectRatio(
@@ -145,8 +158,7 @@ class _GameViewState extends State<GameView> {
                           setState(() {
                             gameOver = true;
                             highScores = [...scores];
-                            highScores
-                                .sort((a, b) => b.score!.compareTo(a.score!));
+                            highScores.sort((a, b) => b.score!.compareTo(a.score!));
                           });
                         });
                       });
@@ -201,21 +213,15 @@ class _GameViewState extends State<GameView> {
                 SizedBox(height: 20),
                 DataTable(
                     headingRowHeight: 0,
-                    columns: [
-                      DataColumn(label: Container()),
-                      DataColumn(label: Container())
-                    ],
+                    columns: [DataColumn(label: Container()), DataColumn(label: Container())],
                     rows: highScores
                         .take(5)
                         .map((score) => DataRow(
                               cells: [
-                                DataCell(Text("${score.score}",
-                                    style: TextStyle(fontSize: 24))),
+                                DataCell(Text("${score.score}", style: TextStyle(fontSize: 24))),
                                 DataCell(Text("(${_getAgoString(score.date)})",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey[800],
-                                        fontStyle: FontStyle.italic))),
+                                    style:
+                                        TextStyle(fontSize: 12, color: Colors.grey[800], fontStyle: FontStyle.italic))),
                               ],
                             ))
                         .toList()),
