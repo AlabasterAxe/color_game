@@ -206,6 +206,7 @@ class _GameViewState extends State<GameView> {
                       DataColumn(label: Container())
                     ],
                     rows: highScores
+                        .take(5)
                         .map((score) => DataRow(
                               cells: [
                                 DataCell(Text("${score.score}",
