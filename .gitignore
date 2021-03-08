@@ -42,3 +42,5 @@ app.*.map.json
 
 Runner.ipa
 Runner.app.dSYM.zip
+
+google-services.json
