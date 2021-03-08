@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>316712147136-46mv7b41avpb4jhc9mn975t7018bbtt6.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.316712147136-46mv7b41avpb4jhc9mn975t7018bbtt6</string>
+	<key>API_KEY</key>
+	<string>AIzaSyC9V_bIKrkGNHX2fyxSmxJGex6UlXMr978</string>
+	<key>GCM_SENDER_ID</key>
+	<string>316712147136</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>co.thkp.colorcollapseapp</string>
+	<key>PROJECT_ID</key>
+	<string>thkp-339ed</string>
+	<key>STORAGE_BUCKET</key>
+	<string>thkp-339ed.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:316712147136:ios:e71eb11eaf7f888b707525</string>
+</dict>
+</plist>

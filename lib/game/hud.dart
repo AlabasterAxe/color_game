@@ -10,7 +10,9 @@ class Hud extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [AnimatedScore(score: score)],
+      children: [
+        AnimatedScore(score: score),
+      ],
     );
   }
 }
