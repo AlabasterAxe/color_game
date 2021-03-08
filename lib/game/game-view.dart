@@ -60,7 +60,7 @@ class _GameViewState extends State<GameView> {
       // Replace the testAdUnitId with an ad unit id from the AdMob dash.
       // https://developers.google.com/admob/android/test-ads
       // https://developers.google.com/admob/ios/test-ads
-      adUnitId: BannerAd.testAdUnitId,
+      adUnitId: ANDROID_BANNER_AD_UNIT_ID,
       size: AdSize.smartBanner,
       targetingInfo: MobileAdTargetingInfo(),
       listener: (MobileAdEvent event) {

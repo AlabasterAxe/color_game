@@ -20,3 +20,7 @@ const List<Color> COLORS = [
   // Colors.grey,
   // Colors.black,
 ];
+
+const String ANDROID_BANNER_AD_UNIT_ID =
+    "ca-app-pub-1235186580185107/8452878897";
+const String IOS_BANNER_AD_UNIT_ID = "ca-app-pub-1235186580185107/4021026902";
