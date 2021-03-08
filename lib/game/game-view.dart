@@ -70,6 +70,24 @@ class _GameViewState extends State<GameView> {
         bannerAd.show();
       }
     });
+
+    // InterstitialAd myInterstitial = InterstitialAd(
+    //   // Replace the testAdUnitId with an ad unit id from the AdMob dash.
+    //   // https://developers.google.com/admob/android/test-ads
+    //   // https://developers.google.com/admob/ios/test-ads
+    //   adUnitId: InterstitialAd.testAdUnitId,
+    //   targetingInfo: MobileAdTargetingInfo(),
+    //   listener: (MobileAdEvent event) {
+    //     print("InterstitialAd event is $event");
+    //   },
+    // );
+    // myInterstitial
+    //   ..load()
+    //   ..show(
+    //     anchorType: AnchorType.bottom,
+    //     anchorOffset: 0.0,
+    //     horizontalCenterOffset: 0.0,
+    //   );
   }
 
   void _handleNewRun(RunEventMetadata? metadata) {
