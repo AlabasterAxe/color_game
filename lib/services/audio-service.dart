@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +10,7 @@ enum SoundEffectType {
   SMALL_POOF,
   MEDIUM_POOF,
   LARGE_POOF,
+  SPLASH,
 }
 
 final Map<SoundEffectType, List<String>> sfxFileLocations =
@@ -23,6 +23,9 @@ final Map<SoundEffectType, List<String>> sfxFileLocations =
   ],
   SoundEffectType.LARGE_POOF: [
     "audio/sfx/poof_4.wav",
+  ],
+  SoundEffectType.SPLASH: [
+    "audio/sfx/splash.wav",
   ],
 };
 

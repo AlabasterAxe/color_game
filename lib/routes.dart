@@ -4,9 +4,11 @@ import 'package:flutter/widgets.dart';
 
 import 'game/game-view.dart';
 import 'views/home-view.dart';
+import 'views/splash-view.dart';
 
 enum RouteId {
   homeView,
+  splashView,
   gameView,
 }
 
@@ -25,6 +27,8 @@ Route<dynamic> _staticRoute(Widget child) {
 Map<RouteId, _RouteConfig> _routeConfiguration = {
   RouteId.homeView: _RouteConfig(
       name: '/', routeBuilder: (settings) => _staticRoute(HomeView())),
+  RouteId.splashView: _RouteConfig(
+      name: '/splash', routeBuilder: (settings) => _staticRoute(SplashView())),
   RouteId.gameView: _RouteConfig(
       name: '/game',
       routeBuilder: (settings) => MaterialPageRoute(builder: (context) {
