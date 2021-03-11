@@ -33,7 +33,7 @@ dependencies:
   audioplayers: ^0.17.4
   path_provider: ^2.0.1
   firebase_core: any
-  firebase_admob: any
+  google_mobile_ads: any
   firebase_analytics: any
   video_player: ^2.0.1
 

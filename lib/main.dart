@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:color_game/services/analytics-service.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'routes.dart';
 import 'services/audio-service.dart';
@@ -64,8 +64,17 @@ class _AppContextStateState extends State<AppContextState> {
     FirebaseAnalyticsObserver observer =
         FirebaseAnalyticsObserver(analytics: analytics);
     analytics.logAppOpen();
-    FirebaseAdMob.instance.initialize(
-        appId: Platform.isIOS ? IOS_ADMOB_APP_ID : ANDROID_ADMOB_APP_ID);
+
+    MobileAds.instance.initialize().then((InitializationStatus status) {
+      print('Initialization done: ${status.toString()}');
+      MobileAds.instance
+          .updateRequestConfiguration(RequestConfiguration(
+              tagForChildDirectedTreatment:
+                  TagForChildDirectedTreatment.unspecified))
+          .then((value) {});
+    });
+    // FirebaseAdMob.instance.initialize(
+    //     appId: Platform.isIOS ? IOS_ADMOB_APP_ID : ANDROID_ADMOB_APP_ID);
     return AppContext(
         MaterialApp(
           onGenerateRoute: (RouteSettings settings) =>

@@ -1,3 +1,4 @@
+import 'package:color_game/widgets/banner-ad-widget.dart';
 import 'package:flutter/widgets.dart';
 
 import 'animated-score.dart';
@@ -10,9 +11,7 @@ class Hud extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        AnimatedScore(score: score),
-      ],
+      children: [AnimatedScore(score: score)],
     );
   }
 }

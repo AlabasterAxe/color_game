@@ -12,6 +12,13 @@
       "args": ["--no-sound-null-safety"]
     },
     {
+      "name": "Flutter (release mode)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "args": ["--no-sound-null-safety", "--release"]
+    },
+    {
       "type": "pwa-chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost",

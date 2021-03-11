@@ -4,9 +4,10 @@ import 'dart:ui';
 import 'package:color_game/constants.dart';
 import 'package:color_game/services/analytics-service.dart';
 import 'package:color_game/services/audio-service.dart';
-import 'package:firebase_admob/firebase_admob.dart';
+import 'package:color_game/widgets/banner-ad-widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../main.dart';
 import '../model.dart';
@@ -55,23 +56,6 @@ class _GameViewState extends State<GameView> {
     getScores().then((scores) {
       this.highScores = scores;
       this.highScores.sort((a, b) => b.score!.compareTo(a.score!));
-    });
-
-    BannerAd bannerAd = BannerAd(
-      // Replace the testAdUnitId with an ad unit id from the AdMob dash.
-      // https://developers.google.com/admob/android/test-ads
-      // https://developers.google.com/admob/ios/test-ads
-      adUnitId: ANDROID_BANNER_AD_UNIT_ID,
-      size: AdSize.smartBanner,
-      targetingInfo: MobileAdTargetingInfo(),
-      listener: (MobileAdEvent event) {
-        print("BannerAd event is $event");
-      },
-    );
-    bannerAd.load().then((value) {
-      if (value) {
-        bannerAd.show();
-      }
     });
 
     // InterstitialAd myInterstitial = InterstitialAd(
@@ -296,7 +280,16 @@ class _GameViewState extends State<GameView> {
     return Container(
       color: BOARD_BACKGROUND_COLOR,
       child: SafeArea(
-        child: Stack(alignment: Alignment.center, children: stackChildren),
+        child: Stack(children: [
+          Stack(alignment: Alignment.center, children: stackChildren),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 95,
+            child: BannerAdWidget(),
+          )
+        ]),
       ),
     );
   }
