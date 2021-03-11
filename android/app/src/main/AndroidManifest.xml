@@ -12,7 +12,7 @@
         <!-- AdMob app id -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-1235186580185107~4695991932"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
