@@ -32,8 +32,9 @@ dependencies:
   shared_preferences: ^2.0.3
   audioplayers: ^0.17.4
   path_provider: ^2.0.1
-  firebase_core: ^0.7.0
-  firebase_admob: ^0.11.0+1
+  firebase_core: any
+  firebase_admob: any
+  firebase_analytics: any
   video_player: ^2.0.1
 
 dependency_overrides:

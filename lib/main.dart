@@ -1,12 +1,18 @@
 import 'dart:io';
 
+import 'package:color_game/services/analytics-service.dart';
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'routes.dart';
 import 'services/audio-service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -23,10 +29,12 @@ class MyApp extends StatelessWidget {
 class AppContext extends InheritedWidget {
   final Widget child;
   final AudioService audioService;
+  final AnalyticsService analytics;
 
   AppContext(
     this.child,
-    this.audioService, {
+    this.audioService,
+    this.analytics, {
     Key? key,
   }) : super(key: key, child: child);
 
@@ -52,15 +60,19 @@ class _AppContextStateState extends State<AppContextState> {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseAnalytics analytics = FirebaseAnalytics();
+    FirebaseAnalyticsObserver observer =
+        FirebaseAnalyticsObserver(analytics: analytics);
+    analytics.logAppOpen();
     FirebaseAdMob.instance.initialize(
         appId: Platform.isIOS ? IOS_ADMOB_APP_ID : ANDROID_ADMOB_APP_ID);
     return AppContext(
-      MaterialApp(
-        onGenerateRoute: (RouteSettings settings) =>
-            getRouteIdByName(settings.name).generateRoute(settings),
-        initialRoute: "/splash",
-      ),
-      audioService,
-    );
+        MaterialApp(
+          onGenerateRoute: (RouteSettings settings) =>
+              getRouteIdByName(settings.name).generateRoute(settings),
+          initialRoute: "/splash",
+        ),
+        audioService,
+        AnalyticsService(analytics, observer));
   }
 }
