@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:color_game/constants.dart';
+import 'package:color_game/services/analytics-service.dart';
 import 'package:color_game/services/audio-service.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
@@ -152,6 +153,7 @@ class _GameViewState extends State<GameView> {
   Widget build(BuildContext context) {
     double boxSize =
         (MediaQuery.of(context).size.shortestSide * .9) / GRID_SIZE;
+    AnalyticsService analytics = AppContext.of(context)!.analytics;
     List<Widget> stackChildren = [
       AspectRatio(
         aspectRatio: 1,
@@ -187,6 +189,8 @@ class _GameViewState extends State<GameView> {
                 config: widget.config,
                 onGameEvent: (GameEvent e) {
                   switch (e.type) {
+                    case null:
+                      throw Exception('must not submit null event!');
                     case GameEventType.RUN:
                       _handleNewRun(e.metadata);
                       break;
@@ -194,6 +198,7 @@ class _GameViewState extends State<GameView> {
                       _handleNewSquare(e.metadata);
                       break;
                     case GameEventType.NO_MOVES:
+                      analytics.logEvent(AnalyticsEvent.finish_game);
                       addScore(score).then((_) {
                         getScores().then((scores) {
                           setState(() {
