@@ -428,6 +428,10 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
               slidingColumn = getColumnMates(tappedBox);
               slidingRow = getRowMates(tappedBox);
             }
+            if (boardUpdateTimer != null) {
+              boardUpdateTimer!.cancel();
+              boardUpdateTimer = null;
+            }
           },
           onPanUpdate: (DragUpdateDetails deets) {
             if (tappedBox == null) {
