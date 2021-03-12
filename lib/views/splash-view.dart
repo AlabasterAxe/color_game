@@ -36,7 +36,7 @@ class _SplashViewState extends State<SplashView>
     _videoController.addListener(() {
       setState(() {});
       if (_videoController.value.position == _videoController.value.duration) {
-        Navigator.pushReplacementNamed(context, "/game");
+        Navigator.pushReplacementNamed(context, "/");
       }
     });
   }
