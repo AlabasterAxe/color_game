@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:color_game/services/analytics-service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
@@ -73,8 +71,6 @@ class _AppContextStateState extends State<AppContextState> {
                   TagForChildDirectedTreatment.unspecified))
           .then((value) {});
     });
-    // FirebaseAdMob.instance.initialize(
-    //     appId: Platform.isIOS ? IOS_ADMOB_APP_ID : ANDROID_ADMOB_APP_ID);
     return AppContext(
         MaterialApp(
           onGenerateRoute: (RouteSettings settings) =>

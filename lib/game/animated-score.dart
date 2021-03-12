@@ -9,7 +9,8 @@ class AnimatedScore extends StatefulWidget {
   _AnimatedScoreState createState() => _AnimatedScoreState();
 }
 
-class _AnimatedScoreState extends State<AnimatedScore> with SingleTickerProviderStateMixin {
+class _AnimatedScoreState extends State<AnimatedScore>
+    with SingleTickerProviderStateMixin {
   late AnimationController controller;
   Animation<Color?> colorAnimation = AlwaysStoppedAnimation(Colors.grey[200]);
   int? prevScore = 0;
@@ -18,7 +19,8 @@ class _AnimatedScoreState extends State<AnimatedScore> with SingleTickerProvider
   void initState() {
     super.initState();
 
-    controller = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
   }
 
   @override
@@ -40,8 +42,11 @@ class _AnimatedScoreState extends State<AnimatedScore> with SingleTickerProvider
     return AnimatedBuilder(
         animation: controller,
         builder: (context, _) {
-          return Text("${((widget.score - prevScore!) * controller.value + prevScore!).round()}",
-              style: TextStyle(color: colorAnimation.value, decoration: TextDecoration.none));
+          return Text(
+              "${((widget.score - prevScore!) * controller.value + prevScore!).round()}",
+              style: TextStyle(
+                  color: colorAnimation.value,
+                  decoration: TextDecoration.none));
         });
   }
 }
