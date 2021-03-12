@@ -57,24 +57,6 @@ class _GameViewState extends State<GameView> {
       this.highScores = scores;
       this.highScores.sort((a, b) => b.score!.compareTo(a.score!));
     });
-
-    // InterstitialAd myInterstitial = InterstitialAd(
-    //   // Replace the testAdUnitId with an ad unit id from the AdMob dash.
-    //   // https://developers.google.com/admob/android/test-ads
-    //   // https://developers.google.com/admob/ios/test-ads
-    //   adUnitId: InterstitialAd.testAdUnitId,
-    //   targetingInfo: MobileAdTargetingInfo(),
-    //   listener: (MobileAdEvent event) {
-    //     print("InterstitialAd event is $event");
-    //   },
-    // );
-    // myInterstitial
-    //   ..load()
-    //   ..show(
-    //     anchorType: AnchorType.bottom,
-    //     anchorOffset: 0.0,
-    //     horizontalCenterOffset: 0.0,
-    //   );
   }
 
   void _handleNewRun(RunEventMetadata? metadata) {
@@ -135,8 +117,9 @@ class _GameViewState extends State<GameView> {
 
   @override
   Widget build(BuildContext context) {
-    double boxSize =
-        (MediaQuery.of(context).size.shortestSide * .9) / GRID_SIZE;
+    MediaQueryData mediaQueryData = MediaQuery.of(context);
+    Size screenSize = mediaQueryData.size;
+    double boxSize = (screenSize.shortestSide * .9) / GRID_SIZE;
     AnalyticsService analytics = AppContext.of(context)!.analytics;
     List<Widget> stackChildren = [
       AspectRatio(
@@ -282,13 +265,7 @@ class _GameViewState extends State<GameView> {
       child: SafeArea(
         child: Stack(children: [
           Stack(alignment: Alignment.center, children: stackChildren),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 95,
-            child: BannerAdWidget(),
-          )
+          Positioned(left: 0, right: 0, bottom: 0, child: BannerAdWidget())
         ]),
       ),
     );

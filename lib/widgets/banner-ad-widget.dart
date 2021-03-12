@@ -24,7 +24,6 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
         sizes: [AdSize.smartBanner],
         listener: AdListener(
           onAdLoaded: (Ad ad) {
-            print('PublisherBannerAd loaded.');
             bannerCompleter.complete(ad as PublisherBannerAd);
           },
           onAdFailedToLoad: (Ad ad, LoadAdError error) {
@@ -47,41 +46,41 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<PublisherBannerAd>(
-      future: bannerCompleter.future,
-      builder:
-          (BuildContext context, AsyncSnapshot<PublisherBannerAd> snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.none:
-          case ConnectionState.waiting:
-          case ConnectionState.active:
-            return Container();
-          case ConnectionState.done:
-            if (snapshot.hasData) {
-              return OrientationBuilder(
-                  builder: (BuildContext context, Orientation orientation) =>
-                      Container(
-                          height: _getSmartBannerHeight(context, orientation),
-                          child: AdWidget(ad: bannerAd)));
-            } else {
-              return Text('Error loading $PublisherBannerAd');
+    MediaQueryData mediaQueryData = MediaQuery.of(context);
+    return Container(
+        height: getSmartBannerHeight(
+            mediaQueryData.size, mediaQueryData.orientation),
+        child: FutureBuilder<PublisherBannerAd>(
+          future: bannerCompleter.future,
+          builder: (BuildContext context,
+              AsyncSnapshot<PublisherBannerAd> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                return Container();
+              case ConnectionState.done:
+                if (snapshot.hasData) {
+                  return AdWidget(ad: bannerAd);
+                } else {
+                  // this will occur in the case of an error loading the ad.
+                  return Container();
+                }
             }
-        }
-      },
-    );
+          },
+        ));
   }
+}
 
-  double _getSmartBannerHeight(BuildContext context, Orientation orientation) {
-    MediaQueryData mediaScreen = MediaQuery.of(context);
-    double dpHeight = mediaScreen.orientation == Orientation.portrait
-        ? mediaScreen.size.height
-        : mediaScreen.size.width;
-    if (dpHeight <= 400.0) {
-      return 32.0;
-    }
-    if (dpHeight > 720.0) {
-      return 90.0;
-    }
-    return 50.0;
+double getSmartBannerHeight(Size screenSize, Orientation orientation) {
+  double dpHeight = orientation == Orientation.portrait
+      ? screenSize.height
+      : screenSize.width;
+  if (dpHeight <= 400.0) {
+    return 32.0;
   }
+  if (dpHeight > 720.0) {
+    return 90.0;
+  }
+  return 50.0;
 }
