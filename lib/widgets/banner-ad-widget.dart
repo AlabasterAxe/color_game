@@ -58,12 +58,30 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
             return Container();
           case ConnectionState.done:
             if (snapshot.hasData) {
-              return Container(height: 90.0, child: AdWidget(ad: bannerAd));
+              return OrientationBuilder(
+                  builder: (BuildContext context, Orientation orientation) =>
+                      Container(
+                          height: _getSmartBannerHeight(context, orientation),
+                          child: AdWidget(ad: bannerAd)));
             } else {
               return Text('Error loading $PublisherBannerAd');
             }
         }
       },
     );
+  }
+
+  double _getSmartBannerHeight(BuildContext context, Orientation orientation) {
+    MediaQueryData mediaScreen = MediaQuery.of(context);
+    double dpHeight = mediaScreen.orientation == Orientation.portrait
+        ? mediaScreen.size.height
+        : mediaScreen.size.width;
+    if (dpHeight <= 400.0) {
+      return 32.0;
+    }
+    if (dpHeight > 720.0) {
+      return 90.0;
+    }
+    return 50.0;
   }
 }
