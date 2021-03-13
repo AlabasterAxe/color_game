@@ -12,8 +12,12 @@ class ColorCollapseButton extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        elevation: 3,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: child,
         ),
       ),

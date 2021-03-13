@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import 'constants.dart';
 import 'routes.dart';
 import 'services/audio-service.dart';
 
@@ -75,7 +76,8 @@ class _AppContextStateState extends State<AppContextState> {
         MaterialApp(
           onGenerateRoute: (RouteSettings settings) =>
               getRouteIdByName(settings.name).generateRoute(settings),
-          initialRoute: "/world_map",
+          initialRoute: "/splash",
+          theme: colorCollapseTheme,
         ),
         audioService,
         AnalyticsService(analytics, observer));

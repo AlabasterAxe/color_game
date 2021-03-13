@@ -28,11 +28,7 @@ class HomeView extends StatelessWidget {
                   child: Center(
                     child: Text("Color Collapse",
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.lato(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 64,
-                            color: Colors.grey[200],
-                            decoration: TextDecoration.none)),
+                        style: Theme.of(context).textTheme.headline1),
                   ),
                 ),
                 Expanded(
@@ -40,8 +36,13 @@ class HomeView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       ColorCollapseButton(
-                          child: Text(
-                            "High Scores",
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset("assets/images/high_scores.png"),
+                              Text("High Scores",
+                                  style: Theme.of(context).textTheme.bodyText1),
+                            ],
                           ),
                           onPressed: () {
                             analyticsService
@@ -50,13 +51,18 @@ class HomeView extends StatelessWidget {
                                 arguments: ColorGameConfig());
                           }),
                       ColorCollapseButton(
-                          child: Text(
-                            "Play",
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset("assets/images/play_button.png"),
+                              Text("Play",
+                                  style: Theme.of(context).textTheme.bodyText1),
+                            ],
                           ),
                           onPressed: () {
                             analyticsService
                                 .logEvent(AnalyticsEvent.start_game);
-                            Navigator.pushNamed(context, "/game",
+                            Navigator.pushNamed(context, "/world_map",
                                 arguments: ColorGameConfig());
                           }),
                     ],
