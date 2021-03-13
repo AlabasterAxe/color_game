@@ -7,11 +7,11 @@ const BOX_BORDER_RADIUS = 1 / 8;
 const GRID_SIZE = 6;
 const COLLAPSE_DURATION_MILLISECONDS = 750;
 
-const BOARD_BACKGROUND_COLOR = Color(0xff557287);
+const BOARD_BACKGROUND_COLOR = Color(0xff486173);
 
 const RED_COLOR = Color(0xffF55454);
 const YELLOW_COLOR = Color(0xffFED30B);
-const GREEN_COLOR = Color(0xff58A273);
+const GREEN_COLOR = Color(0xff9CC405);
 const BLUE_COLOR = Color(0xff5099B0);
 
 ShapeBorder CARD_SHAPE = RoundedRectangleBorder(
