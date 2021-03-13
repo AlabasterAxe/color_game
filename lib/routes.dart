@@ -5,11 +5,13 @@ import 'package:flutter/widgets.dart';
 import 'game/game-view.dart';
 import 'views/home-view.dart';
 import 'views/splash-view.dart';
+import 'views/world-map-view.dart';
 
 enum RouteId {
   homeView,
   splashView,
   gameView,
+  worldMapView,
 }
 
 class _RouteConfig {
@@ -29,6 +31,9 @@ Map<RouteId, _RouteConfig> _routeConfiguration = {
       name: '/', routeBuilder: (settings) => _staticRoute(HomeView())),
   RouteId.splashView: _RouteConfig(
       name: '/splash', routeBuilder: (settings) => _staticRoute(SplashView())),
+  RouteId.worldMapView: _RouteConfig(
+      name: '/world_map',
+      routeBuilder: (settings) => _staticRoute(WorldMapView())),
   RouteId.gameView: _RouteConfig(
       name: '/game',
       routeBuilder: (settings) => MaterialPageRoute(builder: (context) {

@@ -75,7 +75,7 @@ class _AppContextStateState extends State<AppContextState> {
         MaterialApp(
           onGenerateRoute: (RouteSettings settings) =>
               getRouteIdByName(settings.name).generateRoute(settings),
-          initialRoute: "/splash",
+          initialRoute: "/world_map",
         ),
         audioService,
         AnalyticsService(analytics, observer));
