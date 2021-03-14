@@ -246,13 +246,9 @@ class _GameViewState extends State<GameView> {
                             ))
                         .toList()),
                 ElevatedButton(
-                    child: Text("New Game"),
+                    child: Text("Back"),
                     onPressed: () {
-                      setState(() {
-                        gameOver = false;
-                        gameKey = UniqueKey();
-                        score = 0;
-                      });
+                      Navigator.pop(context);
                     }),
               ],
             ),

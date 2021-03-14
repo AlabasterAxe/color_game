@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -88,8 +90,24 @@ class _WorldMapViewState extends State<WorldMapView>
                                       child: GestureDetector(
                                         onTap: () {
                                           Navigator.pushNamed(context, "/game",
-                                              arguments: _items[page.floor()]
-                                                  .gameConfig);
+                                                  arguments:
+                                                      _items[page.floor()]
+                                                          .gameConfig)
+                                              .then((_) {
+                                            if (_pageController.page != null &&
+                                                _pageController.page! <
+                                                    _items.length - 1) {
+                                              Timer(Duration(seconds: 1), () {
+                                                _pageController.animateToPage(
+                                                  (_pageController.page! + 1)
+                                                      .round(),
+                                                  duration: Duration(
+                                                      milliseconds: 500),
+                                                  curve: Curves.easeInOut,
+                                                );
+                                              });
+                                            }
+                                          });
                                         },
                                         child: Container(
                                             decoration: BoxDecoration(
