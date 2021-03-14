@@ -14,8 +14,10 @@ const YELLOW_COLOR = Color(0xffFED30B);
 const GREEN_COLOR = Color(0xff9CC405);
 const BLUE_COLOR = Color(0xff5099B0);
 
+BorderRadiusGeometry cardBorderRadius = BorderRadius.circular(15.0);
+
 ShapeBorder CARD_SHAPE = RoundedRectangleBorder(
-  borderRadius: BorderRadius.circular(15.0),
+  borderRadius: cardBorderRadius,
 );
 
 const List<Color> COLORS = [

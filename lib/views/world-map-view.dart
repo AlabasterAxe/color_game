@@ -2,48 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../constants.dart';
+import '../model.dart';
 
 class WorldMapView extends StatefulWidget {
-  WorldMapView({Key? key}) : super(key: key);
+  final List<ColorGameConfig> configs;
+  WorldMapView(
+      {Key? key,
+      this.configs = const [
+        ColorGameConfig(),
+        ColorGameConfig(),
+        ColorGameConfig(),
+      ]})
+      : super(key: key);
 
   @override
   _WorldMapViewState createState() => _WorldMapViewState();
 }
 
+class WorldMapItem {
+  ColorGameConfig gameConfig;
+  Color backgroundColor;
+  WorldMapItem({
+    this.gameConfig = const ColorGameConfig(),
+    this.backgroundColor = Colors.black,
+  });
+}
+
 class _WorldMapViewState extends State<WorldMapView>
     with SingleTickerProviderStateMixin {
   PageController _pageController = PageController(viewportFraction: .8);
-  late Animation<Color?> backgroundColor;
+  late List<WorldMapItem> _items;
 
   @override
   void initState() {
     super.initState();
-    AnimationController swipingAnimationController =
-        AnimationController(vsync: this);
-    _pageController.addListener(() {
-      if (_pageController.page != null) {
-        swipingAnimationController.value = _pageController.page! / 3;
-      }
-    });
-
-    backgroundColor = TweenSequence<Color?>(
-      [
-        TweenSequenceItem(
-          weight: 1.0,
-          tween: ColorTween(
-            begin: Colors.orangeAccent,
-            end: Colors.lightBlue,
-          ),
-        ),
-        TweenSequenceItem(
-          weight: 1.0,
-          tween: ColorTween(
-            begin: Colors.lightBlue,
-            end: Colors.green,
-          ),
-        ),
-      ],
-    ).animate(swipingAnimationController);
+    _items = widget.configs
+        .asMap()
+        .entries
+        .map((entry) => WorldMapItem(
+              gameConfig: entry.value,
+              backgroundColor: COLORS[entry.key % COLORS.length],
+            ))
+        .toList();
   }
 
   @override
@@ -51,8 +51,15 @@ class _WorldMapViewState extends State<WorldMapView>
     return AnimatedBuilder(
         animation: _pageController,
         builder: (context, snapshot) {
+          double pageValue =
+              _pageController.hasClients ? _pageController.page ?? 0 : 0;
+          int prevPage = pageValue.floor();
+          int nextPage = pageValue.ceil();
+          double pageLerp = pageValue - prevPage;
+
           return Scaffold(
-              backgroundColor: backgroundColor.value,
+              backgroundColor: Color.lerp(_items[prevPage].backgroundColor,
+                  _items[nextPage].backgroundColor, pageLerp),
               body: PageView.builder(
                   itemCount: 3,
                   itemBuilder: (context, page) {
@@ -80,10 +87,14 @@ class _WorldMapViewState extends State<WorldMapView>
                                       aspectRatio: 1,
                                       child: GestureDetector(
                                         onTap: () {
-                                          Navigator.pushNamed(context, "/game");
+                                          Navigator.pushNamed(context, "/game",
+                                              arguments: _items[page.floor()]
+                                                  .gameConfig);
                                         },
                                         child: Container(
-                                            color: BOARD_BACKGROUND_COLOR),
+                                            decoration: BoxDecoration(
+                                                borderRadius: cardBorderRadius,
+                                                color: BOARD_BACKGROUND_COLOR)),
                                       ),
                                     ),
                                   ),
