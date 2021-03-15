@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'game/game-board.dart';
+import 'game/score-utils.dart';
 import 'model.dart';
 
 const RELATIVE_GAP_SIZE = 1 / 12;
@@ -37,10 +38,27 @@ const List<Color> COLORS = [
   // Colors.black,
 ];
 
-bool Function(List<GameEvent>) noopCompletionEvaluator = (_) => false;
-int Function(List<GameEvent>) dummyStarEvaluator = (_) => 2;
-bool Function(List<GameEvent>) timeFinishedEvaluator = (events) =>
+typedef bool CompletionEvaluator(List<GameEvent> events);
+typedef int StarEvaluator(List<GameEvent> events);
+
+CompletionEvaluator noopCompletionEvaluator = (_) => false;
+StarEvaluator dummyStarEvaluator = (_) => 2;
+CompletionEvaluator timeFinishedEvaluator = (events) =>
     events.any((element) => element.type == GameEventType.TIMER_FINISHED);
+
+StarEvaluator pointStarEvaluator({int? threeStar, int? twoStar, int? oneStar}) {
+  return (List<GameEvent> events) {
+    int score = calculateFinalScore(events);
+    if (threeStar != null && score > threeStar) {
+      return 3;
+    } else if (twoStar != null && score > twoStar) {
+      return 2;
+    } else if (oneStar != null && score > oneStar) {
+      return 1;
+    }
+    return 0;
+  };
+}
 
 List<ColorGameConfig> levels = [
   ColorGameConfig(
@@ -52,7 +70,7 @@ List<ColorGameConfig> levels = [
       GameBox(Offset(1, 0), YELLOW_COLOR),
     ],
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: dummyStarEvaluator,
+    starEvaluator: pointStarEvaluator(threeStar: 2),
   ),
   ColorGameConfig(
     "tut_2",
@@ -65,7 +83,7 @@ List<ColorGameConfig> levels = [
       GameBox(Offset(2, 0), YELLOW_COLOR),
     ],
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: dummyStarEvaluator,
+    starEvaluator: pointStarEvaluator(threeStar: 35),
   ),
   ColorGameConfig(
     "tut_3",
@@ -93,7 +111,7 @@ List<ColorGameConfig> levels = [
       GameBox(Offset(2, -2), GREEN_COLOR),
     ],
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: dummyStarEvaluator,
+    starEvaluator: pointStarEvaluator(threeStar: 575),
   ),
   ColorGameConfig(
     "gamerino",

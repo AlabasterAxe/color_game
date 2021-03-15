@@ -4,9 +4,7 @@ import 'dart:ui';
 import 'package:color_game/constants.dart';
 import 'package:color_game/services/analytics-service.dart';
 import 'package:color_game/services/audio-service.dart';
-import 'package:color_game/widgets/banner-ad-widget.dart';
 import 'package:color_game/widgets/circular-timer.dart';
-import 'package:color_game/widgets/high-scores-dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
