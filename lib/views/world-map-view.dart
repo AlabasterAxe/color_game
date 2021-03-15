@@ -120,7 +120,8 @@ class _WorldMapViewState extends State<WorldMapView>
                                                         BOARD_BACKGROUND_COLOR),
                                                 child: GameBoardWidget(
                                                     _items[page.floor()]
-                                                        .gameConfig)),
+                                                        .gameConfig,
+                                                    onGameEvent: (_) {})),
                                             Opacity(
                                               opacity: .7,
                                               child: ColorCollapseButton(

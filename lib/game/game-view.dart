@@ -47,6 +47,7 @@ class _GameViewState extends State<GameView> {
   bool gameOver = false;
   Tween<int>? scoreTween;
   Key gameKey = UniqueKey();
+  List<GameEvent> events = [];
 
   List<Score> highScores = [];
 
@@ -153,9 +154,8 @@ class _GameViewState extends State<GameView> {
             padding: const EdgeInsets.all(4.0),
             child: GameBoardWidget(widget.config, key: gameKey,
                 onGameEvent: (GameEvent e) {
+              events.add(e);
               switch (e.type) {
-                case null:
-                  throw Exception('must not submit null event!');
                 case GameEventType.RUN:
                   _handleNewRun(e.metadata);
                   break;
@@ -178,6 +178,8 @@ class _GameViewState extends State<GameView> {
                   setState(() {
                     score = (score * .9).round();
                   });
+                  break;
+                default:
                   break;
               }
             }),

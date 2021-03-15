@@ -42,8 +42,8 @@ class GameBoxWidgetState extends State<GameBoxWidget> {
               height: boundsRect.height - gapSize,
               width: boundsRect.width - gapSize,
               decoration: BoxDecoration(
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(BOX_BORDER_RADIUS * (boundsRect.height - gapSize))),
+                  borderRadius: BorderRadius.all(Radius.circular(
+                      BOX_BORDER_RADIUS * (boundsRect.height - gapSize))),
                   color: widget.box.color,
                   boxShadow: [
                     BoxShadow(

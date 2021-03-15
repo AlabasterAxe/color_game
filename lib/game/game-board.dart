@@ -16,6 +16,7 @@ enum GameEventType {
   SQUARE,
   NO_MOVES,
   LEFT_OVER_BOX,
+  USER_MOVE,
 }
 
 class RunEventMetadata {
@@ -25,19 +26,36 @@ class RunEventMetadata {
   late int multiples;
 }
 
+enum DragDirection {
+  HORIZONTAL,
+  VERTICAL,
+}
+
+class UserMoveEventMetadata {
+  final DragDirection dragDirection;
+  final int dragLength;
+  final List<GameBox> draggedBoxes;
+  UserMoveEventMetadata(this.dragDirection, this.dragLength, this.draggedBoxes);
+}
+
 class SquareEventMetadata {
   Color? color;
 }
 
 class GameEvent {
-  GameEventType? type;
-  dynamic metadata;
+  final GameEventType type;
+  final dynamic metadata;
+  final DateTime datetime;
+
+  GameEvent(this.type, {DateTime? datetime, this.metadata})
+      : this.datetime = datetime ?? DateTime.now();
 }
 
 class GameBoardWidget extends StatefulWidget {
   final ColorGameConfig config;
-  final Function(GameEvent)? onGameEvent;
-  GameBoardWidget(this.config, {Key? key, this.onGameEvent}) : super(key: key);
+  final Function(GameEvent) onGameEvent;
+  GameBoardWidget(this.config, {Key? key, required this.onGameEvent})
+      : super(key: key);
 
   @override
   _GameBoardWidgetState createState() => _GameBoardWidgetState();
@@ -208,14 +226,14 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   void _penalizeRemainingBoxes() {
     Timer.periodic(Duration(milliseconds: 1000), (Timer t) {
       if (boxes.isEmpty) {
-        widget.onGameEvent!(GameEvent()..type = GameEventType.NO_MOVES);
+        widget.onGameEvent(GameEvent(GameEventType.NO_MOVES));
         t.cancel();
         return;
       }
 
       setState(() {
         boxes.remove(boxes.first);
-        widget.onGameEvent!(GameEvent()..type = GameEventType.LEFT_OVER_BOX);
+        widget.onGameEvent(GameEvent(GameEventType.LEFT_OVER_BOX));
       });
     });
   }
@@ -366,14 +384,10 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     boxes.removeWhere((box) => toRemove.contains(box));
     for (RunEventMetadata run in runs) {
       run.multiples = runs.length;
-      widget.onGameEvent!(GameEvent()
-        ..type = GameEventType.RUN
-        ..metadata = run);
+      widget.onGameEvent(GameEvent(GameEventType.RUN, metadata: run));
     }
     for (SquareEventMetadata square in squares) {
-      widget.onGameEvent!(GameEvent()
-        ..type = GameEventType.SQUARE
-        ..metadata = square);
+      widget.onGameEvent(GameEvent(GameEventType.SQUARE, metadata: square));
     }
     return runs.isNotEmpty || squares.isNotEmpty;
   }
@@ -492,25 +506,36 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
               Offset delta = tapUpdateLoc! - tapStartLoc!;
               Rect boxSize = tappedBox!.getRect(vt);
               if (draggingCol) {
+                double gameWorldDragDistance = delta.dy / boxSize.height;
                 setState(() {
                   for (GameBox box in slidingColumn!) {
                     Offset translatedOffset =
-                        box.startLoc.translate(0, delta.dy / boxSize.height);
+                        box.startLoc.translate(0, gameWorldDragDistance);
 
                     box.loc = translatedOffset;
                     box.startLoc = translatedOffset;
                     box.userDragged = false;
+
+                    if (gameWorldDragDistance.abs() > .5) {
+                      widget.onGameEvent(GameEvent(GameEventType.USER_MOVE));
+                    }
                   }
                   _snapBoxes();
                 });
               } else {
+                double gameWorldDragDistance = delta.dx / boxSize.width;
                 setState(() {
                   for (GameBox box in slidingRow!) {
                     Offset translatedOffset =
-                        box.startLoc.translate(delta.dx / boxSize.width, 0);
+                        box.startLoc.translate(gameWorldDragDistance, 0);
+
                     box.loc = translatedOffset;
                     box.startLoc = translatedOffset;
                     box.userDragged = false;
+
+                    if (gameWorldDragDistance.abs() > .5) {
+                      widget.onGameEvent(GameEvent(GameEventType.USER_MOVE));
+                    }
                   }
                   _snapBoxes();
                 });
