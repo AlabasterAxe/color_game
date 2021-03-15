@@ -38,7 +38,7 @@ const List<Color> COLORS = [
 ];
 
 bool Function(List<GameEvent>) noopCompletionEvaluator = (_) => false;
-int Function(List<GameEvent>) dummyStarEvaluator = (_) => 3;
+int Function(List<GameEvent>) dummyStarEvaluator = (_) => 2;
 
 List<ColorGameConfig> levels = [
   ColorGameConfig(

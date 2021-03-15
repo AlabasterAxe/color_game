@@ -51,15 +51,9 @@ class _GameViewState extends State<GameView> {
   Key gameKey = UniqueKey();
   List<GameEvent> events = [];
 
-  List<Score> highScores = [];
-
   @override
   void initState() {
     super.initState();
-    getScores().then((scores) {
-      this.highScores = scores;
-      this.highScores.sort((a, b) => b.score.compareTo(a.score));
-    });
   }
 
   void _handleNewRun(RunEventMetadata metadata) {
@@ -115,23 +109,9 @@ class _GameViewState extends State<GameView> {
   void _doGameOver() {
     starsReceived = widget.config.starEvaluator(events);
     AppContext.of(context).analytics.logEvent(AnalyticsEvent.finish_game);
-    addScore(widget.config.label, score).then((_) {
-      getScores().then((scores) {
-        setState(() {
-          gameOver = true;
-          highScores = [...scores];
-          highScores.sort((a, b) => b.score.compareTo(a.score));
-          showDialog(
-            context: context,
-            builder: (context) {
-              return HighScoresDialog(highScores: highScores);
-            },
-            barrierDismissible: false,
-          ).then((_) {
-            Navigator.pop(context, GameCompletedEvent(true));
-          });
-        });
-      });
+    addScore(widget.config.label, score);
+    setState(() {
+      gameOver = true;
     });
   }
 
@@ -223,6 +203,42 @@ class _GameViewState extends State<GameView> {
       ),
       Positioned.fill(child: _createHud()),
     ];
+
+    if (gameOver) {
+      stackChildren.add(Card(
+          shape: CARD_SHAPE,
+          elevation: 4,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Image.asset(
+                          "assets/images/${starsReceived != null && starsReceived! > 0 ? "gold_star" : "star"}.png"),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Image.asset(
+                          "assets/images/${starsReceived != null && starsReceived! > 1 ? "gold_star" : "star"}.png"),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Image.asset(
+                          "assets/images/${starsReceived != null && starsReceived! > 2 ? "gold_star" : "star"}.png"),
+                    ),
+                  ]),
+              ElevatedButton(
+                  child: Text("Back"),
+                  onPressed: () {
+                    Navigator.pop(context, GameCompletedEvent(true));
+                  }),
+            ],
+          )));
+    }
 
     return Container(
       color: BOARD_BACKGROUND_COLOR,
