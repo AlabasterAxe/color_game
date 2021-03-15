@@ -150,9 +150,10 @@ List<ColorGameConfig> levels = [
     starEvaluator: pointStarEvaluator(threeStar: 24),
   ),
   ColorGameConfig(
-    "gamerino",
+    "level_6",
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: dummyStarEvaluator,
+    starEvaluator:
+        pointStarEvaluator(threeStar: 200, twoStar: 100, oneStar: 50),
   ),
   ColorGameConfig("level_9",
       gridSize: Size(5, 5),
