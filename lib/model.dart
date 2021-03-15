@@ -10,9 +10,15 @@ class ColorGameConfig {
   final Size gridSize;
 
   final List<GameBox> predefinedGrid;
+  final String label;
 
-  const ColorGameConfig(
+  const ColorGameConfig(this.label,
       {this.gridSize = const Size(6, 6), this.predefinedGrid = const []});
+}
+
+class GameCompletedEvent {
+  bool successful;
+  GameCompletedEvent(this.successful);
 }
 
 class GameBox {

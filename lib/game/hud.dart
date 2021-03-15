@@ -1,4 +1,3 @@
-import 'package:color_game/widgets/banner-ad-widget.dart';
 import 'package:flutter/widgets.dart';
 
 import 'animated-score.dart';

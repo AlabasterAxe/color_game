@@ -35,9 +35,9 @@ class GameEvent {
 }
 
 class GameBoardWidget extends StatefulWidget {
-  final ColorGameConfig? config;
+  final ColorGameConfig config;
   final Function(GameEvent)? onGameEvent;
-  GameBoardWidget({Key? key, this.config, this.onGameEvent}) : super(key: key);
+  GameBoardWidget(this.config, {Key? key, this.onGameEvent}) : super(key: key);
 
   @override
   _GameBoardWidgetState createState() => _GameBoardWidgetState();
@@ -64,17 +64,19 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   @override
   void initState() {
     super.initState();
-    if (widget.config!.predefinedGrid.isNotEmpty) {
-      boxes = widget.config!.predefinedGrid.map((e) => e.clone()).toList();
+    if (widget.config.predefinedGrid.isNotEmpty) {
+      boxes = widget.config.predefinedGrid.map((e) => e.clone()).toList();
     } else {
       boxes = generateGameBoxes(
-          colors: COLORS, size: widget.config!.gridSize.width.round());
+          colors: COLORS, size: widget.config.gridSize.width.round());
     }
   }
 
   @override
   void dispose() {
-    boardUpdateTimer!.cancel();
+    if (boardUpdateTimer != null) {
+      boardUpdateTimer!.cancel();
+    }
     super.dispose();
   }
 
@@ -190,9 +192,14 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   }
 
   void _snapBoxes() {
+    double horizontalRoundOffset =
+        (widget.config.gridSize.width.round() + 1) % 2 / 2;
+    double verticalRoundOffset =
+        (widget.config.gridSize.height.round() + 1) % 2 / 2;
     for (GameBox box in boxes!) {
       Offset roundedOffset = Offset(
-          (box.loc.dx - .5).round() + .5, (box.loc.dy - .5).round() + .5);
+          (box.loc.dx - horizontalRoundOffset).round() + horizontalRoundOffset,
+          (box.loc.dy - verticalRoundOffset).round() + verticalRoundOffset);
       box.loc = roundedOffset;
       box.startLoc = roundedOffset;
     }
@@ -391,10 +398,10 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     return LayoutBuilder(builder: (context, constraints) {
       ViewTransformation vt = ViewTransformation(
           from: Rect.fromLTRB(
-              -widget.config!.gridSize.width / 2,
-              -widget.config!.gridSize.height / 2,
-              widget.config!.gridSize.width / 2,
-              widget.config!.gridSize.height / 2),
+              -widget.config.gridSize.width / 2,
+              -widget.config.gridSize.height / 2,
+              widget.config.gridSize.width / 2,
+              widget.config.gridSize.height / 2),
           to: Offset(0, 0) & constraints.biggest);
       List<Widget> stackChildren = [];
 

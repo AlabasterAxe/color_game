@@ -37,19 +37,19 @@ const List<Color> COLORS = [
 ];
 
 List<ColorGameConfig> levels = [
-  ColorGameConfig(predefinedGrid: [
-    GameBox(Offset(-.5, .5), YELLOW_COLOR),
-    GameBox(Offset(.5, -.5), YELLOW_COLOR),
-    GameBox(Offset(1.5, .5), YELLOW_COLOR),
+  ColorGameConfig("tut_1", gridSize: Size(5, 5), predefinedGrid: [
+    GameBox(Offset(-1, 0), YELLOW_COLOR),
+    GameBox(Offset(0, 1), YELLOW_COLOR),
+    GameBox(Offset(1, 0), YELLOW_COLOR),
   ]),
-  ColorGameConfig(predefinedGrid: [
-    GameBox(Offset(-1.5, .5), YELLOW_COLOR),
-    GameBox(Offset(-.5, .5), YELLOW_COLOR),
-    GameBox(Offset(.5, -.5), YELLOW_COLOR),
-    GameBox(Offset(1.5, .5), YELLOW_COLOR),
-    GameBox(Offset(2.5, .5), YELLOW_COLOR),
+  ColorGameConfig("tut_2", gridSize: Size(5, 5), predefinedGrid: [
+    GameBox(Offset(-2, 0), YELLOW_COLOR),
+    GameBox(Offset(-1, 0), YELLOW_COLOR),
+    GameBox(Offset(0, 1), YELLOW_COLOR),
+    GameBox(Offset(1, 0), YELLOW_COLOR),
+    GameBox(Offset(2, 0), YELLOW_COLOR),
   ]),
-  ColorGameConfig(),
+  ColorGameConfig("gamerino"),
 ];
 
 const String ANDROID_BANNER_AD_UNIT_ID =

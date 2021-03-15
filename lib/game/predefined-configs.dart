@@ -15,5 +15,6 @@ ColorGameConfig easyToMakePlus() {
   game.insert(14, GameBox(box.loc, Colors.orange));
   box = game.removeAt(7);
   game.insert(7, GameBox(box.loc, Colors.orange));
-  return ColorGameConfig(gridSize: Size(4, 4), predefinedGrid: game);
+  return ColorGameConfig("plus_master_flex",
+      gridSize: Size(4, 4), predefinedGrid: game);
 }

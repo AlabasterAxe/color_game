@@ -35,7 +35,8 @@ class InvertedRectClipper extends CustomClipper<Path> {
 
 class GameView extends StatefulWidget {
   final ColorGameConfig config;
-  GameView({Key? key, this.config = const ColorGameConfig()}) : super(key: key);
+  GameView({Key? key, this.config = const ColorGameConfig("default")})
+      : super(key: key);
 
   @override
   _GameViewState createState() => _GameViewState();
@@ -150,39 +151,40 @@ class _GameViewState extends State<GameView> {
           widthFactor: .9,
           child: Padding(
             padding: const EdgeInsets.all(4.0),
-            child: GameBoardWidget(
-                key: gameKey,
-                config: widget.config,
-                onGameEvent: (GameEvent e) {
-                  switch (e.type) {
-                    case null:
-                      throw Exception('must not submit null event!');
-                    case GameEventType.RUN:
-                      _handleNewRun(e.metadata);
-                      break;
-                    case GameEventType.SQUARE:
-                      _handleNewSquare(e.metadata);
-                      break;
-                    case GameEventType.NO_MOVES:
-                      analytics.logEvent(AnalyticsEvent.finish_game);
-                      addScore(score).then((_) {
-                        getScores().then((scores) {
-                          setState(() {
-                            gameOver = true;
-                            highScores = [...scores];
-                            highScores
-                                .sort((a, b) => b.score!.compareTo(a.score!));
-                          });
+            child: Hero(
+              tag: widget.config.label,
+              child: GameBoardWidget(widget.config, key: gameKey,
+                  onGameEvent: (GameEvent e) {
+                switch (e.type) {
+                  case null:
+                    throw Exception('must not submit null event!');
+                  case GameEventType.RUN:
+                    _handleNewRun(e.metadata);
+                    break;
+                  case GameEventType.SQUARE:
+                    _handleNewSquare(e.metadata);
+                    break;
+                  case GameEventType.NO_MOVES:
+                    analytics.logEvent(AnalyticsEvent.finish_game);
+                    addScore(score).then((_) {
+                      getScores().then((scores) {
+                        setState(() {
+                          gameOver = true;
+                          highScores = [...scores];
+                          highScores
+                              .sort((a, b) => b.score!.compareTo(a.score!));
                         });
                       });
-                      break;
-                    case GameEventType.LEFT_OVER_BOX:
-                      setState(() {
-                        score = (score * .9).round();
-                      });
-                      break;
-                  }
-                }),
+                    });
+                    break;
+                  case GameEventType.LEFT_OVER_BOX:
+                    setState(() {
+                      score = (score * .9).round();
+                    });
+                    break;
+                }
+              }),
+            ),
           ),
         ),
       ),
@@ -247,7 +249,9 @@ class _GameViewState extends State<GameView> {
                 ElevatedButton(
                     child: Text("Back"),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(
+                        context,
+                      );
                     }),
               ],
             ),

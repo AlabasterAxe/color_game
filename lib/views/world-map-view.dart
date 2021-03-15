@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:color_game/game/game-board.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -17,7 +18,7 @@ class WorldMapItem {
   ColorGameConfig gameConfig;
   Color backgroundColor;
   WorldMapItem({
-    this.gameConfig = const ColorGameConfig(),
+    this.gameConfig = const ColorGameConfig("default"),
     this.backgroundColor = Colors.black,
   });
 }
@@ -104,7 +105,14 @@ class _WorldMapViewState extends State<WorldMapView>
                                         child: Container(
                                             decoration: BoxDecoration(
                                                 borderRadius: cardBorderRadius,
-                                                color: BOARD_BACKGROUND_COLOR)),
+                                                color: BOARD_BACKGROUND_COLOR),
+                                            child: Hero(
+                                                tag: _items[page.floor()]
+                                                    .gameConfig
+                                                    .label,
+                                                child: GameBoardWidget(
+                                                    _items[page.floor()]
+                                                        .gameConfig))),
                                       ),
                                     ),
                                   ),

@@ -1,11 +1,8 @@
-import 'package:color_game/constants.dart';
+import 'package:color_game/main.dart';
 import 'package:color_game/services/analytics-service.dart';
 import 'package:color_game/widgets/cc-button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:color_game/main.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../model.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -44,12 +41,7 @@ class HomeView extends StatelessWidget {
                                   style: Theme.of(context).textTheme.bodyText1),
                             ],
                           ),
-                          onPressed: () {
-                            analyticsService
-                                .logEvent(AnalyticsEvent.start_game);
-                            Navigator.pushNamed(context, "/game",
-                                arguments: ColorGameConfig());
-                          }),
+                          onPressed: () {}),
                       ColorCollapseButton(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -62,8 +54,10 @@ class HomeView extends StatelessWidget {
                           onPressed: () {
                             analyticsService
                                 .logEvent(AnalyticsEvent.start_game);
-                            Navigator.pushNamed(context, "/world_map",
-                                arguments: ColorGameConfig());
+                            Navigator.pushNamed(
+                              context,
+                              "/world_map",
+                            );
                           }),
                     ],
                   ),
