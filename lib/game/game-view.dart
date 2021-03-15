@@ -46,7 +46,7 @@ class GameView extends StatefulWidget {
 class _GameViewState extends State<GameView> {
   int score = 0;
   bool gameOver = false;
-  int? starsReceived;
+  int? earnedStars;
   Tween<int>? scoreTween;
   Key gameKey = UniqueKey();
   List<GameEvent> events = [];
@@ -107,9 +107,10 @@ class _GameViewState extends State<GameView> {
   }
 
   void _doGameOver() {
-    starsReceived = widget.config.starEvaluator(events);
+    earnedStars = widget.config.starEvaluator(events);
     AppContext.of(context).analytics.logEvent(AnalyticsEvent.finish_game);
-    addScore(widget.config.label, score);
+    addScore(
+        levelTag: widget.config.label, score: score, earnedStars: earnedStars!);
     setState(() {
       gameOver = true;
     });
@@ -218,17 +219,17 @@ class _GameViewState extends State<GameView> {
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Image.asset(
-                          "assets/images/${starsReceived != null && starsReceived! > 0 ? "gold_star" : "star"}.png"),
+                          "assets/images/${earnedStars != null && earnedStars! > 0 ? "gold_star" : "star"}.png"),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Image.asset(
-                          "assets/images/${starsReceived != null && starsReceived! > 1 ? "gold_star" : "star"}.png"),
+                          "assets/images/${earnedStars != null && earnedStars! > 1 ? "gold_star" : "star"}.png"),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Image.asset(
-                          "assets/images/${starsReceived != null && starsReceived! > 2 ? "gold_star" : "star"}.png"),
+                          "assets/images/${earnedStars != null && earnedStars! > 2 ? "gold_star" : "star"}.png"),
                     ),
                   ]),
               ElevatedButton(
