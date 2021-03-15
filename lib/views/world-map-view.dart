@@ -115,11 +115,11 @@ class _WorldMapViewState extends State<WorldMapView>
                                                       _items[page.floor()]
                                                           .gameConfig)
                                               .then((ev) {
-                                            if (_shouldAdvancePage(
-                                                ev as GameCompletedEvent?)) {
-                                              Timer(Duration(milliseconds: 400),
-                                                  () {
-                                                _getAttemptHistory();
+                                            Timer(Duration(milliseconds: 400),
+                                                () {
+                                              _getAttemptHistory();
+                                              if (_shouldAdvancePage(
+                                                  ev as GameCompletedEvent?)) {
                                                 Timer(
                                                     Duration(milliseconds: 750),
                                                     () {
@@ -131,8 +131,8 @@ class _WorldMapViewState extends State<WorldMapView>
                                                     curve: Curves.easeInOut,
                                                   );
                                                 });
-                                              });
-                                            }
+                                              }
+                                            });
                                           });
                                         },
                                         child: Stack(
