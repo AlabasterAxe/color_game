@@ -235,7 +235,10 @@ class _GameViewState extends State<GameView> {
               ElevatedButton(
                   child: Text("Back"),
                   onPressed: () {
-                    Navigator.pop(context, GameCompletedEvent(true));
+                    Navigator.pop(
+                        context,
+                        GameCompletedEvent(
+                            earnedStars != null && earnedStars! > 0));
                   }),
             ],
           )));

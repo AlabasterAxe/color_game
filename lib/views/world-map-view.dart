@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:color_game/game/game-board.dart';
 import 'package:color_game/widgets/cc-button.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/widgets.dart';
 
 import '../constants.dart';
 import '../model.dart';
+import '../shared-pref-helper.dart';
 
 class WorldMapView extends StatefulWidget {
   WorldMapView({Key? key}) : super(key: key);
@@ -18,9 +20,11 @@ class WorldMapView extends StatefulWidget {
 class WorldMapItem {
   ColorGameConfig gameConfig;
   Color backgroundColor;
+  int maxStars;
   WorldMapItem({
     required this.gameConfig,
     required this.backgroundColor,
+    required this.maxStars,
   });
 }
 
@@ -38,8 +42,24 @@ class _WorldMapViewState extends State<WorldMapView>
         .map((entry) => WorldMapItem(
               gameConfig: entry.value,
               backgroundColor: COLORS[entry.key % COLORS.length],
+              maxStars: 0,
             ))
         .toList();
+    _getAttemptHistory();
+  }
+
+  void _getAttemptHistory() {
+    for (WorldMapItem item in _items) {
+      getScores(item.gameConfig.label).then((scores) {
+        int newMax = scores.fold(
+            0, (maxStars, score) => max(maxStars, score.earnedStars));
+        if (newMax > item.maxStars) {
+          setState(() {
+            item.maxStars = newMax;
+          });
+        }
+      });
+    }
   }
 
   bool _shouldAdvancePage(GameCompletedEvent? ev) {
@@ -97,14 +117,20 @@ class _WorldMapViewState extends State<WorldMapView>
                                               .then((ev) {
                                             if (_shouldAdvancePage(
                                                 ev as GameCompletedEvent?)) {
-                                              Timer(Duration(seconds: 1), () {
-                                                _pageController.animateToPage(
-                                                  (_pageController.page! + 1)
-                                                      .round(),
-                                                  duration: Duration(
-                                                      milliseconds: 500),
-                                                  curve: Curves.easeInOut,
-                                                );
+                                              Timer(Duration(milliseconds: 250),
+                                                  () {
+                                                _getAttemptHistory();
+                                                Timer(
+                                                    Duration(milliseconds: 750),
+                                                    () {
+                                                  _pageController.animateToPage(
+                                                    (_pageController.page! + 1)
+                                                        .round(),
+                                                    duration: Duration(
+                                                        milliseconds: 500),
+                                                    curve: Curves.easeInOut,
+                                                  );
+                                                });
                                               });
                                             }
                                           });
@@ -138,9 +164,12 @@ class _WorldMapViewState extends State<WorldMapView>
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceAround,
                                       children: [
-                                        Image.asset("assets/images/star.png"),
-                                        Image.asset("assets/images/star.png"),
-                                        Image.asset("assets/images/star.png"),
+                                        Image.asset(
+                                            "assets/images/${_items[page].maxStars > 0 ? "gold_star" : "star"}.png"),
+                                        Image.asset(
+                                            "assets/images/${_items[page].maxStars > 1 ? "gold_star" : "star"}.png"),
+                                        Image.asset(
+                                            "assets/images/${_items[page].maxStars > 2 ? "gold_star" : "star"}.png"),
                                       ])
                                 ])));
                   },

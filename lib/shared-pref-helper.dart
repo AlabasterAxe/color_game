@@ -52,14 +52,23 @@ Future<void> addScore(
   });
 }
 
-Future<List<Score>> getScores() {
+Future<List<Score>> getScores([String? levelTag]) {
   return SharedPreferences.getInstance().then((prefs) {
     List<String>? scores = prefs.getStringList(SCORES_KEY);
     if (scores == null) {
       return [];
     }
 
-    return scores.map((score) => Score.fromJson(json.decode(score))).toList();
+    return scores
+        .map((scoreJson) {
+          Score score = Score.fromJson(json.decode(scoreJson));
+          if (levelTag == null || levelTag == score.levelTag) {
+            return score;
+          }
+          return null;
+        })
+        .where((score) => score != null)
+        .toList() as List<Score>;
   });
 }
 
