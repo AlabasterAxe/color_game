@@ -5,6 +5,13 @@ import 'package:flutter/widgets.dart';
 
 import 'view-transform.dart';
 
+class TimerSpec {
+  final Key key = UniqueKey();
+  final int numberOfSeconds;
+
+  TimerSpec({required this.numberOfSeconds});
+}
+
 class ColorGameConfig {
   // the number of squares on each side of the board
   final Size gridSize;
@@ -12,8 +19,12 @@ class ColorGameConfig {
   final List<GameBox> predefinedGrid;
   final String label;
 
+  final TimerSpec? timerSpec;
+
   const ColorGameConfig(this.label,
-      {this.gridSize = const Size(6, 6), this.predefinedGrid = const []});
+      {this.gridSize = const Size(6, 6),
+      this.predefinedGrid = const [],
+      this.timerSpec});
 }
 
 class GameCompletedEvent {

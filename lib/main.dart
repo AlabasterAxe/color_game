@@ -37,8 +37,8 @@ class AppContext extends InheritedWidget {
     Key? key,
   }) : super(key: key, child: child);
 
-  static AppContext? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<AppContext>();
+  static AppContext of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AppContext>()!;
   }
 
   @override

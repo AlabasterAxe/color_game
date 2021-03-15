@@ -37,11 +37,14 @@ const List<Color> COLORS = [
 ];
 
 List<ColorGameConfig> levels = [
-  ColorGameConfig("tut_1", gridSize: Size(3, 3), predefinedGrid: [
-    GameBox(Offset(-1, 0), YELLOW_COLOR),
-    GameBox(Offset(0, 1), YELLOW_COLOR),
-    GameBox(Offset(1, 0), YELLOW_COLOR),
-  ]),
+  ColorGameConfig("tut_1",
+      gridSize: Size(3, 3),
+      predefinedGrid: [
+        GameBox(Offset(-1, 0), YELLOW_COLOR),
+        GameBox(Offset(0, 1), YELLOW_COLOR),
+        GameBox(Offset(1, 0), YELLOW_COLOR),
+      ],
+      timerSpec: TimerSpec(numberOfSeconds: 20)),
   ColorGameConfig("tut_2", gridSize: Size(5, 5), predefinedGrid: [
     GameBox(Offset(-2, 0), YELLOW_COLOR),
     GameBox(Offset(-1, 0), YELLOW_COLOR),

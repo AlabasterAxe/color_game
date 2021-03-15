@@ -5,6 +5,7 @@ import 'package:color_game/constants.dart';
 import 'package:color_game/services/analytics-service.dart';
 import 'package:color_game/services/audio-service.dart';
 import 'package:color_game/widgets/banner-ad-widget.dart';
+import 'package:color_game/widgets/circular-timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -60,7 +61,7 @@ class _GameViewState extends State<GameView> {
     });
   }
 
-  void _handleNewRun(RunEventMetadata? metadata) {
+  void _handleNewRun(RunEventMetadata metadata) {
     setState(() {
       score += pow(metadata!.runLength, metadata.runStreakLength) *
           metadata.multiples as int;
@@ -80,7 +81,7 @@ class _GameViewState extends State<GameView> {
     });
   }
 
-  void _handleNewSquare(SquareEventMetadata? metadata) {
+  void _handleNewSquare(SquareEventMetadata metadata) {
     AppContext.of(context)
         ?.audioService
         .playSoundEffect(SoundEffectType.LARGE_POOF);
@@ -113,6 +114,57 @@ class _GameViewState extends State<GameView> {
       return "${delta.inSeconds} seconds ago";
     } else {
       return "just now";
+    }
+  }
+
+  Widget _createHud() {
+    Widget? timerWidget;
+    if (widget.config.timerSpec != null) {
+      TimerSpec spec = widget.config.timerSpec!;
+      timerWidget = Container(
+          width: 60,
+          height: 60,
+          child: CircularTimer(
+              key: spec.key,
+              duration: Duration(seconds: spec.numberOfSeconds),
+              onFinished: () {
+                // timer finished event
+              }));
+    }
+    return Hud(
+      score: score,
+      timerWidget: timerWidget,
+    );
+  }
+
+  void _handleGameEvent(GameEvent e) {
+    events.add(e);
+    switch (e.type) {
+      case GameEventType.RUN:
+        _handleNewRun(e.metadata);
+        break;
+      case GameEventType.SQUARE:
+        _handleNewSquare(e.metadata);
+        break;
+      case GameEventType.NO_MOVES:
+        AppContext.of(context).analytics.logEvent(AnalyticsEvent.finish_game);
+        addScore(widget.config.label, score).then((_) {
+          getScores().then((scores) {
+            setState(() {
+              gameOver = true;
+              highScores = [...scores];
+              highScores.sort((a, b) => b.score.compareTo(a.score));
+            });
+          });
+        });
+        break;
+      case GameEventType.LEFT_OVER_BOX:
+        setState(() {
+          score = (score * .9).round();
+        });
+        break;
+      default:
+        break;
     }
   }
 
@@ -152,37 +204,8 @@ class _GameViewState extends State<GameView> {
           widthFactor: .9,
           child: Padding(
             padding: const EdgeInsets.all(4.0),
-            child: GameBoardWidget(widget.config, key: gameKey,
-                onGameEvent: (GameEvent e) {
-              events.add(e);
-              switch (e.type) {
-                case GameEventType.RUN:
-                  _handleNewRun(e.metadata);
-                  break;
-                case GameEventType.SQUARE:
-                  _handleNewSquare(e.metadata);
-                  break;
-                case GameEventType.NO_MOVES:
-                  analytics.logEvent(AnalyticsEvent.finish_game);
-                  addScore(widget.config.label, score).then((_) {
-                    getScores().then((scores) {
-                      setState(() {
-                        gameOver = true;
-                        highScores = [...scores];
-                        highScores.sort((a, b) => b.score.compareTo(a.score));
-                      });
-                    });
-                  });
-                  break;
-                case GameEventType.LEFT_OVER_BOX:
-                  setState(() {
-                    score = (score * .9).round();
-                  });
-                  break;
-                default:
-                  break;
-              }
-            }),
+            child: GameBoardWidget(widget.config,
+                key: gameKey, onGameEvent: _handleGameEvent),
           ),
         ),
       ),
@@ -207,7 +230,7 @@ class _GameViewState extends State<GameView> {
           ),
         ),
       ),
-      Positioned.fill(child: Hud(score: score)),
+      Positioned.fill(child: _createHud()),
     ];
 
     if (gameOver) {
