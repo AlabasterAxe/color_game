@@ -173,7 +173,6 @@ class _GameViewState extends State<GameView> {
     MediaQueryData mediaQueryData = MediaQuery.of(context);
     Size screenSize = mediaQueryData.size;
     double boxSize = (screenSize.shortestSide * .9) / GRID_SIZE;
-    AnalyticsService analytics = AppContext.of(context)!.analytics;
     List<Widget> stackChildren = [
       AspectRatio(
         aspectRatio: 1,
