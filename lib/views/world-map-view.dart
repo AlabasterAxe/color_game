@@ -64,7 +64,7 @@ class _WorldMapViewState extends State<WorldMapView>
               backgroundColor: Color.lerp(_items[prevPage].backgroundColor,
                   _items[nextPage].backgroundColor, pageLerp),
               body: PageView.builder(
-                  itemCount: 3,
+                  itemCount: _items.length,
                   itemBuilder: (context, page) {
                     return FractionallySizedBox(
                         widthFactor: .9,
