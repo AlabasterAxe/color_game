@@ -117,7 +117,7 @@ class _WorldMapViewState extends State<WorldMapView>
                                               .then((ev) {
                                             if (_shouldAdvancePage(
                                                 ev as GameCompletedEvent?)) {
-                                              Timer(Duration(milliseconds: 250),
+                                              Timer(Duration(milliseconds: 400),
                                                   () {
                                                 _getAttemptHistory();
                                                 Timer(
