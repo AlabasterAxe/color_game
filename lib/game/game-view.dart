@@ -258,10 +258,11 @@ class _GameViewState extends State<GameView> {
     return Container(
       color: BOARD_BACKGROUND_COLOR,
       child: SafeArea(
-        child: Stack(children: [
-          Stack(alignment: Alignment.center, children: stackChildren),
-          Positioned(left: 0, right: 0, bottom: 0, child: BannerAdWidget())
-        ]),
+        child:
+            // Stack(children: [
+            Stack(alignment: Alignment.center, children: stackChildren),
+        //   Positioned(left: 0, right: 0, bottom: 0, child: BannerAdWidget())
+        // ]),
       ),
     );
   }
