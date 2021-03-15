@@ -6,9 +6,13 @@ import 'package:flutter/widgets.dart';
 class CircularTimer extends StatefulWidget {
   final Duration duration;
   final Function() onFinished;
+  final bool stop;
 
   const CircularTimer(
-      {required Key key, required this.duration, required this.onFinished})
+      {required Key key,
+      required this.duration,
+      required this.onFinished,
+      this.stop = false})
       : super(key: key);
   @override
   State<StatefulWidget> createState() => CircularTimerState();
@@ -29,6 +33,13 @@ class CircularTimerState extends State<CircularTimer>
     });
 
     controller.forward();
+  }
+
+  @override
+  void didUpdateWidget(CircularTimer previousWidget) {
+    if (widget.stop) {
+      controller.stop();
+    }
   }
 
   @override

@@ -72,6 +72,14 @@ List<ColorGameConfig> levels = [
     GameBox(Offset(2, -2), GREEN_COLOR),
   ]),
   ColorGameConfig("gamerino"),
+  ColorGameConfig("level_9",
+      gridSize: Size(5, 5),
+      predefinedGrid: [
+        GameBox(Offset(0, -1), GREEN_COLOR),
+        GameBox(Offset(1, -2), GREEN_COLOR),
+        GameBox(Offset(2, -2), GREEN_COLOR),
+      ],
+      timerSpec: TimerSpec(numberOfSeconds: 60)),
 ];
 
 const String ANDROID_BANNER_AD_UNIT_ID =
