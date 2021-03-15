@@ -55,7 +55,7 @@ class _GameViewState extends State<GameView> {
     super.initState();
     getScores().then((scores) {
       this.highScores = scores;
-      this.highScores.sort((a, b) => b.score!.compareTo(a.score!));
+      this.highScores.sort((a, b) => b.score.compareTo(a.score));
     });
   }
 
@@ -164,12 +164,12 @@ class _GameViewState extends State<GameView> {
                   break;
                 case GameEventType.NO_MOVES:
                   analytics.logEvent(AnalyticsEvent.finish_game);
-                  addScore(score).then((_) {
+                  addScore(widget.config.label, score).then((_) {
                     getScores().then((scores) {
                       setState(() {
                         gameOver = true;
                         highScores = [...scores];
-                        highScores.sort((a, b) => b.score!.compareTo(a.score!));
+                        highScores.sort((a, b) => b.score.compareTo(a.score));
                       });
                     });
                   });
