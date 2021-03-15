@@ -17,6 +17,7 @@ enum GameEventType {
   NO_MOVES,
   LEFT_OVER_BOX,
   USER_MOVE,
+  TIMER_FINISHED
 }
 
 class RunEventMetadata {

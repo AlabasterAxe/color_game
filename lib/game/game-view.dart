@@ -128,7 +128,7 @@ class _GameViewState extends State<GameView> {
               key: spec.key,
               duration: Duration(seconds: spec.numberOfSeconds),
               onFinished: () {
-                // timer finished event
+                _handleGameEvent(GameEvent(GameEventType.TIMER_FINISHED));
               }));
     }
     return Hud(
