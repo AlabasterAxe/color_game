@@ -7,15 +7,7 @@ import '../constants.dart';
 import '../model.dart';
 
 class WorldMapView extends StatefulWidget {
-  final List<ColorGameConfig> configs;
-  WorldMapView(
-      {Key? key,
-      this.configs = const [
-        ColorGameConfig(),
-        ColorGameConfig(),
-        ColorGameConfig(),
-      ]})
-      : super(key: key);
+  WorldMapView({Key? key}) : super(key: key);
 
   @override
   _WorldMapViewState createState() => _WorldMapViewState();
@@ -38,7 +30,7 @@ class _WorldMapViewState extends State<WorldMapView>
   @override
   void initState() {
     super.initState();
-    _items = widget.configs
+    _items = levels
         .asMap()
         .entries
         .map((entry) => WorldMapItem(

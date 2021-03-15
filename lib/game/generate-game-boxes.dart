@@ -13,9 +13,9 @@ List<GameBox> generateGameBoxes({List<Color>? colors, int size = 6}) {
     for (double y = -halfSize; y <= halfSize; y++) {
       List<Color> availableColors = [...colors!];
       for (int i = result.length - 1; i >= 0; i--) {
-        if (result[i].loc!.dx == x && result[i].loc!.dy == y - 1) {
+        if (result[i].loc.dx == x && result[i].loc.dy == y - 1) {
           availableColors.remove(result[i].color);
-        } else if (result[i].loc!.dy == y && result[i].loc!.dx == x - 1) {
+        } else if (result[i].loc.dy == y && result[i].loc.dx == x - 1) {
           availableColors.remove(result[i].color);
         }
       }

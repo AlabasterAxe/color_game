@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import 'model.dart';
+
 const RELATIVE_GAP_SIZE = 1 / 12;
 const BOX_BORDER_RADIUS = 1 / 8;
 const GRID_SIZE = 6;
@@ -32,6 +34,22 @@ const List<Color> COLORS = [
   // Colors.white,
   // Colors.grey,
   // Colors.black,
+];
+
+List<ColorGameConfig> levels = [
+  ColorGameConfig(predefinedGrid: [
+    GameBox(Offset(-.5, .5), YELLOW_COLOR),
+    GameBox(Offset(.5, -.5), YELLOW_COLOR),
+    GameBox(Offset(1.5, .5), YELLOW_COLOR),
+  ]),
+  ColorGameConfig(predefinedGrid: [
+    GameBox(Offset(-1.5, .5), YELLOW_COLOR),
+    GameBox(Offset(-.5, .5), YELLOW_COLOR),
+    GameBox(Offset(.5, -.5), YELLOW_COLOR),
+    GameBox(Offset(1.5, .5), YELLOW_COLOR),
+    GameBox(Offset(2.5, .5), YELLOW_COLOR),
+  ]),
+  ColorGameConfig(),
 ];
 
 const String ANDROID_BANNER_AD_UNIT_ID =

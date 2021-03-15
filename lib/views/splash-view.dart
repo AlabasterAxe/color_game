@@ -1,9 +1,6 @@
-import 'package:color_game/services/audio-service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
-
-import '../main.dart';
 
 class SplashView extends StatefulWidget {
   SplashView({Key? key}) : super(key: key);

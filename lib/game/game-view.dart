@@ -7,7 +7,6 @@ import 'package:color_game/services/audio-service.dart';
 import 'package:color_game/widgets/banner-ad-widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../main.dart';
 import '../model.dart';
