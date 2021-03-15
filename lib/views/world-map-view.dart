@@ -139,6 +139,7 @@ class _WorldMapViewState extends State<WorldMapView>
                                           alignment: Alignment.center,
                                           children: [
                                             Container(
+                                                clipBehavior: Clip.hardEdge,
                                                 decoration: BoxDecoration(
                                                     borderRadius:
                                                         cardBorderRadius,
