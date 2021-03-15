@@ -42,7 +42,8 @@ Map<RouteId, _RouteConfig> _routeConfiguration = {
             }
             return GameView(
                 config: ColorGameConfig("default",
-                    completionEvaluator: (_) => true, starEvaluator: (_) => 3));
+                    completionEvaluator: (_) => false,
+                    starEvaluator: (_) => 3));
           })),
 };
 

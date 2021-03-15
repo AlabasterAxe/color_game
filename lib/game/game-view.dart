@@ -6,6 +6,7 @@ import 'package:color_game/services/analytics-service.dart';
 import 'package:color_game/services/audio-service.dart';
 import 'package:color_game/widgets/banner-ad-widget.dart';
 import 'package:color_game/widgets/circular-timer.dart';
+import 'package:color_game/widgets/high-scores-dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -45,6 +46,7 @@ class GameView extends StatefulWidget {
 class _GameViewState extends State<GameView> {
   int score = 0;
   bool gameOver = false;
+  int? starsReceived;
   Tween<int>? scoreTween;
   Key gameKey = UniqueKey();
   List<GameEvent> events = [];
@@ -89,33 +91,6 @@ class _GameViewState extends State<GameView> {
     });
   }
 
-  String _getAgoString(DateTime date) {
-    DateTime now = DateTime.now();
-    var delta = Duration(
-        milliseconds: now.millisecondsSinceEpoch - date.millisecondsSinceEpoch);
-    if (delta.inDays > 365) {
-      int numYears = (delta.inDays / 365).round();
-      return "${numYears} ${numYears == 1 ? "year" : "years"} ago";
-    } else if (delta.inDays > 30) {
-      int numMonths = (delta.inDays / 30).round();
-      return "${numMonths} ${numMonths == 1 ? "month" : "months"} ago";
-    } else if (delta.inDays > 7) {
-      int numWeeks = (delta.inDays / 7).round();
-      return "${numWeeks} ${numWeeks == 1 ? "week" : "weeks"} ago";
-    } else if (delta.inDays > 0) {
-      int numDays = delta.inDays;
-      return "${numDays} ${numDays == 1 ? "day" : "days"} ago";
-    } else if (delta.inHours > 0) {
-      return "${delta.inHours} ${delta.inHours == 1 ? "hour" : "hours"} ago";
-    } else if (delta.inMinutes > 0) {
-      return "${delta.inMinutes} ${delta.inMinutes == 1 ? "minute" : "minutes"} ago";
-    } else if (delta.inSeconds > 30) {
-      return "${delta.inSeconds} seconds ago";
-    } else {
-      return "just now";
-    }
-  }
-
   Widget _createHud() {
     Widget? timerWidget;
     if (widget.config.timerSpec != null) {
@@ -137,7 +112,33 @@ class _GameViewState extends State<GameView> {
     );
   }
 
+  void _doGameOver() {
+    starsReceived = widget.config.starEvaluator(events);
+    AppContext.of(context).analytics.logEvent(AnalyticsEvent.finish_game);
+    addScore(widget.config.label, score).then((_) {
+      getScores().then((scores) {
+        setState(() {
+          gameOver = true;
+          highScores = [...scores];
+          highScores.sort((a, b) => b.score.compareTo(a.score));
+          showDialog(
+            context: context,
+            builder: (context) {
+              return HighScoresDialog(highScores: highScores);
+            },
+            barrierDismissible: false,
+          ).then((_) {
+            Navigator.pop(context, GameCompletedEvent(true));
+          });
+        });
+      });
+    });
+  }
+
   void _handleGameEvent(GameEvent e) {
+    if (widget.config.completionEvaluator(events)) {
+      _doGameOver();
+    }
     events.add(e);
     switch (e.type) {
       case GameEventType.RUN:
@@ -147,16 +148,7 @@ class _GameViewState extends State<GameView> {
         _handleNewSquare(e.metadata);
         break;
       case GameEventType.NO_MOVES:
-        AppContext.of(context).analytics.logEvent(AnalyticsEvent.finish_game);
-        addScore(widget.config.label, score).then((_) {
-          getScores().then((scores) {
-            setState(() {
-              gameOver = true;
-              highScores = [...scores];
-              highScores.sort((a, b) => b.score.compareTo(a.score));
-            });
-          });
-        });
+        _doGameOver();
         break;
       case GameEventType.LEFT_OVER_BOX:
         setState(() {
@@ -232,51 +224,6 @@ class _GameViewState extends State<GameView> {
       Positioned.fill(child: _createHud()),
     ];
 
-    if (gameOver) {
-      stackChildren.add(Center(
-          child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: IntrinsicHeight(
-            child: Column(
-              children: [
-                Text(
-                  "Your High Scores",
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headline5,
-                ),
-                SizedBox(height: 20),
-                DataTable(
-                    headingRowHeight: 0,
-                    columns: [
-                      DataColumn(label: Container()),
-                      DataColumn(label: Container())
-                    ],
-                    rows: highScores
-                        .take(5)
-                        .map((score) => DataRow(
-                              cells: [
-                                DataCell(Text("${score.score}",
-                                    style: TextStyle(fontSize: 24))),
-                                DataCell(Text("(${_getAgoString(score.date)})",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey[800],
-                                        fontStyle: FontStyle.italic))),
-                              ],
-                            ))
-                        .toList()),
-                ElevatedButton(
-                    child: Text("Back"),
-                    onPressed: () {
-                      Navigator.pop(context, GameCompletedEvent(true));
-                    }),
-              ],
-            ),
-          ),
-        ),
-      )));
-    }
     return Container(
       color: BOARD_BACKGROUND_COLOR,
       child: SafeArea(

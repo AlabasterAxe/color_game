@@ -1,8 +1,11 @@
 import 'package:color_game/main.dart';
 import 'package:color_game/services/analytics-service.dart';
 import 'package:color_game/widgets/cc-button.dart';
+import 'package:color_game/widgets/high-scores-dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+
+import '../shared-pref-helper.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -41,7 +44,20 @@ class HomeView extends StatelessWidget {
                                   style: Theme.of(context).textTheme.bodyText1),
                             ],
                           ),
-                          onPressed: () {}),
+                          onPressed: () {
+                            getScores().then((highScores) {
+                              highScores
+                                  .sort((a, b) => b.score.compareTo(a.score));
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return HighScoresDialog(
+                                      highScores: highScores);
+                                },
+                                barrierDismissible: false,
+                              );
+                            });
+                          }),
                       ColorCollapseButton(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
