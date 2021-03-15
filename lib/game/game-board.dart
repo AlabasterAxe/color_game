@@ -58,7 +58,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   bool draggingCol = false;
   bool outsideSnap = false;
 
-  List<GameBox>? boxes;
+  List<GameBox> boxes = [];
   List<GameBox> toRemove = [];
 
   @override
@@ -82,7 +82,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   List<GameBox> getColumnMates(GameBox? tappedBox) {
     List<GameBox> result = [];
-    for (GameBox box in boxes!.where((b) => b.color != Colors.transparent)) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if (tappedBox!.loc.dx == box.loc.dx) {
         result.add(box);
       }
@@ -92,7 +92,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   List<GameBox> getRowMates(GameBox? box) {
     List<GameBox> result = [];
-    for (GameBox box in boxes!.where((b) => b.color != Colors.transparent)) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if (tappedBox!.loc.dy == box.loc.dy) {
         result.add(box);
       }
@@ -101,7 +101,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   }
 
   GameBox? getTappedBox(Offset? localTapCoords, ViewTransformation vt) {
-    for (GameBox box in boxes!.where((b) => b.color != Colors.transparent)) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if (box.getRect(vt).contains(localTapCoords!)) {
         return box;
       }
@@ -110,7 +110,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   }
 
   GameBox? getBoxAtPosition(Offset loc) {
-    for (GameBox box in boxes!.where((b) => b.color != Colors.transparent)) {
+    for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if ((box.loc - loc).distanceSquared < .1) {
         return box;
       }
@@ -120,7 +120,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   List<GameBox> _gravitize() {
     Offset gravitationalCenter = Offset(0, 0);
-    List<GameBox> distSortedBoxes = [...boxes!];
+    List<GameBox> distSortedBoxes = [...boxes];
 
     distSortedBoxes.sort((a, b) => (gravitationalCenter - a.loc)
         .distanceSquared
@@ -196,7 +196,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         (widget.config.gridSize.width.round() + 1) % 2 / 2;
     double verticalRoundOffset =
         (widget.config.gridSize.height.round() + 1) % 2 / 2;
-    for (GameBox box in boxes!) {
+    for (GameBox box in boxes) {
       Offset roundedOffset = Offset(
           (box.loc.dx - horizontalRoundOffset).round() + horizontalRoundOffset,
           (box.loc.dy - verticalRoundOffset).round() + verticalRoundOffset);
@@ -207,26 +207,26 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   void _penalizeRemainingBoxes() {
     Timer.periodic(Duration(milliseconds: 1000), (Timer t) {
-      if (boxes!.isEmpty) {
+      if (boxes.isEmpty) {
         widget.onGameEvent!(GameEvent()..type = GameEventType.NO_MOVES);
         t.cancel();
         return;
       }
 
       setState(() {
-        boxes!.remove(boxes!.first);
+        boxes.remove(boxes.first);
         widget.onGameEvent!(GameEvent()..type = GameEventType.LEFT_OVER_BOX);
       });
     });
   }
 
   bool _playerHasValidMoves() {
-    if (boxes!.length < 3) {
+    if (boxes.length < 3) {
       return false;
     }
 
     Map<Color, int> colorMap = Map();
-    for (GameBox box in boxes!) {
+    for (GameBox box in boxes) {
       colorMap.putIfAbsent(box.color, () => 0);
       colorMap[box.color] = colorMap[box.color]! + 1;
       if (colorMap[box.color]! >= 3) {
@@ -271,7 +271,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   Map<double, List<GameBox>> getRows() {
     Map<double, List<GameBox>> result = Map();
-    for (GameBox box in boxes!) {
+    for (GameBox box in boxes) {
       List<GameBox> row = result.putIfAbsent(box.loc.dy, () => []);
       row.add(box);
       row.sort((a, b) => (a.loc.dx - b.loc.dx).ceil());
@@ -282,7 +282,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   Map<double, List<GameBox>> getCols() {
     Map<double, List<GameBox>> result = Map();
-    for (GameBox box in boxes!) {
+    for (GameBox box in boxes) {
       List<GameBox> col = result.putIfAbsent(box.loc.dx, () => []);
       col.add(box);
       col.sort((a, b) => (a.loc.dy - b.loc.dy).ceil());
@@ -321,7 +321,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   List<SquareEventMetadata> _getSquares() {
     List<SquareEventMetadata> squares = [];
-    for (GameBox box in boxes!) {
+    for (GameBox box in boxes) {
       if (box.eligibleForInclusionInSquare) {
         // only eligible if not part of run
         GameBox? r = getBoxAtPosition(box.loc + Offset(1.0, 0));
@@ -353,17 +353,17 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     runs.addAll(_markRuns(getCols().values));
     List<SquareEventMetadata> squares = _getSquares();
     // remove all squares and corresponding colors.
-    toRemove = boxes!
+    toRemove = boxes
         .where((box) => box.runs.isNotEmpty || box.squares.isNotEmpty)
         .toList();
     for (SquareEventMetadata s in squares) {
-      for (GameBox gb in boxes!) {
+      for (GameBox gb in boxes) {
         if (!toRemove.contains(gb) && gb.color == s.color) {
           toRemove.add(gb);
         }
       }
     }
-    boxes!.removeWhere((box) => toRemove.contains(box));
+    boxes.removeWhere((box) => toRemove.contains(box));
     for (RunEventMetadata run in runs) {
       run.multiples = runs.length;
       widget.onGameEvent!(GameEvent()
@@ -424,9 +424,26 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       }));
 
       stackChildren
-          .addAll(boxes!.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
+          .addAll(boxes.map((b) => GameBoxWidget(box: b, vt: vt)).toList());
 
       return GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTapUp: (deets) {
+            GameBox? box = getTappedBox(deets.localPosition, vt);
+            setState(() {
+              if (box == null) {
+                boxes.add(GameBox(vt.backward(deets.localPosition), COLORS[0]));
+                _snapBoxes();
+              } else {
+                int colorIndex = COLORS.indexOf(box.color);
+                if (colorIndex == COLORS.length - 1) {
+                  boxes.remove(box);
+                } else {
+                  box.color = COLORS[colorIndex + 1];
+                }
+              }
+            });
+          },
           onPanStart: (DragStartDetails deets) {
             tapStartLoc = deets.localPosition;
             tapUpdateLoc = deets.localPosition;
