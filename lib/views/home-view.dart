@@ -9,7 +9,7 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AnalyticsService analyticsService = AppContext.of(context)!.analytics;
+    AnalyticsService analyticsService = AppContext.of(context).analytics;
     return Container(
         decoration: BoxDecoration(
             image: DecorationImage(

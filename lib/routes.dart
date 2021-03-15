@@ -40,7 +40,9 @@ Map<RouteId, _RouteConfig> _routeConfiguration = {
             if (settings.arguments != null) {
               return GameView(config: settings.arguments as ColorGameConfig);
             }
-            return GameView();
+            return GameView(
+                config: ColorGameConfig("default",
+                    completionEvaluator: (_) => true, starEvaluator: (_) => 3));
           })),
 };
 

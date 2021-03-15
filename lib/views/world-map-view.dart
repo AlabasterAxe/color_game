@@ -19,8 +19,8 @@ class WorldMapItem {
   ColorGameConfig gameConfig;
   Color backgroundColor;
   WorldMapItem({
-    this.gameConfig = const ColorGameConfig("default"),
-    this.backgroundColor = Colors.black,
+    required this.gameConfig,
+    required this.backgroundColor,
   });
 }
 

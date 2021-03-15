@@ -21,10 +21,17 @@ class ColorGameConfig {
 
   final TimerSpec? timerSpec;
 
-  const ColorGameConfig(this.label,
-      {this.gridSize = const Size(6, 6),
-      this.predefinedGrid = const [],
-      this.timerSpec});
+  final bool Function(List<GameEvent> events) completionEvaluator;
+  final int Function(List<GameEvent> events) starEvaluator;
+
+  const ColorGameConfig(
+    this.label, {
+    this.gridSize = const Size(6, 6),
+    this.predefinedGrid = const [],
+    required this.completionEvaluator,
+    required this.starEvaluator,
+    this.timerSpec,
+  });
 }
 
 class GameCompletedEvent {

@@ -36,8 +36,7 @@ class InvertedRectClipper extends CustomClipper<Path> {
 
 class GameView extends StatefulWidget {
   final ColorGameConfig config;
-  GameView({Key? key, this.config = const ColorGameConfig("default")})
-      : super(key: key);
+  GameView({Key? key, required this.config}) : super(key: key);
 
   @override
   _GameViewState createState() => _GameViewState();
@@ -63,19 +62,19 @@ class _GameViewState extends State<GameView> {
 
   void _handleNewRun(RunEventMetadata metadata) {
     setState(() {
-      score += pow(metadata!.runLength, metadata.runStreakLength) *
+      score += pow(metadata.runLength, metadata.runStreakLength) *
           metadata.multiples as int;
       if (metadata.runStreakLength == 1) {
         AppContext.of(context)
-            ?.audioService
+            .audioService
             .playSoundEffect(SoundEffectType.SMALL_POOF);
       } else if (metadata.runStreakLength == 2) {
         AppContext.of(context)
-            ?.audioService
+            .audioService
             .playSoundEffect(SoundEffectType.MEDIUM_POOF);
       } else if (metadata.runStreakLength >= 3) {
         AppContext.of(context)
-            ?.audioService
+            .audioService
             .playSoundEffect(SoundEffectType.LARGE_POOF);
       }
     });
@@ -83,7 +82,7 @@ class _GameViewState extends State<GameView> {
 
   void _handleNewSquare(SquareEventMetadata metadata) {
     AppContext.of(context)
-        ?.audioService
+        .audioService
         .playSoundEffect(SoundEffectType.LARGE_POOF);
     setState(() {
       score += 25;

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import 'game/game-board.dart';
 import 'model.dart';
 
 const RELATIVE_GAP_SIZE = 1 / 12;
@@ -36,42 +37,67 @@ const List<Color> COLORS = [
   // Colors.black,
 ];
 
+bool Function(List<GameEvent>) noopCompletionEvaluator = (_) => false;
+int Function(List<GameEvent>) dummyStarEvaluator = (_) => 3;
+
 List<ColorGameConfig> levels = [
-  ColorGameConfig("tut_1", gridSize: Size(3, 3), predefinedGrid: [
-    GameBox(Offset(-1, 0), YELLOW_COLOR),
-    GameBox(Offset(0, 1), YELLOW_COLOR),
-    GameBox(Offset(1, 0), YELLOW_COLOR),
-  ]),
-  ColorGameConfig("tut_2", gridSize: Size(5, 5), predefinedGrid: [
-    GameBox(Offset(-2, 0), YELLOW_COLOR),
-    GameBox(Offset(-1, 0), YELLOW_COLOR),
-    GameBox(Offset(0, 1), YELLOW_COLOR),
-    GameBox(Offset(1, 0), YELLOW_COLOR),
-    GameBox(Offset(2, 0), YELLOW_COLOR),
-  ]),
-  ColorGameConfig("tut_3", gridSize: Size(5, 5), predefinedGrid: [
-    GameBox(Offset(-2, 0), YELLOW_COLOR),
-    GameBox(Offset(-1, 0), YELLOW_COLOR),
-    GameBox(Offset(0, 1), YELLOW_COLOR),
-    GameBox(Offset(1, 0), YELLOW_COLOR),
-    GameBox(Offset(2, 0), YELLOW_COLOR),
-    GameBox(Offset(-2, 1), BLUE_COLOR),
-    GameBox(Offset(-1, 1), BLUE_COLOR),
-    GameBox(Offset(0, 2), BLUE_COLOR),
-    GameBox(Offset(1, 1), BLUE_COLOR),
-    GameBox(Offset(2, 1), BLUE_COLOR),
-    GameBox(Offset(-2, -1), RED_COLOR),
-    GameBox(Offset(-1, -1), RED_COLOR),
-    GameBox(Offset(0, 0), RED_COLOR),
-    GameBox(Offset(1, -1), RED_COLOR),
-    GameBox(Offset(2, -1), RED_COLOR),
-    GameBox(Offset(-2, -2), GREEN_COLOR),
-    GameBox(Offset(-1, -2), GREEN_COLOR),
-    GameBox(Offset(0, -1), GREEN_COLOR),
-    GameBox(Offset(1, -2), GREEN_COLOR),
-    GameBox(Offset(2, -2), GREEN_COLOR),
-  ]),
-  ColorGameConfig("gamerino"),
+  ColorGameConfig(
+    "tut_1",
+    gridSize: Size(3, 3),
+    predefinedGrid: [
+      GameBox(Offset(-1, 0), YELLOW_COLOR),
+      GameBox(Offset(0, 1), YELLOW_COLOR),
+      GameBox(Offset(1, 0), YELLOW_COLOR),
+    ],
+    completionEvaluator: noopCompletionEvaluator,
+    starEvaluator: dummyStarEvaluator,
+  ),
+  ColorGameConfig(
+    "tut_2",
+    gridSize: Size(5, 5),
+    predefinedGrid: [
+      GameBox(Offset(-2, 0), YELLOW_COLOR),
+      GameBox(Offset(-1, 0), YELLOW_COLOR),
+      GameBox(Offset(0, 1), YELLOW_COLOR),
+      GameBox(Offset(1, 0), YELLOW_COLOR),
+      GameBox(Offset(2, 0), YELLOW_COLOR),
+    ],
+    completionEvaluator: noopCompletionEvaluator,
+    starEvaluator: dummyStarEvaluator,
+  ),
+  ColorGameConfig(
+    "tut_3",
+    gridSize: Size(5, 5),
+    predefinedGrid: [
+      GameBox(Offset(-2, 0), YELLOW_COLOR),
+      GameBox(Offset(-1, 0), YELLOW_COLOR),
+      GameBox(Offset(0, 1), YELLOW_COLOR),
+      GameBox(Offset(1, 0), YELLOW_COLOR),
+      GameBox(Offset(2, 0), YELLOW_COLOR),
+      GameBox(Offset(-2, 1), BLUE_COLOR),
+      GameBox(Offset(-1, 1), BLUE_COLOR),
+      GameBox(Offset(0, 2), BLUE_COLOR),
+      GameBox(Offset(1, 1), BLUE_COLOR),
+      GameBox(Offset(2, 1), BLUE_COLOR),
+      GameBox(Offset(-2, -1), RED_COLOR),
+      GameBox(Offset(-1, -1), RED_COLOR),
+      GameBox(Offset(0, 0), RED_COLOR),
+      GameBox(Offset(1, -1), RED_COLOR),
+      GameBox(Offset(2, -1), RED_COLOR),
+      GameBox(Offset(-2, -2), GREEN_COLOR),
+      GameBox(Offset(-1, -2), GREEN_COLOR),
+      GameBox(Offset(0, -1), GREEN_COLOR),
+      GameBox(Offset(1, -2), GREEN_COLOR),
+      GameBox(Offset(2, -2), GREEN_COLOR),
+    ],
+    completionEvaluator: noopCompletionEvaluator,
+    starEvaluator: dummyStarEvaluator,
+  ),
+  ColorGameConfig(
+    "gamerino",
+    completionEvaluator: noopCompletionEvaluator,
+    starEvaluator: dummyStarEvaluator,
+  ),
 ];
 
 const String ANDROID_BANNER_AD_UNIT_ID =
