@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Flutter Bug Repro",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main_bug_repro.dart",
+      "args": ["--no-sound-null-safety"]
+    },
+    {
       "name": "Flutter",
       "type": "dart",
       "request": "launch",
