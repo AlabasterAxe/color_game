@@ -126,6 +126,7 @@ class _GameViewState extends State<GameView> {
           child: CircularTimer(
               key: spec.key,
               duration: Duration(seconds: spec.numberOfSeconds),
+              stop: gameOver,
               onFinished: () {
                 _handleGameEvent(GameEvent(GameEventType.TIMER_FINISHED));
               }));
