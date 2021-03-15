@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:color_game/game/game-board.dart';
+import 'package:color_game/widgets/cc-button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -39,6 +40,13 @@ class _WorldMapViewState extends State<WorldMapView>
               backgroundColor: COLORS[entry.key % COLORS.length],
             ))
         .toList();
+  }
+
+  bool _shouldAdvancePage(GameCompletedEvent? ev) {
+    return (ev != null &&
+        ev.successful &&
+        _pageController.page != null &&
+        _pageController.page! < _items.length - 1);
   }
 
   @override
@@ -86,10 +94,9 @@ class _WorldMapViewState extends State<WorldMapView>
                                                   arguments:
                                                       _items[page.floor()]
                                                           .gameConfig)
-                                              .then((_) {
-                                            if (_pageController.page != null &&
-                                                _pageController.page! <
-                                                    _items.length - 1) {
+                                              .then((ev) {
+                                            if (_shouldAdvancePage(
+                                                ev as GameCompletedEvent?)) {
                                               Timer(Duration(seconds: 1), () {
                                                 _pageController.animateToPage(
                                                   (_pageController.page! + 1)
@@ -102,17 +109,27 @@ class _WorldMapViewState extends State<WorldMapView>
                                             }
                                           });
                                         },
-                                        child: Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius: cardBorderRadius,
-                                                color: BOARD_BACKGROUND_COLOR),
-                                            child: Hero(
-                                                tag: _items[page.floor()]
-                                                    .gameConfig
-                                                    .label,
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        cardBorderRadius,
+                                                    color:
+                                                        BOARD_BACKGROUND_COLOR),
                                                 child: GameBoardWidget(
                                                     _items[page.floor()]
-                                                        .gameConfig))),
+                                                        .gameConfig)),
+                                            Opacity(
+                                              opacity: .7,
+                                              child: ColorCollapseButton(
+                                                child: Image.asset(
+                                                    "assets/images/play_button.png"),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),

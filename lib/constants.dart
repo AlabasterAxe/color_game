@@ -37,7 +37,7 @@ const List<Color> COLORS = [
 ];
 
 List<ColorGameConfig> levels = [
-  ColorGameConfig("tut_1", gridSize: Size(5, 5), predefinedGrid: [
+  ColorGameConfig("tut_1", gridSize: Size(3, 3), predefinedGrid: [
     GameBox(Offset(-1, 0), YELLOW_COLOR),
     GameBox(Offset(0, 1), YELLOW_COLOR),
     GameBox(Offset(1, 0), YELLOW_COLOR),
