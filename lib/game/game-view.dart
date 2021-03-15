@@ -117,10 +117,10 @@ class _GameViewState extends State<GameView> {
   }
 
   void _handleGameEvent(GameEvent e) {
+    events.add(e);
     if (widget.config.completionEvaluator(events)) {
       _doGameOver();
     }
-    events.add(e);
     switch (e.type) {
       case GameEventType.RUN:
         _handleNewRun(e.metadata);

@@ -39,6 +39,8 @@ const List<Color> COLORS = [
 
 bool Function(List<GameEvent>) noopCompletionEvaluator = (_) => false;
 int Function(List<GameEvent>) dummyStarEvaluator = (_) => 2;
+bool Function(List<GameEvent>) timeFinishedEvaluator = (events) =>
+    events.any((element) => element.type == GameEventType.TIMER_FINISHED);
 
 List<ColorGameConfig> levels = [
   ColorGameConfig(
@@ -105,8 +107,11 @@ List<ColorGameConfig> levels = [
         GameBox(Offset(1, -2), GREEN_COLOR),
         GameBox(Offset(2, -2), GREEN_COLOR),
       ],
-      completionEvaluator: noopCompletionEvaluator,
-      starEvaluator: dummyStarEvaluator,
+      completionEvaluator: timeFinishedEvaluator,
+      starEvaluator: (List<GameEvent> events) =>
+          events.any((element) => element.type == GameEventType.TIMER_FINISHED)
+              ? 0
+              : 3,
       timerSpec: TimerSpec(numberOfSeconds: 60))
 ];
 
