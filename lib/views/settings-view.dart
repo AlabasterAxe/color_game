@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:settings_ui/settings_ui.dart';
 
+import '../shared-pref-helper.dart';
+
 class SettingsView extends StatelessWidget {
   const SettingsView({Key? key}) : super(key: key);
 
@@ -15,11 +17,13 @@ class SettingsView extends StatelessWidget {
           title: 'Progress',
           tiles: [
             SettingsTile(
-              // Single Setting item
-              title: 'Reset Progress',
-              subtitle: 'That progress was no good anyway...',
-              leading: Icon(Icons.replay),
-            ),
+                // Single Setting item
+                title: 'Reset Progress',
+                subtitle: 'That progress was no good anyway...',
+                leading: Icon(Icons.replay),
+                onPressed: (_) {
+                  clearSharedPrefs();
+                }),
           ],
         ),
       ],

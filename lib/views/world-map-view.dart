@@ -124,39 +124,48 @@ class _WorldMapViewState extends State<WorldMapView>
                                     child: AspectRatio(
                                       aspectRatio: 1,
                                       child: GestureDetector(
-                                        onTap: () {
-                                          Navigator.pushNamed(context, "/game",
-                                                  arguments:
-                                                      _items[page.floor()]
-                                                          .gameConfig)
-                                              .then((ev) {
-                                            int nextPage =
-                                                (_pageController.page! + 1)
-                                                    .round();
-                                            shouldAdvancePage =
-                                                _shouldAdvancePage(
-                                                    ev as GameCompletedEvent?);
-                                            Timer(Duration(milliseconds: 400),
-                                                () {
-                                              _getAttemptHistory();
-                                              if (shouldAdvancePage) {
-                                                Timer(
-                                                    Duration(milliseconds: 750),
-                                                    () {
-                                                  if (shouldAdvancePage) {
-                                                    _pageController
-                                                        .animateToPage(
-                                                      nextPage,
-                                                      duration: Duration(
-                                                          milliseconds: 500),
-                                                      curve: Curves.easeInOut,
-                                                    );
-                                                  }
+                                        onTap: page == (_numVisibleItems - 1)
+                                            ? null
+                                            : () {
+                                                Navigator.pushNamed(
+                                                        context, "/game",
+                                                        arguments:
+                                                            _items[page.floor()]
+                                                                .gameConfig)
+                                                    .then((ev) {
+                                                  int nextPage =
+                                                      (_pageController.page! +
+                                                              1)
+                                                          .round();
+                                                  shouldAdvancePage =
+                                                      _shouldAdvancePage(ev
+                                                          as GameCompletedEvent?);
+                                                  Timer(
+                                                      Duration(
+                                                          milliseconds: 400),
+                                                      () {
+                                                    _getAttemptHistory();
+                                                    if (shouldAdvancePage) {
+                                                      Timer(
+                                                          Duration(
+                                                              milliseconds:
+                                                                  750), () {
+                                                        if (shouldAdvancePage) {
+                                                          _pageController
+                                                              .animateToPage(
+                                                            nextPage,
+                                                            duration: Duration(
+                                                                milliseconds:
+                                                                    500),
+                                                            curve: Curves
+                                                                .easeInOut,
+                                                          );
+                                                        }
+                                                      });
+                                                    }
+                                                  });
                                                 });
-                                              }
-                                            });
-                                          });
-                                        },
+                                              },
                                         child: Stack(
                                           alignment: Alignment.center,
                                           children: [
@@ -176,8 +185,13 @@ class _WorldMapViewState extends State<WorldMapView>
                                             Opacity(
                                               opacity: .7,
                                               child: ColorCollapseButton(
-                                                child: Image.asset(
-                                                    "assets/images/play_button.png"),
+                                                child: Icon(
+                                                  page == (_numVisibleItems - 1)
+                                                      ? Icons.lock
+                                                      : Icons.play_arrow,
+                                                  color: BOARD_BACKGROUND_COLOR,
+                                                  size: 72,
+                                                ),
                                               ),
                                             ),
                                           ],
