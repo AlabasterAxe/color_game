@@ -69,6 +69,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   List<GameBox>? slidingRow;
   List<GameBox>? slidingColumn;
   Timer? boardUpdateTimer;
+  Timer? boxAddingTimer;
   bool _settled = true;
   int runStreakLength = 1;
   bool sentNoMovesEvent = false;
@@ -89,12 +90,23 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       boxes = generateGameBoxes(
           colors: COLORS, size: widget.config.gridSize.width.round());
     }
+    if (widget.config.boxAddingSpec?.behavior == BoxAddingBehavior.PER_TIME) {
+      boxAddingTimer =
+          Timer.periodic(widget.config.boxAddingSpec!.boxAddingPeriod!, (_) {
+        setState(() {
+          _addBoxRandomlyOnBoard();
+        });
+      });
+    }
   }
 
   @override
   void dispose() {
     if (boardUpdateTimer != null) {
       boardUpdateTimer!.cancel();
+    }
+    if (boxAddingTimer != null) {
+      boxAddingTimer!.cancel();
     }
     super.dispose();
   }
@@ -282,6 +294,31 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         runStreakLength = 1;
       }
     });
+  }
+
+  bool _addBoxRandomlyOnBoard() {
+    Set<Offset> possibleLocations = Set();
+
+    double halfWidth = (widget.config.gridSize.width - 1) / 2.0;
+    double halfHeight = (widget.config.gridSize.height - 1) / 2.0;
+    for (double x = -halfWidth; x <= halfWidth; x++) {
+      for (double y = -halfHeight; y <= halfHeight; y++) {
+        possibleLocations.add(Offset(x, y));
+      }
+
+      for (GameBox box in boxes) {
+        possibleLocations.remove(box.loc);
+      }
+    }
+
+    if (possibleLocations.isEmpty) {
+      return false;
+    } else {
+      Offset newBoxLoc = possibleLocations
+          .toList()[Random().nextInt(possibleLocations.length)];
+      boxes.add(GameBox(newBoxLoc, COLORS[Random().nextInt(COLORS.length)]));
+      return true;
+    }
   }
 
   void _updateBoardTillSettled() {
@@ -521,10 +558,17 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                     box.startLoc = translatedOffset;
                     box.userDragged = false;
                   }
+                  _snapBoxes();
                   if (gameWorldDragDistance.abs() > .5) {
                     widget.onGameEvent(GameEvent(GameEventType.USER_MOVE));
+                    if (widget.config.boxAddingSpec?.behavior ==
+                        BoxAddingBehavior.PER_MOVE) {
+                      setState(() {
+                        _addBoxRandomlyOnBoard();
+                        _addBoxRandomlyOnBoard();
+                      });
+                    }
                   }
-                  _snapBoxes();
                 });
               } else {
                 double gameWorldDragDistance = delta.dx / boxSize.width;
@@ -537,10 +581,16 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                     box.startLoc = translatedOffset;
                     box.userDragged = false;
                   }
+                  _snapBoxes();
                   if (gameWorldDragDistance.abs() > .5) {
                     widget.onGameEvent(GameEvent(GameEventType.USER_MOVE));
+                    if (widget.config.boxAddingSpec?.behavior ==
+                        BoxAddingBehavior.PER_MOVE) {
+                      setState(() {
+                        _addBoxRandomlyOnBoard();
+                      });
+                    }
                   }
-                  _snapBoxes();
                 });
               }
             }

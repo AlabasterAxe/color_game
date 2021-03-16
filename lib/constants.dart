@@ -84,6 +84,15 @@ StarEvaluator moveStarEvaluator({int? threeStar, int? twoStar, int? oneStar}) {
   };
 }
 
+ColorGameConfig gravitizePerMoveLevel = ColorGameConfig(
+  "level_16",
+  gridSize: Size(6, 6),
+  // predefinedGrid: generateGameBoxes(colors: COLORS, size: 4),
+  completionEvaluator: noopCompletionEvaluator,
+  starEvaluator: pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100),
+  gravitizeAfterEveryMove: true,
+);
+
 List<ColorGameConfig> levels = [
   ColorGameConfig(
     "tut_1",
@@ -222,15 +231,23 @@ List<ColorGameConfig> levels = [
     moveLimit: 30,
     starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 15, oneStar: 30),
   ),
-  ColorGameConfig(
-    "level_16",
-    gridSize: Size(6, 6),
-    // predefinedGrid: generateGameBoxes(colors: COLORS, size: 4),
-    completionEvaluator: noopCompletionEvaluator,
-    starEvaluator:
-        pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100),
-    gravitizeAfterEveryMove: true,
-  ),
+  ColorGameConfig("level_11",
+      gridSize: Size(7, 7),
+      predefinedGrid: generateGameBoxes(colors: COLORS, size: 5),
+      completionEvaluator: noopCompletionEvaluator,
+      starEvaluator:
+          pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100),
+      boxAddingSpec: BoxAddingSpec(
+          behavior: BoxAddingBehavior.PER_MOVE, addBoxEveryNMoves: 1)),
+  ColorGameConfig("level_12",
+      gridSize: Size(7, 7),
+      predefinedGrid: generateGameBoxes(colors: COLORS, size: 5),
+      completionEvaluator: noopCompletionEvaluator,
+      starEvaluator:
+          pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100),
+      boxAddingSpec: BoxAddingSpec(
+          behavior: BoxAddingBehavior.PER_TIME,
+          boxAddingPeriod: Duration(seconds: 1)))
 ];
 
 const String ANDROID_BANNER_AD_UNIT_ID =

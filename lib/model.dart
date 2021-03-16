@@ -19,6 +19,19 @@ enum GameMode {
   TIME_ATTACK,
 }
 
+enum BoxAddingBehavior {
+  PER_MOVE,
+  PER_TIME,
+}
+
+class BoxAddingSpec {
+  BoxAddingBehavior behavior;
+  Duration? boxAddingPeriod;
+  int? addBoxEveryNMoves;
+  BoxAddingSpec(
+      {required this.behavior, this.boxAddingPeriod, this.addBoxEveryNMoves});
+}
+
 class ColorGameConfig {
   // the number of squares on each side of the board
   final Size gridSize;
@@ -36,6 +49,8 @@ class ColorGameConfig {
 
   final GameMode mode;
 
+  final BoxAddingSpec? boxAddingSpec;
+
   const ColorGameConfig(
     this.label, {
     this.gridSize = const Size(6, 6),
@@ -46,6 +61,7 @@ class ColorGameConfig {
     this.gravitizeAfterEveryMove = false,
     this.moveLimit,
     this.mode = GameMode.POINT_GOAL,
+    this.boxAddingSpec,
   });
 }
 

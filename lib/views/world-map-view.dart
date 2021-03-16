@@ -50,30 +50,34 @@ class _WorldMapViewState extends State<WorldMapView>
               maxStars: 0,
             ))
         .toList();
-    _getAttemptHistory();
+    _getAttemptHistory().then((_) {
+      int targetPage = _numVisibleItems - 2;
+      _pageController.jumpToPage(max(0, targetPage - 4));
+      _pageController.animateToPage(targetPage,
+          duration: Duration(milliseconds: 750), curve: Curves.easeInOut);
+    });
     _pageController.addListener(() {
       shouldAdvancePage = false;
     });
   }
 
-  void _getAttemptHistory() {
+  Future<void> _getAttemptHistory() async {
     int newVisibleItems = 2;
     for (WorldMapItem item in _items) {
-      getScores(item.gameConfig.label).then((scores) {
-        int newMax = scores.fold(
-            0, (maxStars, score) => max(maxStars, score.earnedStars));
-        if (newMax > item.maxStars) {
-          setState(() {
-            item.maxStars = newMax;
-          });
-        }
-        if (newMax > 0) {
-          newVisibleItems += 1;
-          setState(() {
-            _numVisibleItems = newVisibleItems;
-          });
-        }
-      });
+      List<Score> scores = await getScores(item.gameConfig.label);
+      int newMax =
+          scores.fold(0, (maxStars, score) => max(maxStars, score.earnedStars));
+      if (newMax > item.maxStars) {
+        setState(() {
+          item.maxStars = newMax;
+        });
+      }
+      if (newMax > 0) {
+        newVisibleItems += 1;
+        setState(() {
+          _numVisibleItems = newVisibleItems;
+        });
+      }
     }
   }
 
