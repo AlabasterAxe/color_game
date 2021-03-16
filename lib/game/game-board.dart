@@ -266,6 +266,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       if (featuresExist) {
         _settled = false;
         runStreakLength += 1;
+      } else if (widget.config.gravitizeAfterEveryMove) {
+        _settled = false;
       }
       List<GameBox> affectedBoxes = [];
       if (!_settled) {
@@ -273,7 +275,9 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         _snapBoxes();
       }
       if (!featuresExist && affectedBoxes.isEmpty) {
-        t!.cancel();
+        if (t != null) {
+          t.cancel();
+        }
         _settled = true;
         runStreakLength = 1;
       }
@@ -516,10 +520,9 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                     box.loc = translatedOffset;
                     box.startLoc = translatedOffset;
                     box.userDragged = false;
-
-                    if (gameWorldDragDistance.abs() > .5) {
-                      widget.onGameEvent(GameEvent(GameEventType.USER_MOVE));
-                    }
+                  }
+                  if (gameWorldDragDistance.abs() > .5) {
+                    widget.onGameEvent(GameEvent(GameEventType.USER_MOVE));
                   }
                   _snapBoxes();
                 });
@@ -533,10 +536,9 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                     box.loc = translatedOffset;
                     box.startLoc = translatedOffset;
                     box.userDragged = false;
-
-                    if (gameWorldDragDistance.abs() > .5) {
-                      widget.onGameEvent(GameEvent(GameEventType.USER_MOVE));
-                    }
+                  }
+                  if (gameWorldDragDistance.abs() > .5) {
+                    widget.onGameEvent(GameEvent(GameEventType.USER_MOVE));
                   }
                   _snapBoxes();
                 });
@@ -559,6 +561,11 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                     alignment: Alignment.center,
                     children: stackChildren),
               ),
+              // ElevatedButton(
+              //     child: Text("Step"),
+              //     onPressed: () {
+              //       _updateBoard(null);
+              //     }),
             ],
           ));
     });

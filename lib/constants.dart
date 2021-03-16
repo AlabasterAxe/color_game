@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'game/game-board.dart';
+import 'game/generate-game-boxes.dart';
 import 'game/score-utils.dart';
 import 'model.dart';
 
@@ -54,6 +55,21 @@ StarEvaluator pointStarEvaluator({int? threeStar, int? twoStar, int? oneStar}) {
     } else if (twoStar != null && score > twoStar) {
       return 2;
     } else if (oneStar != null && score > oneStar) {
+      return 1;
+    }
+    return 0;
+  };
+}
+
+StarEvaluator moveStarEvaluator({int? threeStar, int? twoStar, int? oneStar}) {
+  return (List<GameEvent> events) {
+    int numMoves =
+        events.where((event) => event.type == GameEventType.USER_MOVE).length;
+    if (threeStar != null && numMoves < threeStar) {
+      return 3;
+    } else if (twoStar != null && numMoves < twoStar) {
+      return 2;
+    } else if (oneStar != null && numMoves < oneStar) {
       return 1;
     }
     return 0;
@@ -115,26 +131,6 @@ List<ColorGameConfig> levels = [
   ),
   ColorGameConfig(
     "tut_4",
-    gridSize: Size(5, 5),
-    predefinedGrid: [
-      GameBox(Offset(-3, 0), BLUE_COLOR),
-      GameBox(Offset(-2, 0), GREEN_COLOR),
-      GameBox(Offset(-1, 0), RED_COLOR),
-      GameBox(Offset(0, 0), YELLOW_COLOR),
-      GameBox(Offset(-3, 1), BLUE_COLOR),
-      GameBox(Offset(-2, 1), GREEN_COLOR),
-      GameBox(Offset(-1, 1), RED_COLOR),
-      GameBox(Offset(0, 1), YELLOW_COLOR),
-      GameBox(Offset(1, -1), YELLOW_COLOR),
-      GameBox(Offset(2, -1), RED_COLOR),
-      GameBox(Offset(3, -1), GREEN_COLOR),
-      GameBox(Offset(4, -1), BLUE_COLOR),
-    ],
-    completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: pointStarEvaluator(threeStar: 119),
-  ),
-  ColorGameConfig(
-    "tut_5",
     gridSize: Size(6, 6),
     predefinedGrid: [
       GameBox(Offset(-2.5, -2.5), RED_COLOR),
@@ -150,10 +146,46 @@ List<ColorGameConfig> levels = [
     starEvaluator: pointStarEvaluator(threeStar: 24),
   ),
   ColorGameConfig(
+    "tut_5",
+    gridSize: Size(6, 6),
+    predefinedGrid: [
+      GameBox(Offset(-3.5, -3.5), BLUE_COLOR),
+      GameBox(Offset(3.5, 3.5), BLUE_COLOR),
+      GameBox(Offset(-3.5, 3.5), BLUE_COLOR),
+      GameBox(Offset(3.5, -3.5), BLUE_COLOR),
+      GameBox(Offset(-2.5, -2.5), YELLOW_COLOR),
+      GameBox(Offset(2.5, 2.5), YELLOW_COLOR),
+      GameBox(Offset(-2.5, 2.5), YELLOW_COLOR),
+      GameBox(Offset(2.5, -2.5), YELLOW_COLOR),
+      GameBox(Offset(-1.5, -1.5), GREEN_COLOR),
+      GameBox(Offset(1.5, 1.5), GREEN_COLOR),
+      GameBox(Offset(-1.5, 1.5), GREEN_COLOR),
+      GameBox(Offset(1.5, -1.5), GREEN_COLOR),
+      GameBox(Offset(-1.5, -.5), RED_COLOR),
+      GameBox(Offset(-.5, .5), RED_COLOR),
+      GameBox(Offset(.5, .5), RED_COLOR),
+      GameBox(Offset(-.5, -.5), RED_COLOR),
+    ],
+    completionEvaluator: noopCompletionEvaluator,
+    starEvaluator: pointStarEvaluator(threeStar: 24),
+  ),
+  ColorGameConfig(
     "level_6",
     completionEvaluator: noopCompletionEvaluator,
     starEvaluator:
         pointStarEvaluator(threeStar: 200, twoStar: 100, oneStar: 50),
+  ),
+  ColorGameConfig(
+    "level_7",
+    gridSize: Size(6, 6),
+    predefinedGrid: [
+      GameBox(Offset(-1.5, -1.5), GREEN_COLOR),
+      GameBox(Offset(1.5, 1.5), GREEN_COLOR),
+      GameBox(Offset(-1.5, 1.5), GREEN_COLOR),
+      GameBox(Offset(1.5, -1.5), GREEN_COLOR),
+    ],
+    completionEvaluator: noopCompletionEvaluator,
+    starEvaluator: moveStarEvaluator(threeStar: 10, twoStar: 15, oneStar: 30),
   ),
   ColorGameConfig("level_9",
       gridSize: Size(5, 5),
@@ -167,7 +199,16 @@ List<ColorGameConfig> levels = [
           events.any((element) => element.type == GameEventType.TIMER_FINISHED)
               ? 0
               : 3,
-      timerSpec: TimerSpec(numberOfSeconds: 60))
+      timerSpec: TimerSpec(numberOfSeconds: 60)),
+  ColorGameConfig(
+    "level_16",
+    gridSize: Size(6, 6),
+    // predefinedGrid: generateGameBoxes(colors: COLORS, size: 4),
+    completionEvaluator: timeFinishedEvaluator,
+    starEvaluator:
+        pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100),
+    gravitizeAfterEveryMove: true,
+  ),
 ];
 
 const String ANDROID_BANNER_AD_UNIT_ID =

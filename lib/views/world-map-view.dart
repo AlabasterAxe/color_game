@@ -32,6 +32,7 @@ class _WorldMapViewState extends State<WorldMapView>
     with SingleTickerProviderStateMixin {
   PageController _pageController = PageController(viewportFraction: .8);
   late List<WorldMapItem> _items;
+  bool shouldAdvancePage = false;
 
   @override
   void initState() {
@@ -46,6 +47,9 @@ class _WorldMapViewState extends State<WorldMapView>
             ))
         .toList();
     _getAttemptHistory();
+    _pageController.addListener(() {
+      shouldAdvancePage = false;
+    });
   }
 
   void _getAttemptHistory() {
@@ -115,21 +119,28 @@ class _WorldMapViewState extends State<WorldMapView>
                                                       _items[page.floor()]
                                                           .gameConfig)
                                               .then((ev) {
+                                            int nextPage =
+                                                (_pageController.page! + 1)
+                                                    .round();
+                                            shouldAdvancePage =
+                                                _shouldAdvancePage(
+                                                    ev as GameCompletedEvent?);
                                             Timer(Duration(milliseconds: 400),
                                                 () {
                                               _getAttemptHistory();
-                                              if (_shouldAdvancePage(
-                                                  ev as GameCompletedEvent?)) {
+                                              if (shouldAdvancePage) {
                                                 Timer(
                                                     Duration(milliseconds: 750),
                                                     () {
-                                                  _pageController.animateToPage(
-                                                    (_pageController.page! + 1)
-                                                        .round(),
-                                                    duration: Duration(
-                                                        milliseconds: 500),
-                                                    curve: Curves.easeInOut,
-                                                  );
+                                                  if (shouldAdvancePage) {
+                                                    _pageController
+                                                        .animateToPage(
+                                                      nextPage,
+                                                      duration: Duration(
+                                                          milliseconds: 500),
+                                                      curve: Curves.easeInOut,
+                                                    );
+                                                  }
                                                 });
                                               }
                                             });

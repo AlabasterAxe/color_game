@@ -24,6 +24,8 @@ class ColorGameConfig {
   final bool Function(List<GameEvent> events) completionEvaluator;
   final int Function(List<GameEvent> events) starEvaluator;
 
+  final bool gravitizeAfterEveryMove;
+
   const ColorGameConfig(
     this.label, {
     this.gridSize = const Size(6, 6),
@@ -31,6 +33,7 @@ class ColorGameConfig {
     required this.completionEvaluator,
     required this.starEvaluator,
     this.timerSpec,
+    this.gravitizeAfterEveryMove = false,
   });
 }
 
