@@ -156,10 +156,12 @@ class _WorldMapViewState extends State<WorldMapView>
                                                         cardBorderRadius,
                                                     color:
                                                         BOARD_BACKGROUND_COLOR),
-                                                child: GameBoardWidget(
-                                                    _items[page.floor()]
-                                                        .gameConfig,
-                                                    onGameEvent: (_) {})),
+                                                child: IgnorePointer(
+                                                  child: GameBoardWidget(
+                                                      _items[page.floor()]
+                                                          .gameConfig,
+                                                      onGameEvent: (_) {}),
+                                                )),
                                             Opacity(
                                               opacity: .7,
                                               child: ColorCollapseButton(

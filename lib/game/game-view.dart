@@ -43,6 +43,7 @@ class GameView extends StatefulWidget {
 
 class _GameViewState extends State<GameView> {
   int score = 0;
+  int? movesLeft;
   bool gameOver = false;
   int? earnedStars;
   Tween<int>? scoreTween;
@@ -52,6 +53,7 @@ class _GameViewState extends State<GameView> {
   @override
   void initState() {
     super.initState();
+    movesLeft = widget.config.moveLimit;
   }
 
   void _handleNewRun(RunEventMetadata metadata) {
@@ -99,7 +101,7 @@ class _GameViewState extends State<GameView> {
               }));
     }
     return Hud(
-      score: score,
+      score: movesLeft ?? score,
       timerWidget: timerWidget,
     );
   }
@@ -133,6 +135,13 @@ class _GameViewState extends State<GameView> {
         setState(() {
           score = (score * .9).round();
         });
+        break;
+      case GameEventType.USER_MOVE:
+        if (movesLeft != null) {
+          setState(() {
+            movesLeft = movesLeft! - 1;
+          });
+        }
         break;
       default:
         break;

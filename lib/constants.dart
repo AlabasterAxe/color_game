@@ -61,15 +61,23 @@ StarEvaluator pointStarEvaluator({int? threeStar, int? twoStar, int? oneStar}) {
   };
 }
 
+CompletionEvaluator moveCompletionEvaluator(int moveLimit) {
+  return (List<GameEvent> events) {
+    int numMoves =
+        events.where((event) => event.type == GameEventType.USER_MOVE).length;
+    return numMoves > moveLimit;
+  };
+}
+
 StarEvaluator moveStarEvaluator({int? threeStar, int? twoStar, int? oneStar}) {
   return (List<GameEvent> events) {
     int numMoves =
         events.where((event) => event.type == GameEventType.USER_MOVE).length;
-    if (threeStar != null && numMoves < threeStar) {
+    if (threeStar != null && numMoves <= threeStar) {
       return 3;
-    } else if (twoStar != null && numMoves < twoStar) {
+    } else if (twoStar != null && numMoves <= twoStar) {
       return 2;
-    } else if (oneStar != null && numMoves < oneStar) {
+    } else if (oneStar != null && numMoves <= oneStar) {
       return 1;
     }
     return 0;
@@ -184,8 +192,9 @@ List<ColorGameConfig> levels = [
       GameBox(Offset(-1.5, 1.5), GREEN_COLOR),
       GameBox(Offset(1.5, -1.5), GREEN_COLOR),
     ],
-    completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: moveStarEvaluator(threeStar: 10, twoStar: 15, oneStar: 30),
+    completionEvaluator: moveCompletionEvaluator(30),
+    moveLimit: 30,
+    starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 15, oneStar: 30),
   ),
   ColorGameConfig("level_9",
       gridSize: Size(5, 5),
@@ -201,10 +210,23 @@ List<ColorGameConfig> levels = [
               : 3,
       timerSpec: TimerSpec(numberOfSeconds: 60)),
   ColorGameConfig(
+    "level_10",
+    gridSize: Size(6, 6),
+    predefinedGrid: [
+      GameBox(Offset(-2.5, -2.5), RED_COLOR),
+      GameBox(Offset(2.5, 2.5), RED_COLOR),
+      GameBox(Offset(-2.5, 2.5), RED_COLOR),
+      GameBox(Offset(2.5, -2.5), RED_COLOR),
+    ],
+    completionEvaluator: moveCompletionEvaluator(30),
+    moveLimit: 30,
+    starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 15, oneStar: 30),
+  ),
+  ColorGameConfig(
     "level_16",
     gridSize: Size(6, 6),
     // predefinedGrid: generateGameBoxes(colors: COLORS, size: 4),
-    completionEvaluator: timeFinishedEvaluator,
+    completionEvaluator: noopCompletionEvaluator,
     starEvaluator:
         pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100),
     gravitizeAfterEveryMove: true,

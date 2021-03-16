@@ -20,6 +20,7 @@ class ColorGameConfig {
   final String label;
 
   final TimerSpec? timerSpec;
+  final int? moveLimit;
 
   final bool Function(List<GameEvent> events) completionEvaluator;
   final int Function(List<GameEvent> events) starEvaluator;
@@ -34,6 +35,7 @@ class ColorGameConfig {
     required this.starEvaluator,
     this.timerSpec,
     this.gravitizeAfterEveryMove = false,
+    this.moveLimit,
   });
 }
 
