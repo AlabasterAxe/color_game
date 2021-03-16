@@ -12,6 +12,13 @@ class TimerSpec {
   TimerSpec({required this.numberOfSeconds});
 }
 
+enum GameMode {
+  MOVE_LIMIT,
+  POINT_GOAL,
+  TIME_LIMIT,
+  TIME_ATTACK,
+}
+
 class ColorGameConfig {
   // the number of squares on each side of the board
   final Size gridSize;
@@ -27,6 +34,8 @@ class ColorGameConfig {
 
   final bool gravitizeAfterEveryMove;
 
+  final GameMode mode;
+
   const ColorGameConfig(
     this.label, {
     this.gridSize = const Size(6, 6),
@@ -36,6 +45,7 @@ class ColorGameConfig {
     this.timerSpec,
     this.gravitizeAfterEveryMove = false,
     this.moveLimit,
+    this.mode = GameMode.POINT_GOAL,
   });
 }
 
