@@ -32,6 +32,10 @@ class _WorldMapViewState extends State<WorldMapView>
     with SingleTickerProviderStateMixin {
   PageController _pageController = PageController(viewportFraction: .8);
   late List<WorldMapItem> _items;
+  int _numVisibleItems = 2;
+
+  // this control whether we jump to the next page after the user completes a
+  // level
   bool shouldAdvancePage = false;
 
   @override
@@ -53,6 +57,7 @@ class _WorldMapViewState extends State<WorldMapView>
   }
 
   void _getAttemptHistory() {
+    int newVisibleItems = 2;
     for (WorldMapItem item in _items) {
       getScores(item.gameConfig.label).then((scores) {
         int newMax = scores.fold(
@@ -60,6 +65,12 @@ class _WorldMapViewState extends State<WorldMapView>
         if (newMax > item.maxStars) {
           setState(() {
             item.maxStars = newMax;
+          });
+        }
+        if (newMax > 0) {
+          newVisibleItems += 1;
+          setState(() {
+            _numVisibleItems = newVisibleItems;
           });
         }
       });
@@ -88,7 +99,7 @@ class _WorldMapViewState extends State<WorldMapView>
               backgroundColor: Color.lerp(_items[prevPage].backgroundColor,
                   _items[nextPage].backgroundColor, pageLerp),
               body: PageView.builder(
-                  itemCount: _items.length,
+                  itemCount: min(_numVisibleItems, _items.length),
                   itemBuilder: (context, page) {
                     return FractionallySizedBox(
                         widthFactor: .9,

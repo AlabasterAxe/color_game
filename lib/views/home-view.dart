@@ -1,3 +1,4 @@
+import 'package:color_game/constants.dart';
 import 'package:color_game/main.dart';
 import 'package:color_game/services/analytics-service.dart';
 import 'package:color_game/widgets/cc-button.dart';
@@ -23,7 +24,28 @@ class HomeView extends StatelessWidget {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Expanded(child: Container()),
+                Expanded(
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      ColorCollapseButton(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.settings,
+                                color: BOARD_BACKGROUND_COLOR,
+                                size: 48,
+                              ),
+                              // Text("Settings",
+                              //     style: Theme.of(context).textTheme.bodyText1),
+                            ],
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(context, "/settings");
+                          }),
+                    ])),
                 Expanded(
                   child: Center(
                     child: Text("Color Collapse",

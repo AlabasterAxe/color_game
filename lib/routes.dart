@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 import 'game/game-view.dart';
 import 'views/home-view.dart';
+import 'views/settings-view.dart';
 import 'views/splash-view.dart';
 import 'views/world-map-view.dart';
 
@@ -11,6 +12,7 @@ enum RouteId {
   homeView,
   splashView,
   gameView,
+  settingsView,
   worldMapView,
 }
 
@@ -45,6 +47,8 @@ Map<RouteId, _RouteConfig> _routeConfiguration = {
                     completionEvaluator: (_) => false,
                     starEvaluator: (_) => 3));
           })),
+  RouteId.settingsView: _RouteConfig(
+      name: '/settings', routeBuilder: (_) => _staticRoute(SettingsView())),
 };
 
 extension RouteIdUtils on RouteId? {
