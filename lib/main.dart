@@ -1,4 +1,7 @@
+// @dart=2.9
+
 import 'package:color_game/services/analytics-service.dart';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -34,11 +37,11 @@ class AppContext extends InheritedWidget {
     this.child,
     this.audioService,
     this.analytics, {
-    Key? key,
+    Key key,
   }) : super(key: key, child: child);
 
   static AppContext of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<AppContext>()!;
+    return context.dependOnInheritedWidgetOfExactType<AppContext>();
   }
 
   @override
@@ -48,7 +51,7 @@ class AppContext extends InheritedWidget {
 }
 
 class AppContextState extends StatefulWidget {
-  AppContextState({Key? key}) : super(key: key);
+  AppContextState({Key key}) : super(key: key);
 
   @override
   _AppContextStateState createState() => _AppContextStateState();
