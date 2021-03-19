@@ -80,6 +80,8 @@ class GameCompletedEvent {
 enum GameBoxAttribute {
   UNGRABBABLE,
   IMMOVABLE,
+  UNFEATURED,
+  UNGRAVITIZABLE,
 }
 
 class GameBox {

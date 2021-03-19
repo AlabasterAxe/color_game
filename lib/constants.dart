@@ -263,6 +263,16 @@ List<ColorGameConfig> levels = [
       )),
   immovable(),
   undraggable(),
+  ColorGameConfig(
+    "blocked",
+    gridSize: Size(6, 6),
+    predefinedGrid: [
+      ...generateGameBoxes(colors: COLORS, size: 6),
+      ...getImmovableBorder()
+    ],
+    completionEvaluator: noopCompletionEvaluator,
+    starEvaluator: pointStarEvaluator(threeStar: 24),
+  ),
 ];
 
 const String ANDROID_BANNER_AD_UNIT_ID =

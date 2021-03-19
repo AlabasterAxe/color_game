@@ -245,7 +245,10 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   List<GameBox> _gravitize() {
     Offset gravitationalCenter = Offset(0, 0);
-    List<GameBox> distSortedBoxes = [...boxes];
+    List<GameBox> distSortedBoxes = [
+      ...boxes
+          .where((b) => !b.attributes.contains(GameBoxAttribute.UNGRAVITIZABLE))
+    ];
 
     distSortedBoxes.sort((a, b) => (gravitationalCenter - a.loc)
         .distanceSquared
@@ -335,21 +338,35 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       boxAddingTimer!.cancel();
     }
     Timer.periodic(Duration(milliseconds: 1000), (Timer t) {
-      if (boxes.isEmpty) {
+      if (boxes
+          .where((b) => !b.attributes.contains(GameBoxAttribute.UNFEATURED))
+          .isEmpty) {
         widget.onGameEvent(GameEvent(GameEventType.NO_MOVES));
         t.cancel();
         return;
       }
 
       setState(() {
-        boxes.remove(boxes.first);
+        boxes.remove(boxes
+            .where((b) => !b.attributes.contains(GameBoxAttribute.UNFEATURED))
+            .first);
         widget.onGameEvent(GameEvent(GameEventType.LEFT_OVER_BOX));
       });
     });
   }
 
   bool _playerHasValidMoves() {
-    if (boxes.length < 3) {
+    if (boxes
+                .where(
+                    (b) => !b.attributes.contains(GameBoxAttribute.UNFEATURED))
+                .length <
+            3 ||
+        boxes
+                .where((b) =>
+                    !b.attributes.contains(GameBoxAttribute.UNGRABBABLE) &&
+                    !b.attributes.contains(GameBoxAttribute.IMMOVABLE))
+                .length <
+            1) {
       return false;
     }
 
@@ -457,6 +474,9 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     List<RunEventMetadata> runs = [];
     for (List<GameBox> boxes in allBoxes) {
       for (int i = 0; i < boxes.length; i++) {
+        if (boxes[i].attributes.contains(GameBoxAttribute.UNFEATURED)) {
+          continue;
+        }
         List<GameBox> run = [boxes[i]];
         for (int k = (i + 1); k < boxes.length; k++) {
           if (boxes[k].color == run.last.color &&
@@ -482,7 +502,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   List<SquareEventMetadata> _getSquares() {
     List<SquareEventMetadata> squares = [];
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes
+        .where((b) => !b.attributes.contains(GameBoxAttribute.UNFEATURED))) {
       if (box.eligibleForInclusionInSquare) {
         // only eligible if not part of run
         GameBox? r = getBoxAtPosition(box.loc + Offset(1.0, 0));
