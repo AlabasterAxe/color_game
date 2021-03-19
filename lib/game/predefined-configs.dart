@@ -71,3 +71,51 @@ ColorGameConfig immovable() {
     starEvaluator: (_) => 3,
   );
 }
+
+ColorGameConfig undraggable() {
+  List<GameBox> game = [
+    GameBox(
+      Offset(-1.5, -1.5),
+      Colors.grey,
+      attributes: [GameBoxAttribute.UNGRABBABLE],
+    ),
+    GameBox(
+      Offset(1.5, 1.5),
+      Colors.grey,
+      attributes: [GameBoxAttribute.UNGRABBABLE],
+    ),
+    GameBox(
+      Offset(-1.5, 1.5),
+      Colors.grey,
+      attributes: [GameBoxAttribute.UNGRABBABLE],
+    ),
+    GameBox(
+      Offset(1.5, -1.5),
+      Colors.grey,
+      attributes: [GameBoxAttribute.UNGRABBABLE],
+    ),
+    GameBox(
+      Offset(-2.5, -2.5),
+      Colors.purple,
+    ),
+    GameBox(
+      Offset(2.5, 2.5),
+      Colors.purple,
+    ),
+    GameBox(
+      Offset(-2.5, 2.5),
+      Colors.purple,
+    ),
+    GameBox(
+      Offset(2.5, -2.5),
+      Colors.purple,
+    ),
+  ];
+  return ColorGameConfig(
+    "immovable_boxes",
+    gridSize: Size(6, 6),
+    predefinedGrid: game,
+    completionEvaluator: (_) => false,
+    starEvaluator: (_) => 3,
+  );
+}

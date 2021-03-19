@@ -65,12 +65,23 @@ class GameBoardWidget extends StatefulWidget {
   _GameBoardWidgetState createState() => _GameBoardWidgetState();
 }
 
+class DragMateSpec {
+  List<GameBox> mates;
+  double? limitStart;
+  double? limitEnd;
+  DragMateSpec({
+    required this.mates,
+    this.limitStart,
+    this.limitEnd,
+  });
+}
+
 class _GameBoardWidgetState extends State<GameBoardWidget> {
   Offset? tapStartLoc;
   Offset? tapUpdateLoc;
   GameBox? tappedBox;
-  List<GameBox>? slidingRow;
-  List<GameBox>? slidingColumn;
+  DragMateSpec? slidingRow;
+  DragMateSpec? slidingColumn;
   Timer? boardUpdateTimer;
   Timer? boxAddingTimer;
   bool _settled = true;
@@ -122,7 +133,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     super.dispose();
   }
 
-  List<GameBox> getColumnMates(GameBox? tappedBox) {
+  DragMateSpec getColumnMates(GameBox? tappedBox) {
     List<GameBox> result = [];
     for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if (tappedBox!.loc.dx == box.loc.dx) {
@@ -132,6 +143,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     result.sort((a, b) => (a.loc.dy - b.loc.dy).ceil());
     List<GameBox> draggableChunk = [];
     bool chunkContainedTappedBox = false;
+    GameBox? priorImmovable;
     for (GameBox box in result) {
       if (box == tappedBox) {
         chunkContainedTappedBox = true;
@@ -139,18 +151,26 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
       if (box.attributes.contains(GameBoxAttribute.IMMOVABLE)) {
         if (chunkContainedTappedBox) {
-          return draggableChunk;
+          return DragMateSpec(
+            mates: draggableChunk,
+            limitStart:
+                priorImmovable == null ? null : priorImmovable.loc.dy + 1,
+            limitEnd: box.loc.dy - 1,
+          );
         } else {
+          priorImmovable = box;
           draggableChunk = [];
         }
       } else {
         draggableChunk.add(box);
       }
     }
-    return draggableChunk;
+    return DragMateSpec(
+        mates: draggableChunk,
+        limitStart: priorImmovable == null ? null : priorImmovable.loc.dy + 1);
   }
 
-  List<GameBox> getRowMates(GameBox? box) {
+  DragMateSpec getRowMates(GameBox? box) {
     List<GameBox> result = [];
     for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if (tappedBox!.loc.dy == box.loc.dy) {
@@ -160,6 +180,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     result.sort((a, b) => (a.loc.dx - b.loc.dx).ceil());
     List<GameBox> draggableChunk = [];
     bool chunkContainedTappedBox = false;
+    GameBox? priorImmovable;
     for (GameBox box in result) {
       if (box == tappedBox) {
         chunkContainedTappedBox = true;
@@ -167,15 +188,23 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
       if (box.attributes.contains(GameBoxAttribute.IMMOVABLE)) {
         if (chunkContainedTappedBox) {
-          return draggableChunk;
+          return DragMateSpec(
+            mates: draggableChunk,
+            limitStart:
+                priorImmovable == null ? null : priorImmovable.loc.dx + 1,
+            limitEnd: box.loc.dx - 1,
+          );
         } else {
+          priorImmovable = box;
           draggableChunk = [];
         }
       } else {
         draggableChunk.add(box);
       }
     }
-    return draggableChunk;
+    return DragMateSpec(
+        mates: draggableChunk,
+        limitStart: priorImmovable == null ? null : priorImmovable.loc.dx + 1);
   }
 
   GameBox? getTappedBox(Offset? localTapCoords, ViewTransformation vt) {
@@ -521,6 +550,32 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     }
   }
 
+  double _applyColumnDragLimits(DragMateSpec drag, double worldDragAmount) {
+    double columnStartLoc = drag.mates[0].startLoc.dy;
+    double columnEndLoc = drag.mates[drag.mates.length - 1].startLoc.dy;
+    if (drag.limitStart != null &&
+        columnStartLoc + worldDragAmount < drag.limitStart!) {
+      return drag.limitStart! - columnStartLoc;
+    } else if (drag.limitEnd != null &&
+        columnEndLoc + worldDragAmount > drag.limitEnd!) {
+      return drag.limitEnd! - columnEndLoc;
+    }
+    return worldDragAmount;
+  }
+
+  double _applyRowDragLimits(DragMateSpec drag, double worldDragAmount) {
+    double columnStartLoc = drag.mates[0].startLoc.dx;
+    double columnEndLoc = drag.mates[drag.mates.length - 1].startLoc.dx;
+    if (drag.limitStart != null &&
+        columnStartLoc + worldDragAmount < drag.limitStart!) {
+      return drag.limitStart! - columnStartLoc;
+    } else if (drag.limitEnd != null &&
+        columnEndLoc + worldDragAmount > drag.limitEnd!) {
+      return drag.limitEnd! - columnEndLoc;
+    }
+    return worldDragAmount;
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -607,11 +662,21 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
             }
             setState(() {
               if (draggingCol) {
-                _updateSlidingCollection(slidingColumn!,
-                    Offset(0, dragDelta.dy / boxSize.height), slidingRow!);
+                _updateSlidingCollection(
+                    slidingColumn!.mates,
+                    Offset(
+                        0,
+                        _applyColumnDragLimits(
+                            slidingColumn!, dragDelta.dy / boxSize.height)),
+                    slidingRow!.mates);
               } else {
-                _updateSlidingCollection(slidingRow!,
-                    Offset(dragDelta.dx / boxSize.width, 0), slidingColumn!);
+                _updateSlidingCollection(
+                    slidingRow!.mates,
+                    Offset(
+                        _applyRowDragLimits(
+                            slidingRow!, dragDelta.dx / boxSize.width),
+                        0),
+                    slidingColumn!.mates);
               }
             });
           },
@@ -620,9 +685,11 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
               Offset delta = tapUpdateLoc! - tapStartLoc!;
               Rect boxSize = tappedBox!.getRect(vt);
               if (draggingCol) {
-                double gameWorldDragDistance = delta.dy / boxSize.height;
+                double gameWorldDragDistance = _applyColumnDragLimits(
+                    slidingColumn!, delta.dy / boxSize.height);
+
                 setState(() {
-                  for (GameBox box in slidingColumn!) {
+                  for (GameBox box in slidingColumn!.mates) {
                     Offset translatedOffset =
                         box.startLoc.translate(0, gameWorldDragDistance);
 
@@ -643,9 +710,10 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                   }
                 });
               } else {
-                double gameWorldDragDistance = delta.dx / boxSize.width;
+                double gameWorldDragDistance =
+                    _applyRowDragLimits(slidingRow!, delta.dx / boxSize.width);
                 setState(() {
-                  for (GameBox box in slidingRow!) {
+                  for (GameBox box in slidingRow!.mates) {
                     Offset translatedOffset =
                         box.startLoc.translate(gameWorldDragDistance, 0);
 

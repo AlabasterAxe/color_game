@@ -262,6 +262,7 @@ List<ColorGameConfig> levels = [
         boxAddingAcceleration: .00001,
       )),
   immovable(),
+  undraggable(),
 ];
 
 const String ANDROID_BANNER_AD_UNIT_ID =
