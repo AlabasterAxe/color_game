@@ -129,7 +129,25 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         result.add(box);
       }
     }
-    return result;
+    result.sort((a, b) => (a.loc.dy - b.loc.dy).ceil());
+    List<GameBox> draggableChunk = [];
+    bool chunkContainedTappedBox = false;
+    for (GameBox box in result) {
+      if (box == tappedBox) {
+        chunkContainedTappedBox = true;
+      }
+
+      if (box.attributes.contains(GameBoxAttribute.IMMOVABLE)) {
+        if (chunkContainedTappedBox) {
+          return draggableChunk;
+        } else {
+          draggableChunk = [];
+        }
+      } else {
+        draggableChunk.add(box);
+      }
+    }
+    return draggableChunk;
   }
 
   List<GameBox> getRowMates(GameBox? box) {
@@ -139,12 +157,31 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
         result.add(box);
       }
     }
-    return result;
+    result.sort((a, b) => (a.loc.dx - b.loc.dx).ceil());
+    List<GameBox> draggableChunk = [];
+    bool chunkContainedTappedBox = false;
+    for (GameBox box in result) {
+      if (box == tappedBox) {
+        chunkContainedTappedBox = true;
+      }
+
+      if (box.attributes.contains(GameBoxAttribute.IMMOVABLE)) {
+        if (chunkContainedTappedBox) {
+          return draggableChunk;
+        } else {
+          draggableChunk = [];
+        }
+      } else {
+        draggableChunk.add(box);
+      }
+    }
+    return draggableChunk;
   }
 
   GameBox? getTappedBox(Offset? localTapCoords, ViewTransformation vt) {
     for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
       if (box.getRect(vt).contains(localTapCoords!) &&
+          !box.attributes.contains(GameBoxAttribute.UNGRABBABLE) &&
           !box.attributes.contains(GameBoxAttribute.IMMOVABLE)) {
         return box;
       }

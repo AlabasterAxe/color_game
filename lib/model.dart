@@ -78,6 +78,7 @@ class GameCompletedEvent {
 }
 
 enum GameBoxAttribute {
+  UNGRABBABLE,
   IMMOVABLE,
 }
 

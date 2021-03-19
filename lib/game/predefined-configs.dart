@@ -28,23 +28,39 @@ ColorGameConfig immovable() {
   List<GameBox> game = [
     GameBox(
       Offset(-1.5, -1.5),
-      Colors.grey,
+      Colors.black,
       attributes: [GameBoxAttribute.IMMOVABLE],
     ),
     GameBox(
       Offset(1.5, 1.5),
-      Colors.grey,
+      Colors.black,
       attributes: [GameBoxAttribute.IMMOVABLE],
     ),
     GameBox(
       Offset(-1.5, 1.5),
-      Colors.grey,
+      Colors.black,
       attributes: [GameBoxAttribute.IMMOVABLE],
     ),
     GameBox(
       Offset(1.5, -1.5),
-      Colors.grey,
+      Colors.black,
       attributes: [GameBoxAttribute.IMMOVABLE],
+    ),
+    GameBox(
+      Offset(-2.5, -2.5),
+      Colors.purple,
+    ),
+    GameBox(
+      Offset(2.5, 2.5),
+      Colors.purple,
+    ),
+    GameBox(
+      Offset(-2.5, 2.5),
+      Colors.purple,
+    ),
+    GameBox(
+      Offset(2.5, -2.5),
+      Colors.purple,
     ),
   ];
   return ColorGameConfig(
