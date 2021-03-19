@@ -17,7 +17,8 @@ enum GameEventType {
   NO_MOVES,
   LEFT_OVER_BOX,
   USER_MOVE,
-  TIMER_FINISHED
+  TIMER_FINISHED,
+  BOARD_FULL,
 }
 
 class RunEventMetadata {
@@ -237,6 +238,9 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   }
 
   void _penalizeRemainingBoxes() {
+    if (boxAddingTimer != null) {
+      boxAddingTimer!.cancel();
+    }
     Timer.periodic(Duration(milliseconds: 1000), (Timer t) {
       if (boxes.isEmpty) {
         widget.onGameEvent(GameEvent(GameEventType.NO_MOVES));
