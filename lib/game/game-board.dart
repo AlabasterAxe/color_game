@@ -21,6 +21,8 @@ enum GameEventType {
   BOARD_FULL,
 }
 
+const double MAX_BOX_ADDING_RATE = .004;
+
 class RunEventMetadata {
   late int runLength;
   Color? color;
@@ -74,6 +76,14 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   bool _settled = true;
   int runStreakLength = 1;
   bool sentNoMovesEvent = false;
+  int lastBoxAddedTimeMS = 0;
+  double boxAddingRate = 0;
+
+  // presently it's only possible to send one board full event
+  // the logic here is that, either board full ends the game and it's not
+  // possible for the user to do anything else, or, it doesn't end the game
+  // end the outer game doesn't care anyway
+  bool sentBoardFullEvent = false;
 
   // if they're not dragging col, they're dragging row;
   bool draggingCol = false;
@@ -92,12 +102,12 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           colors: COLORS, size: widget.config.gridSize.width.round());
     }
     if (widget.config.boxAddingSpec?.behavior == BoxAddingBehavior.PER_TIME) {
-      boxAddingTimer =
-          Timer.periodic(widget.config.boxAddingSpec!.boxAddingPeriod!, (_) {
-        setState(() {
-          _addBoxRandomlyOnBoard();
-        });
-      });
+      boxAddingRate =
+          1 / widget.config.boxAddingSpec!.boxAddingPeriod!.inMilliseconds;
+      lastBoxAddedTimeMS = DateTime.now().millisecondsSinceEpoch;
+      boxAddingTimer = Timer(
+          Duration(milliseconds: (1 / boxAddingRate).round()),
+          _doPeriodicBoxAdd);
     }
   }
 
@@ -134,7 +144,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   GameBox? getTappedBox(Offset? localTapCoords, ViewTransformation vt) {
     for (GameBox box in boxes.where((b) => b.color != Colors.transparent)) {
-      if (box.getRect(vt).contains(localTapCoords!)) {
+      if (box.getRect(vt).contains(localTapCoords!) &&
+          !box.attributes.contains(GameBoxAttribute.IMMOVABLE)) {
         return box;
       }
     }
@@ -148,6 +159,22 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
       }
     }
     return null;
+  }
+
+  void _doPeriodicBoxAdd() {
+    setState(() {
+      _addBoxRandomlyOnBoard();
+    });
+    int currentTime = DateTime.now().millisecondsSinceEpoch;
+    int timeDelta = currentTime - lastBoxAddedTimeMS;
+    lastBoxAddedTimeMS = currentTime;
+    boxAddingRate = min(
+        MAX_BOX_ADDING_RATE,
+        boxAddingRate +
+            (timeDelta / 1000) *
+                widget.config.boxAddingSpec!.boxAddingAcceleration);
+    boxAddingTimer = Timer(
+        Duration(milliseconds: (1 / boxAddingRate).round()), _doPeriodicBoxAdd);
   }
 
   List<GameBox> _gravitize() {
@@ -316,6 +343,10 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     }
 
     if (possibleLocations.isEmpty) {
+      if (!sentBoardFullEvent) {
+        widget.onGameEvent(GameEvent(GameEventType.BOARD_FULL));
+        sentBoardFullEvent = true;
+      }
       return false;
     } else {
       Offset newBoxLoc = possibleLocations
@@ -591,6 +622,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
                     if (widget.config.boxAddingSpec?.behavior ==
                         BoxAddingBehavior.PER_MOVE) {
                       setState(() {
+                        _addBoxRandomlyOnBoard();
                         _addBoxRandomlyOnBoard();
                       });
                     }

@@ -27,9 +27,16 @@ enum BoxAddingBehavior {
 class BoxAddingSpec {
   BoxAddingBehavior behavior;
   Duration? boxAddingPeriod;
+
+  // expressed in boxes per second per second
+  double boxAddingAcceleration;
   int? addBoxEveryNMoves;
-  BoxAddingSpec(
-      {required this.behavior, this.boxAddingPeriod, this.addBoxEveryNMoves});
+  BoxAddingSpec({
+    required this.behavior,
+    this.boxAddingPeriod,
+    this.addBoxEveryNMoves,
+    this.boxAddingAcceleration = 0,
+  });
 }
 
 class ColorGameConfig {
@@ -70,6 +77,10 @@ class GameCompletedEvent {
   GameCompletedEvent(this.successful);
 }
 
+enum GameBoxAttribute {
+  IMMOVABLE,
+}
+
 class GameBox {
   // this is the box's drawn location
   Offset loc;
@@ -77,6 +88,7 @@ class GameBox {
   // this stores the original location of the box during a drag
   Offset startLoc;
   Color color;
+  List<GameBoxAttribute> attributes;
 
   bool userDragged = false;
   bool collapsing = false;
@@ -85,7 +97,7 @@ class GameBox {
   List<RunEventMetadata> runs = [];
   List<SquareEventMetadata> squares = [];
 
-  GameBox(this.loc, this.color) : startLoc = loc;
+  GameBox(this.loc, this.color, {this.attributes = const []}) : startLoc = loc;
 
   Rect getRect(ViewTransformation vt) {
     return vt.rectForward(Rect.fromCenter(center: loc, width: 1, height: 1));
@@ -98,5 +110,5 @@ class GameBox {
 
   bool get eligibleForInclusionInSquare => runs.isEmpty && squares.isEmpty;
 
-  GameBox clone() => GameBox(loc, color);
+  GameBox clone() => GameBox(loc, color, attributes: attributes);
 }

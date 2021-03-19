@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'game/game-board.dart';
 import 'game/generate-game-boxes.dart';
+import 'game/predefined-configs.dart';
 import 'game/score-utils.dart';
 import 'model.dart';
 
@@ -46,6 +47,9 @@ CompletionEvaluator noopCompletionEvaluator = (_) => false;
 StarEvaluator dummyStarEvaluator = (_) => 2;
 CompletionEvaluator timeFinishedEvaluator = (events) =>
     events.any((element) => element.type == GameEventType.TIMER_FINISHED);
+
+CompletionEvaluator boardFullFinishedEvaluator = (events) =>
+    events.any((element) => element.type == GameEventType.BOARD_FULL);
 
 StarEvaluator pointStarEvaluator({int? threeStar, int? twoStar, int? oneStar}) {
   return (List<GameEvent> events) {
@@ -205,19 +209,21 @@ List<ColorGameConfig> levels = [
     moveLimit: 30,
     starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 15, oneStar: 30),
   ),
-  ColorGameConfig("level_9",
-      gridSize: Size(5, 5),
-      predefinedGrid: [
-        GameBox(Offset(0, -1), GREEN_COLOR),
-        GameBox(Offset(1, -2), GREEN_COLOR),
-        GameBox(Offset(2, -2), GREEN_COLOR),
-      ],
-      completionEvaluator: timeFinishedEvaluator,
-      starEvaluator: (List<GameEvent> events) =>
-          events.any((element) => element.type == GameEventType.TIMER_FINISHED)
-              ? 0
-              : 3,
-      timerSpec: TimerSpec(numberOfSeconds: 60)),
+  ColorGameConfig(
+    "level_9",
+    gridSize: Size(5, 5),
+    predefinedGrid: [
+      GameBox(Offset(0, -1), GREEN_COLOR),
+      GameBox(Offset(1, -2), GREEN_COLOR),
+      GameBox(Offset(2, -2), GREEN_COLOR),
+    ],
+    completionEvaluator: timeFinishedEvaluator,
+    starEvaluator: (List<GameEvent> events) =>
+        events.any((element) => element.type == GameEventType.TIMER_FINISHED)
+            ? 0
+            : 3,
+    timerSpec: TimerSpec(numberOfSeconds: 60),
+  ),
   ColorGameConfig(
     "level_10",
     gridSize: Size(6, 6),
@@ -231,23 +237,31 @@ List<ColorGameConfig> levels = [
     moveLimit: 30,
     starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 15, oneStar: 30),
   ),
-  ColorGameConfig("level_11",
-      gridSize: Size(7, 7),
-      predefinedGrid: generateGameBoxes(colors: COLORS, size: 5),
-      completionEvaluator: noopCompletionEvaluator,
-      starEvaluator:
-          pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100),
-      boxAddingSpec: BoxAddingSpec(
-          behavior: BoxAddingBehavior.PER_MOVE, addBoxEveryNMoves: 1)),
+  ColorGameConfig(
+    "level_11",
+    gridSize: Size(7, 7),
+    predefinedGrid: generateGameBoxes(colors: COLORS, size: 5),
+    completionEvaluator: timeFinishedEvaluator,
+    starEvaluator: (List<GameEvent> events) => events
+            .any((element) => element.type == GameEventType.NO_MOVES)
+        ? pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100)(events)
+        : 0,
+    boxAddingSpec: BoxAddingSpec(
+        behavior: BoxAddingBehavior.PER_MOVE, addBoxEveryNMoves: 1),
+    timerSpec: TimerSpec(numberOfSeconds: 60),
+  ),
   ColorGameConfig("level_12",
       gridSize: Size(7, 7),
       predefinedGrid: generateGameBoxes(colors: COLORS, size: 5),
-      completionEvaluator: noopCompletionEvaluator,
+      completionEvaluator: boardFullFinishedEvaluator,
       starEvaluator:
           pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100),
       boxAddingSpec: BoxAddingSpec(
-          behavior: BoxAddingBehavior.PER_TIME,
-          boxAddingPeriod: Duration(seconds: 1)))
+        behavior: BoxAddingBehavior.PER_TIME,
+        boxAddingPeriod: Duration(seconds: 1),
+        boxAddingAcceleration: .00001,
+      )),
+  immovable(),
 ];
 
 const String ANDROID_BANNER_AD_UNIT_ID =

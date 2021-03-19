@@ -23,3 +23,35 @@ ColorGameConfig easyToMakePlus() {
     starEvaluator: (_) => 3,
   );
 }
+
+ColorGameConfig immovable() {
+  List<GameBox> game = [
+    GameBox(
+      Offset(-1.5, -1.5),
+      Colors.grey,
+      attributes: [GameBoxAttribute.IMMOVABLE],
+    ),
+    GameBox(
+      Offset(1.5, 1.5),
+      Colors.grey,
+      attributes: [GameBoxAttribute.IMMOVABLE],
+    ),
+    GameBox(
+      Offset(-1.5, 1.5),
+      Colors.grey,
+      attributes: [GameBoxAttribute.IMMOVABLE],
+    ),
+    GameBox(
+      Offset(1.5, -1.5),
+      Colors.grey,
+      attributes: [GameBoxAttribute.IMMOVABLE],
+    ),
+  ];
+  return ColorGameConfig(
+    "immovable_boxes",
+    gridSize: Size(6, 6),
+    predefinedGrid: game,
+    completionEvaluator: (_) => false,
+    starEvaluator: (_) => 3,
+  );
+}
