@@ -45,6 +45,7 @@ class ColorGameConfig {
 
   final List<GameBox> predefinedGrid;
   final String label;
+  final String goalString;
 
   final TimerSpec? timerSpec;
   final int? moveLimit;
@@ -64,6 +65,7 @@ class ColorGameConfig {
     this.predefinedGrid = const [],
     required this.completionEvaluator,
     required this.starEvaluator,
+    required this.goalString,
     this.timerSpec,
     this.gravitizeAfterEveryMove = false,
     this.moveLimit,

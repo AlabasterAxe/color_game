@@ -17,6 +17,7 @@ ColorGameConfig easyToMakePlus() {
   game.insert(7, GameBox(box.loc, Colors.orange));
   return ColorGameConfig(
     "plus_master_flex",
+    goalString: "Plusses work too!",
     gridSize: Size(4, 4),
     predefinedGrid: game,
     completionEvaluator: (_) => false,
@@ -65,6 +66,7 @@ ColorGameConfig immovable() {
   ];
   return ColorGameConfig(
     "immovable_boxes",
+    goalString: "Black boxes can't move at all. Trust me, we've tried.",
     gridSize: Size(6, 6),
     predefinedGrid: game,
     completionEvaluator: (_) => false,
@@ -113,6 +115,7 @@ ColorGameConfig undraggable() {
   ];
   return ColorGameConfig(
     "immovable_boxes",
+    goalString: "Grey boxes don't like to be touched.",
     gridSize: Size(6, 6),
     predefinedGrid: game,
     completionEvaluator: (_) => false,

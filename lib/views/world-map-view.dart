@@ -119,10 +119,15 @@ class _WorldMapViewState extends State<WorldMapView>
                                       style: Theme.of(context)
                                           .textTheme
                                           .headline2),
-                                  Text("Disappear the boxes",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                        _items[page].gameConfig.goalString,
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1!),
+                                  ),
                                   FractionallySizedBox(
                                     widthFactor: .8,
                                     child: AspectRatio(

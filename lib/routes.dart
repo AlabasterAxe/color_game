@@ -44,6 +44,8 @@ Map<RouteId, _RouteConfig> _routeConfiguration = {
             }
             return GameView(
                 config: ColorGameConfig("default",
+                    goalString:
+                        "Hmm... you're definitely not supposed to see this level.",
                     completionEvaluator: (_) => false,
                     starEvaluator: (_) => 3));
           })),

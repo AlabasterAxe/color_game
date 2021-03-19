@@ -90,6 +90,8 @@ StarEvaluator moveStarEvaluator({int? threeStar, int? twoStar, int? oneStar}) {
 
 ColorGameConfig gravitizePerMoveLevel = ColorGameConfig(
   "level_16",
+  goalString:
+      "This level is actually on Jupiter. As a result, gravity can't be contained.",
   gridSize: Size(6, 6),
   // predefinedGrid: generateGameBoxes(colors: COLORS, size: 4),
   completionEvaluator: noopCompletionEvaluator,
@@ -100,6 +102,7 @@ ColorGameConfig gravitizePerMoveLevel = ColorGameConfig(
 List<ColorGameConfig> levels = [
   ColorGameConfig(
     "tut_1",
+    goalString: "Make a run of 3.",
     gridSize: Size(3, 3),
     predefinedGrid: [
       GameBox(Offset(-1, 0), YELLOW_COLOR),
@@ -111,6 +114,7 @@ List<ColorGameConfig> levels = [
   ),
   ColorGameConfig(
     "tut_2",
+    goalString: "Make a run of 5.",
     gridSize: Size(5, 5),
     predefinedGrid: [
       GameBox(Offset(-2, 0), YELLOW_COLOR),
@@ -124,6 +128,7 @@ List<ColorGameConfig> levels = [
   ),
   ColorGameConfig(
     "tut_3",
+    goalString: "You are rewarded handsomely for multiples.",
     gridSize: Size(5, 5),
     predefinedGrid: [
       GameBox(Offset(-2, 0), YELLOW_COLOR),
@@ -152,6 +157,7 @@ List<ColorGameConfig> levels = [
   ),
   ColorGameConfig(
     "tut_4",
+    goalString: "Learn about the magic of quads.",
     gridSize: Size(6, 6),
     predefinedGrid: [
       GameBox(Offset(-2.5, -2.5), RED_COLOR),
@@ -168,6 +174,8 @@ List<ColorGameConfig> levels = [
   ),
   ColorGameConfig(
     "tut_5",
+    goalString:
+        "After runs or quads, the boxes collapse inward (generally...).",
     gridSize: Size(6, 6),
     predefinedGrid: [
       GameBox(Offset(-3.5, -3.5), BLUE_COLOR),
@@ -192,12 +200,14 @@ List<ColorGameConfig> levels = [
   ),
   ColorGameConfig(
     "level_6",
+    goalString: "Take your time. Disappear the boxes. Get some points.",
     completionEvaluator: noopCompletionEvaluator,
     starEvaluator:
         pointStarEvaluator(threeStar: 200, twoStar: 100, oneStar: 50),
   ),
   ColorGameConfig(
     "level_7",
+    goalString: "Sometimes, you only have a few moves.",
     gridSize: Size(6, 6),
     predefinedGrid: [
       GameBox(Offset(-1.5, -1.5), GREEN_COLOR),
@@ -211,6 +221,7 @@ List<ColorGameConfig> levels = [
   ),
   ColorGameConfig(
     "level_9",
+    goalString: "Sometimes, you only have a few seconds.",
     gridSize: Size(5, 5),
     predefinedGrid: [
       GameBox(Offset(0, -1), GREEN_COLOR),
@@ -226,6 +237,7 @@ List<ColorGameConfig> levels = [
   ),
   ColorGameConfig(
     "level_10",
+    goalString: "Have I been here before?",
     gridSize: Size(6, 6),
     predefinedGrid: [
       GameBox(Offset(-2.5, -2.5), RED_COLOR),
@@ -239,6 +251,7 @@ List<ColorGameConfig> levels = [
   ),
   ColorGameConfig(
     "level_11",
+    goalString: "Hmm... Are more boxes supposed to be showing up?",
     gridSize: Size(7, 7),
     predefinedGrid: generateGameBoxes(colors: COLORS, size: 5),
     completionEvaluator: timeFinishedEvaluator,
@@ -251,6 +264,7 @@ List<ColorGameConfig> levels = [
     timerSpec: TimerSpec(numberOfSeconds: 60),
   ),
   ColorGameConfig("level_12",
+      goalString: "This doesn't look good...",
       gridSize: Size(7, 7),
       predefinedGrid: generateGameBoxes(colors: COLORS, size: 5),
       completionEvaluator: boardFullFinishedEvaluator,
@@ -265,6 +279,7 @@ List<ColorGameConfig> levels = [
   undraggable(),
   ColorGameConfig(
     "blocked",
+    goalString: "You're penned in!",
     gridSize: Size(6, 6),
     predefinedGrid: [
       ...generateGameBoxes(colors: COLORS, size: 6),
