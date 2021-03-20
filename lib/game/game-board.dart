@@ -371,7 +371,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     }
 
     Map<Color, int> colorMap = Map();
-    for (GameBox box in boxes) {
+    for (GameBox box in boxes
+        .where((b) => !b.attributes.contains(GameBoxAttribute.UNFEATURED))) {
       colorMap.putIfAbsent(box.color, () => 0);
       colorMap[box.color] = colorMap[box.color]! + 1;
       if (colorMap[box.color]! >= 3) {

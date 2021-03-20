@@ -86,6 +86,12 @@ enum GameBoxAttribute {
   UNGRAVITIZABLE,
 }
 
+const List<GameBoxAttribute> IMMOVABLE_BOX_ATTRIBUTES = [
+  GameBoxAttribute.IMMOVABLE,
+  GameBoxAttribute.UNFEATURED,
+  GameBoxAttribute.UNGRAVITIZABLE,
+];
+
 class GameBox {
   // this is the box's drawn location
   Offset loc;

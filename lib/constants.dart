@@ -48,6 +48,9 @@ StarEvaluator dummyStarEvaluator = (_) => 2;
 CompletionEvaluator timeFinishedEvaluator = (events) =>
     events.any((element) => element.type == GameEventType.TIMER_FINISHED);
 
+CompletionEvaluator runCompletionEvaluator =
+    (events) => events.any((element) => element.type == GameEventType.RUN);
+
 CompletionEvaluator boardFullFinishedEvaluator = (events) =>
     events.any((element) => element.type == GameEventType.BOARD_FULL);
 
@@ -98,6 +101,66 @@ ColorGameConfig gravitizePerMoveLevel = ColorGameConfig(
   starEvaluator: pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100),
   gravitizeAfterEveryMove: true,
 );
+
+ColorGameConfig generateCrossLevel() {
+  List<GameBox> boxes = generateGameBoxes(colors: COLORS, size: 6);
+  GameBox box = boxes.removeAt(0);
+  boxes.insert(
+      0, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(1);
+  boxes.insert(
+      1, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(4);
+  boxes.insert(
+      4, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(5);
+  boxes.insert(
+      5, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(6);
+  boxes.insert(
+      6, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(7);
+  boxes.insert(
+      7, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(10);
+  boxes.insert(
+      10, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(11);
+  boxes.insert(
+      11, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(24);
+  boxes.insert(
+      24, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(25);
+  boxes.insert(
+      25, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(28);
+  boxes.insert(
+      28, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(29);
+  boxes.insert(
+      29, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(30);
+  boxes.insert(
+      30, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(31);
+  boxes.insert(
+      31, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(34);
+  boxes.insert(
+      34, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  box = boxes.removeAt(35);
+  boxes.insert(
+      35, GameBox(box.loc, Colors.black, attributes: IMMOVABLE_BOX_ATTRIBUTES));
+  return ColorGameConfig(
+    "level_22",
+    goalString: "This level's a cross. Why? Nobody knows.",
+    gridSize: Size(6, 6),
+    predefinedGrid: boxes,
+    completionEvaluator: noopCompletionEvaluator,
+    starEvaluator: pointStarEvaluator(threeStar: 75, twoStar: 50, oneStar: 40),
+  );
+}
 
 List<ColorGameConfig> levels = [
   ColorGameConfig(
@@ -275,10 +338,10 @@ List<ColorGameConfig> levels = [
         boxAddingPeriod: Duration(seconds: 1),
         boxAddingAcceleration: .00001,
       )),
-  immovable(),
   undraggable(),
+  immovable(),
   ColorGameConfig(
-    "blocked",
+    "level_15",
     goalString: "You're penned in!",
     gridSize: Size(6, 6),
     predefinedGrid: [
@@ -287,6 +350,52 @@ List<ColorGameConfig> levels = [
     ],
     completionEvaluator: noopCompletionEvaluator,
     starEvaluator: pointStarEvaluator(threeStar: 24),
+  ),
+  gravitizePerMoveLevel,
+  ColorGameConfig(
+    "level_17",
+    goalString: "I guess most of these aren't really goals...",
+    gridSize: Size(6, 6),
+    predefinedGrid: [
+      ...generateGameBoxes(colors: [...COLORS, Colors.orange], size: 6),
+    ],
+    completionEvaluator: noopCompletionEvaluator,
+    starEvaluator: pointStarEvaluator(threeStar: 24),
+  ),
+  ColorGameConfig(
+    "level_20",
+    goalString:
+        "This one is definitely a goal though! Get more than 100 points in under 10 moves.",
+    gridSize: Size(6, 6),
+    predefinedGrid: [
+      ...generateGameBoxes(colors: COLORS, size: 6),
+    ],
+    completionEvaluator: moveCompletionEvaluator(10),
+    moveLimit: 10,
+    starEvaluator: pointStarEvaluator(threeStar: 100),
+  ),
+  generateCrossLevel(),
+  ColorGameConfig(
+    "level_23",
+    goalString:
+        "No runs allowed! We've turned off gravity because we're only mostly heartless.",
+    gridSize: Size(6, 6),
+    predefinedGrid: [
+      ...generateGameBoxes(
+          colors: COLORS,
+          size: 6,
+          attributes: [GameBoxAttribute.UNGRAVITIZABLE]),
+    ],
+    completionEvaluator: runCompletionEvaluator,
+    starEvaluator: (List<GameEvent> events) =>
+        events.any((element) => element.type == GameEventType.RUN) ? 0 : 3,
+  ),
+  ColorGameConfig(
+    "level_25",
+    goalString:
+        "Get 1000 points! All or nothing. It's definitely probably possible.",
+    completionEvaluator: noopCompletionEvaluator,
+    starEvaluator: pointStarEvaluator(threeStar: 1000),
   ),
 ];
 

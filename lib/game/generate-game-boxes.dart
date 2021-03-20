@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 
 import '../model.dart';
 
-List<GameBox> generateGameBoxes({List<Color>? colors, int size = 6}) {
+List<GameBox> generateGameBoxes(
+    {List<Color>? colors,
+    int size = 6,
+    List<GameBoxAttribute> attributes = const []}) {
   Random r = Random();
   List<GameBox> result = [];
   double halfSize = (size - 1) / 2.0;
@@ -20,7 +23,10 @@ List<GameBox> generateGameBoxes({List<Color>? colors, int size = 6}) {
         }
       }
       int colorIdx = r.nextInt(availableColors.length);
-      result.add(GameBox(Offset(x, y), availableColors[colorIdx]));
+      result.add(
+        GameBox(Offset(x, y), availableColors[colorIdx],
+            attributes: attributes),
+      );
     }
   }
 
