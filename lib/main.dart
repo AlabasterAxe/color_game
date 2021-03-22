@@ -77,6 +77,7 @@ class _AppContextStateState extends State<AppContextState> {
     });
     return AppContext(
         MaterialApp(
+          debugShowCheckedModeBanner: false,
           onGenerateRoute: (RouteSettings settings) =>
               getRouteIdByName(settings.name).generateRoute(settings),
           initialRoute: "/splash",
