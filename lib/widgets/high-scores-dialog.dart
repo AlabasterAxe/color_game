@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../shared-pref-helper.dart';
+import '../model.dart';
 
 String _getAgoString(DateTime date) {
   DateTime now = DateTime.now();

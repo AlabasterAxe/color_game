@@ -5,6 +5,71 @@ import 'package:flutter/widgets.dart';
 
 import 'view-transform.dart';
 
+class Score {
+  final int score;
+  final DateTime date;
+  final String levelTag;
+  final int earnedStars;
+
+  Score(
+      {required this.score,
+      required this.date,
+      required this.levelTag,
+      required this.earnedStars});
+
+  factory Score.fromJson(Map<String, dynamic> json) {
+    return Score(
+        score: json["score"],
+        date: DateTime.parse(json["date"]),
+        levelTag: json["levelTag"],
+        earnedStars: json["earnedStars"]);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "score": score,
+      "date": date.toIso8601String(),
+      "levelTag": levelTag,
+      "earnedStars": earnedStars,
+    };
+  }
+}
+
+class Settings {
+  final bool developerMode;
+  const Settings({this.developerMode = false});
+  factory Settings.fromJson(Map<String, dynamic> json) {
+    return Settings(developerMode: json["developerMode"] ?? false);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "developerMode": this.developerMode,
+    };
+  }
+}
+
+class User {
+  // This is a read only list of attempts if you want to save a new attempt
+  // use the addScore shared prefs utility.
+  final Map<String, List<Score>> attempts;
+
+  final Settings settings;
+  User({this.settings = const Settings(), this.attempts = const {}});
+
+  Map<String, dynamic> toJson() {
+    return {
+      "settings": settings.toJson(),
+    };
+  }
+
+  factory User.fromJson(Map<String, dynamic> json,
+      {Map<String, List<Score>> attempts = const {}}) {
+    return User(
+        settings: Settings.fromJson(json["settings"]), attempts: attempts);
+  }
+}
+
 class TimerSpec {
   final Key key = UniqueKey();
   final int numberOfSeconds;
