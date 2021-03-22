@@ -42,6 +42,12 @@ class GameView extends StatefulWidget {
   _GameViewState createState() => _GameViewState();
 }
 
+List<List<NoteName>> CHORD_PROGRESSIONS = [
+  [NoteName.D, NoteName.F, NoteName.A],
+  [NoteName.G, NoteName.A, NoteName.D],
+  [NoteName.C, NoteName.E, NoteName.G],
+];
+
 class _GameViewState extends State<GameView> {
   int score = 0;
   int? movesLeft;
@@ -60,9 +66,13 @@ class _GameViewState extends State<GameView> {
   }
 
   void _handleNewRun(RunEventMetadata metadata) {
-    AppContext.of(context)
-        .audioService
-        .playSoundEffect(SoundEffectType.UKULELE);
+    List<NoteName> notesToPlay = CHORD_PROGRESSIONS[
+            min(metadata.runStreakLength - 1, CHORD_PROGRESSIONS.length)]
+        .take(metadata.multiples)
+        .toList();
+    for (NoteName note in notesToPlay) {
+      AppContext.of(context).audioService.playNote(Instrument.UKULELE, note);
+    }
     setState(() {
       score += pow(metadata.runLength, metadata.runStreakLength) *
           metadata.multiples as int;

@@ -82,7 +82,7 @@ ColorGameConfig immovable() {
   ];
   return ColorGameConfig(
     "immovable_boxes",
-    goalString: "Black boxes can't move at all. Trust me, we've tried.",
+    goalString: "Black boxes can't move at all. Trust me, we've tried. Just make a purple quad.",
     gridSize: Size(6, 6),
     predefinedGrid: game,
     completionEvaluator: (_) => false,

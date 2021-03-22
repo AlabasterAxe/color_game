@@ -33,17 +33,17 @@ class GameEndCardState extends State<GameEndCard> {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Image.asset(
-                        "assets/images/${widget.earnedStars != null && widget.earnedStars! > 0 ? "gold_star" : "star"}.png"),
+                        "assets/images/${widget.earnedStars > 0 ? "gold_star" : "star"}.png"),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Image.asset(
-                        "assets/images/${widget.earnedStars != null && widget.earnedStars! > 1 ? "gold_star" : "star"}.png"),
+                        "assets/images/${widget.earnedStars > 1 ? "gold_star" : "star"}.png"),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Image.asset(
-                        "assets/images/${widget.earnedStars != null && widget.earnedStars! > 2 ? "gold_star" : "star"}.png"),
+                        "assets/images/${widget.earnedStars > 2 ? "gold_star" : "star"}.png"),
                   ),
                 ]),
             ElevatedButton(child: Text("Back"), onPressed: widget.onBack),
