@@ -74,22 +74,20 @@ class _AppContextStateState extends State<AppContextState> {
           .then((value) {});
     });
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
         home: Scaffold(
-          body: Stack(
-            children: [
-              Center(
-                  child: Container(width: 30, height: 30, color: Colors.pink)),
-              Align(alignment: Alignment(-.5, -.5), child: Text("Foo")),
-              Positioned.fill(
-                  child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                child: Container(color: Colors.transparent),
-              )),
-              Center(child: Text("Foo")),
-              Align(alignment: Alignment.bottomCenter, child: BannerAdWidget())
-            ],
-          ),
-        ));
+      body: Stack(
+        children: [
+          Center(child: Container(width: 30, height: 30, color: Colors.pink)),
+          Align(alignment: Alignment(-.5, -.5), child: Text("Foo")),
+          Positioned.fill(
+              child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+            child: Container(color: Colors.transparent),
+          )),
+          Center(child: Text("Foo")),
+          Align(alignment: Alignment.bottomCenter, child: BannerAdWidget())
+        ],
+      ),
+    ));
   }
 }
