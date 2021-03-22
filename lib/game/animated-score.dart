@@ -46,7 +46,9 @@ class _AnimatedScoreState extends State<AnimatedScore>
               "${((widget.score - prevScore!) * controller.value + prevScore!).round()}",
               style: TextStyle(
                   color: colorAnimation.value,
-                  decoration: TextDecoration.none));
+                  decoration: TextDecoration.none,
+                  fontSize: 36),
+              textAlign: TextAlign.center);
         });
   }
 }

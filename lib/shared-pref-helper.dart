@@ -1,75 +1,69 @@
 import 'dart:convert';
 
-import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'model.dart';
+
 const String SCORES_KEY = "co.thkp.colorcollapse.scores";
-
-class Score {
-  final int score;
-  final DateTime date;
-  final String levelTag;
-  final int earnedStars;
-
-  Score(
-      {required this.score,
-      required this.date,
-      required this.levelTag,
-      required this.earnedStars});
-
-  factory Score.fromJson(Map<String, dynamic> json) {
-    return Score(
-        score: json["score"],
-        date: DateTime.parse(json["date"]),
-        levelTag: json["levelTag"],
-        earnedStars: json["earnedStars"]);
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "score": score,
-      "date": date.toIso8601String(),
-      "levelTag": levelTag,
-      "earnedStars": earnedStars,
-    };
-  }
-}
+const String USER_KEY = "co.thkp.colorcollapse.user";
 
 Future<void> addScore(
-    {required String levelTag, required int score, required int earnedStars}) {
-  return SharedPreferences.getInstance().then((prefs) {
-    var scores = prefs.getStringList(SCORES_KEY);
-    if (scores == null) {
-      scores = [];
-    }
-    scores.add(json.encode((Score(
-            score: score,
-            date: DateTime.now(),
-            levelTag: levelTag,
-            earnedStars: earnedStars)
-        .toJson())));
-    prefs.setStringList(SCORES_KEY, scores);
-  });
+    {required String levelTag,
+    required int score,
+    required int earnedStars}) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var scores = prefs.getStringList(SCORES_KEY);
+  if (scores == null) {
+    scores = [];
+  }
+  scores.add(json.encode((Score(
+          score: score,
+          date: DateTime.now(),
+          levelTag: levelTag,
+          earnedStars: earnedStars)
+      .toJson())));
+  await prefs.setStringList(SCORES_KEY, scores);
 }
 
-Future<List<Score>> getScores([String? levelTag]) {
-  return SharedPreferences.getInstance().then((prefs) {
-    List<String>? scores = prefs.getStringList(SCORES_KEY);
-    if (scores == null) {
-      return [];
-    }
+Future<List<Score>> getScores([String? levelTag]) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  List<String>? scores = prefs.getStringList(SCORES_KEY);
+  if (scores == null) {
+    return [];
+  }
 
-    return scores
-        .map((scoreJson) {
-          Score score = Score.fromJson(json.decode(scoreJson));
-          if (levelTag == null || levelTag == score.levelTag) {
-            return score;
-          }
-          return null;
-        })
-        .where((score) => score != null)
-        .toList() as List<Score>;
+  return scores
+      .map((scoreJson) {
+        Score score = Score.fromJson(json.decode(scoreJson));
+        if (levelTag == null || levelTag == score.levelTag) {
+          return score;
+        }
+        return null;
+      })
+      .where((score) => score != null)
+      .toList() as List<Score>;
+}
+
+Future<User> getUser() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? userJsonString = prefs.getString(USER_KEY);
+  List<Score> attempts = await getScores();
+  Map<String, List<Score>> attemptMap =
+      attempts.fold({}, (Map<String, List<Score>> result, attempt) {
+    List<Score> attemptList = result.putIfAbsent(attempt.levelTag, () => []);
+    attemptList.add(attempt);
+    return result;
   });
+  if (userJsonString != null) {
+    return User.fromJson(json.decode(userJsonString), attempts: attemptMap);
+  }
+  return User();
+}
+
+Future<void> setUser(User user) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  await prefs.setString(USER_KEY, json.encode(user.toJson()));
 }
 
 Future<void> clearSharedPrefs() async {

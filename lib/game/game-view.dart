@@ -101,6 +101,7 @@ class _GameViewState extends State<GameView> {
               }));
     }
     return Hud(
+      numberOfStars: widget.config.starEvaluator(events),
       score: movesLeft ?? score,
       timerWidget: timerWidget,
     );
