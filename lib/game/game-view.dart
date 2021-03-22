@@ -59,22 +59,12 @@ class _GameViewState extends State<GameView> {
   }
 
   void _handleNewRun(RunEventMetadata metadata) {
+    AppContext.of(context)
+        .audioService
+        .playSoundEffect(SoundEffectType.UKULELE);
     setState(() {
       score += pow(metadata.runLength, metadata.runStreakLength) *
           metadata.multiples as int;
-      if (metadata.runStreakLength == 1) {
-        AppContext.of(context)
-            .audioService
-            .playSoundEffect(SoundEffectType.SMALL_POOF);
-      } else if (metadata.runStreakLength == 2) {
-        AppContext.of(context)
-            .audioService
-            .playSoundEffect(SoundEffectType.MEDIUM_POOF);
-      } else if (metadata.runStreakLength >= 3) {
-        AppContext.of(context)
-            .audioService
-            .playSoundEffect(SoundEffectType.LARGE_POOF);
-      }
     });
   }
 

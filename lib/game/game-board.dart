@@ -22,7 +22,7 @@ enum GameEventType {
   BOARD_FULL,
 }
 
-const double MAX_BOX_ADDING_RATE = .004;
+const double MAX_BOX_ADDING_RATE = .008;
 
 class RunEventMetadata {
   late int runLength;
