@@ -326,10 +326,18 @@ List<ColorGameConfig> levels = [
     gridSize: Size(7, 7),
     predefinedGrid: generateGameBoxes(colors: COLORS, size: 5),
     completionEvaluator: timeFinishedEvaluator,
-    starEvaluator: (List<GameEvent> events) => events
-            .any((element) => element.type == GameEventType.NO_MOVES)
-        ? pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100)(events)
-        : 0,
+    starEvaluator: (List<GameEvent> events) {
+      int starValue = pointStarEvaluator(
+          threeStar: 200, twoStar: 150, oneStar: 100)(events);
+      for (GameEvent e in events) {
+        if (e.type == GameEventType.TIMER_FINISHED) {
+          return 0;
+        } else if (e.type == GameEventType.NO_MOVES) {
+          return starValue;
+        }
+      }
+      return starValue;
+    },
     boxAddingSpec: BoxAddingSpec(
         behavior: BoxAddingBehavior.PER_MOVE, addBoxEveryNMoves: 1),
     timerSpec: TimerSpec(numberOfSeconds: 60),
