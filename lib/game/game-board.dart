@@ -89,6 +89,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   bool sentNoMovesEvent = false;
   int lastBoxAddedTimeMS = 0;
   double boxAddingRate = 0;
+  bool developerMode = false;
 
   // presently it's only possible to send one board full event
   // the logic here is that, either board full ends the game and it's not
@@ -633,22 +634,25 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
       return GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTapUp: (deets) {
-            GameBox? box = getTappedBox(deets.localPosition, vt);
-            setState(() {
-              if (box == null) {
-                boxes.add(GameBox(vt.backward(deets.localPosition), COLORS[0]));
-                _snapBoxes();
-              } else {
-                int colorIndex = COLORS.indexOf(box.color);
-                if (colorIndex == COLORS.length - 1) {
-                  boxes.remove(box);
-                } else {
-                  box.color = COLORS[colorIndex + 1];
-                }
-              }
-            });
-          },
+          onTapUp: !developerMode
+              ? null
+              : (deets) {
+                  GameBox? box = getTappedBox(deets.localPosition, vt);
+                  setState(() {
+                    if (box == null) {
+                      boxes.add(
+                          GameBox(vt.backward(deets.localPosition), COLORS[0]));
+                      _snapBoxes();
+                    } else {
+                      int colorIndex = COLORS.indexOf(box.color);
+                      if (colorIndex == COLORS.length - 1) {
+                        boxes.remove(box);
+                      } else {
+                        box.color = COLORS[colorIndex + 1];
+                      }
+                    }
+                  });
+                },
           onPanStart: (DragStartDetails deets) {
             tapStartLoc = deets.localPosition;
             tapUpdateLoc = deets.localPosition;
