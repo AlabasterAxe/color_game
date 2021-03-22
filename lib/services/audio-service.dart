@@ -49,6 +49,56 @@ enum NoteName {
   G_SHARP,
 }
 
+extension NoteNameExtension on NoteName {
+  NoteName _interval(int semitones) {
+    return NoteName.values[this.index + semitones % NoteName.values.length];
+  }
+
+  NoteName get minorSecond {
+    return _interval(1);
+  }
+
+  NoteName get majorSecond {
+    return _interval(2);
+  }
+
+  NoteName get minorThird {
+    return _interval(3);
+  }
+
+  NoteName get majorThird {
+    return _interval(4);
+  }
+
+  NoteName get fourth {
+    return _interval(5);
+  }
+
+  NoteName get diminishedFifth {
+    return _interval(6);
+  }
+
+  NoteName get perfectFifth {
+    return _interval(7);
+  }
+
+  NoteName get minorSixth {
+    return _interval(8);
+  }
+
+  NoteName get majorSixth {
+    return _interval(9);
+  }
+
+  NoteName get minorSeventh {
+    return _interval(10);
+  }
+
+  NoteName get majorSeventh {
+    return _interval(11);
+  }
+}
+
 final Map<Instrument, Map<NoteName, String>> INSTRUMENTS = {
   Instrument.UKULELE: {
     NoteName.C: "audio/sfx/uke/c.mp3",
