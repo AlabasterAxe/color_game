@@ -91,16 +91,13 @@ class _GameViewState extends State<GameView> {
     Widget? timerWidget;
     if (widget.config.timerSpec != null) {
       TimerSpec spec = widget.config.timerSpec!;
-      timerWidget = Container(
-          width: 60,
-          height: 60,
-          child: CircularTimer(
-              key: spec.key,
-              duration: Duration(seconds: spec.numberOfSeconds),
-              stop: gameOver,
-              onFinished: () {
-                _handleGameEvent(GameEvent(GameEventType.TIMER_FINISHED));
-              }));
+      timerWidget = CircularTimer(
+          key: spec.key,
+          duration: Duration(seconds: spec.numberOfSeconds),
+          stop: gameOver,
+          onFinished: () {
+            _handleGameEvent(GameEvent(GameEventType.TIMER_FINISHED));
+          });
     }
     return Hud(
       numberOfStars: widget.config.starEvaluator(events),

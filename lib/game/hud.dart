@@ -17,34 +17,39 @@ class Hud extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    List<Widget> items = [];
+    Widget rightSizeWidget = ClipRRect(
+        borderRadius: BorderRadius.circular(8.0),
+        child: Image.asset(
+          "assets/icon/squarified.png",
+          width: screenSize.width / 10,
+          fit: BoxFit.fitWidth,
+        ));
     if (timerWidget != null) {
-      items.add(timerWidget!);
+      rightSizeWidget = Container(
+          width: screenSize.width / 10,
+          height: screenSize.height / 10,
+          child: timerWidget!);
     }
-    items.add(Padding(
-        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Expanded(
-              child: HudStarsWidget(
-            numberOfStars: numberOfStars,
-            starWidth: screenSize.width / 12,
-          )),
-          Expanded(child: AnimatedScore(score: score)),
-          Expanded(
-              child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.asset(
-                  "assets/icon/squarified.png",
-                  width: screenSize.width / 10,
-                  fit: BoxFit.fitWidth,
-                ))
-          ]))
-        ])));
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
-      children: items,
+      children: [
+        Padding(
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                      child: HudStarsWidget(
+                    numberOfStars: numberOfStars,
+                    starWidth: screenSize.width / 12,
+                  )),
+                  Expanded(child: AnimatedScore(score: score)),
+                  Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [rightSizeWidget]))
+                ]))
+      ],
     );
   }
 }
