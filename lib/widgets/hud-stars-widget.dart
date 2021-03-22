@@ -20,19 +20,19 @@ class HudStarsWidgetState extends State<HudStarsWidget> {
       _SpinningAnimatedStar(
         earned: widget.numberOfStars > 0,
         size: widget.starWidth,
-        durationMS: 300,
+        durationMS: 1300,
       ),
       SizedBox(width: 8),
       _SpinningAnimatedStar(
         earned: widget.numberOfStars > 1,
         size: widget.starWidth,
-        durationMS: 600,
+        durationMS: 1600,
       ),
       SizedBox(width: 8),
       _SpinningAnimatedStar(
         earned: widget.numberOfStars > 2,
         size: widget.starWidth,
-        durationMS: 900,
+        durationMS: 1900,
       ),
     ]);
   }
