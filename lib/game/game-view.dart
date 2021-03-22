@@ -5,6 +5,7 @@ import 'package:color_game/constants.dart';
 import 'package:color_game/services/analytics-service.dart';
 import 'package:color_game/services/audio-service.dart';
 import 'package:color_game/widgets/circular-timer.dart';
+import 'package:color_game/widgets/game-end-card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -213,42 +214,13 @@ class _GameViewState extends State<GameView> {
     ];
 
     if (gameOver) {
-      stackChildren.add(Card(
-          shape: CARD_SHAPE,
-          elevation: 4,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Image.asset(
-                          "assets/images/${earnedStars != null && earnedStars! > 0 ? "gold_star" : "star"}.png"),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Image.asset(
-                          "assets/images/${earnedStars != null && earnedStars! > 1 ? "gold_star" : "star"}.png"),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Image.asset(
-                          "assets/images/${earnedStars != null && earnedStars! > 2 ? "gold_star" : "star"}.png"),
-                    ),
-                  ]),
-              ElevatedButton(
-                  child: Text("Back"),
-                  onPressed: () {
-                    Navigator.pop(
-                        context,
-                        GameCompletedEvent(
-                            earnedStars != null && earnedStars! > 0));
-                  }),
-            ],
-          )));
+      stackChildren.add(GameEndCard(
+          earnedStars: earnedStars!,
+          onBack: () {
+            Navigator.pop(context,
+                GameCompletedEvent(earnedStars != null && earnedStars! > 0));
+          },
+          onRetry: () {}));
     }
 
     return Container(
