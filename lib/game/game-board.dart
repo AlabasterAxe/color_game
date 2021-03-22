@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 
 import '../constants.dart';
 import '../model.dart';
+import '../shared-pref-helper.dart';
 import '../view-transform.dart';
 import 'game-box-widget.dart';
 import 'generate-game-boxes.dart';
@@ -121,6 +122,12 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           Duration(milliseconds: (1 / boxAddingRate).round()),
           _doPeriodicBoxAdd);
     }
+
+    getUser().then((user) {
+      setState(() {
+        developerMode = user.settings.developerMode;
+      });
+    });
   }
 
   @override
@@ -476,7 +483,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     List<RunEventMetadata> runs = [];
     for (List<GameBox> boxes in allBoxes) {
       for (int i = 0; i < boxes.length; i++) {
-        if (boxes[i].attributes.contains(GameBoxAttribute.UNFEATURED)) {
+        if (boxes[i].attributes.contains(GameBoxAttribute.UNFEATURED) ||
+            boxes[i].attributes.contains(GameBoxAttribute.UNRUNNABLE)) {
           continue;
         }
         List<GameBox> run = [boxes[i]];
@@ -504,8 +512,9 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
 
   List<SquareEventMetadata> _getSquares() {
     List<SquareEventMetadata> squares = [];
-    for (GameBox box in boxes
-        .where((b) => !b.attributes.contains(GameBoxAttribute.UNFEATURED))) {
+    for (GameBox box in boxes.where((b) =>
+        !b.attributes.contains(GameBoxAttribute.UNFEATURED) &&
+        !b.attributes.contains(GameBoxAttribute.UNQUADDABLE))) {
       if (box.eligibleForInclusionInSquare) {
         // only eligible if not part of run
         GameBox? r = getBoxAtPosition(box.loc + Offset(1.0, 0));

@@ -100,6 +100,7 @@ class _WorldMapViewState extends State<WorldMapView>
           double pageLerp = pageValue - prevPage;
 
           return Scaffold(
+              appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
               backgroundColor: Color.lerp(_items[prevPage].backgroundColor,
                   _items[nextPage].backgroundColor, pageLerp),
               body: PageView.builder(
@@ -107,7 +108,7 @@ class _WorldMapViewState extends State<WorldMapView>
                   itemBuilder: (context, page) {
                     return FractionallySizedBox(
                         widthFactor: .9,
-                        heightFactor: .6,
+                        heightFactor: .7,
                         child: Card(
                             shape: CARD_SHAPE,
                             elevation: 4,

@@ -53,7 +53,9 @@ class _GameViewState extends State<GameView> {
   @override
   void initState() {
     super.initState();
-    movesLeft = widget.config.moveLimit;
+    setState(() {
+      movesLeft = widget.config.moveLimit;
+    });
   }
 
   void _handleNewRun(RunEventMetadata metadata) {

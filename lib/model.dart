@@ -149,6 +149,8 @@ enum GameBoxAttribute {
   IMMOVABLE,
   UNFEATURED,
   UNGRAVITIZABLE,
+  UNRUNNABLE,
+  UNQUADDABLE,
 }
 
 const List<GameBoxAttribute> IMMOVABLE_BOX_ATTRIBUTES = [
