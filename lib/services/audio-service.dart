@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -132,9 +133,10 @@ class AudioService {
         });
       }
       notePlayers.putIfAbsent(instrument, () => {})[note] = player;
-      player.onPlayerCompletion.listen((_) {
+      Timer(Duration(milliseconds: 1000), () {
         AudioPlayer? notePlayer = notePlayers[instrument]?[note];
         if (notePlayer != null) {
+          notePlayer.stop();
           notePlayer.dispose();
           notePlayers[instrument]!.remove(note);
         }
