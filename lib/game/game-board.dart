@@ -12,49 +12,7 @@ import '../view-transform.dart';
 import 'game-box-widget.dart';
 import 'generate-game-boxes.dart';
 
-enum GameEventType {
-  RUN,
-  SQUARE,
-  NO_MOVES,
-  LEFT_OVER_BOX,
-  USER_MOVE,
-  TIMER_FINISHED,
-  BOARD_FULL,
-}
-
 const double MAX_BOX_ADDING_RATE = .008;
-
-class RunEventMetadata {
-  late int runLength;
-  Color? color;
-  late int runStreakLength;
-  late int multiples;
-}
-
-enum DragDirection {
-  HORIZONTAL,
-  VERTICAL,
-}
-
-class UserMoveEventMetadata {
-  final DragDirection dragDirection;
-  final int dragLength;
-  final List<GameBox> draggedBoxes;
-  UserMoveEventMetadata(this.dragDirection, this.dragLength, this.draggedBoxes);
-}
-
-class SquareEventMetadata {
-  Color? color;
-}
-
-class GameEvent {
-  final GameEventType type;
-  final dynamic metadata;
-  final DateTime datetime;
-
-  GameEvent(this.type, {DateTime? datetime, this.metadata})
-      : this.datetime = datetime ?? DateTime.now();
-}
 
 class GameBoardWidget extends StatefulWidget {
   final ColorGameConfig config;
@@ -91,6 +49,7 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
   int lastBoxAddedTimeMS = 0;
   double boxAddingRate = 0;
   bool developerMode = false;
+  int step = 0;
 
   // presently it's only possible to send one board full event
   // the logic here is that, either board full ends the game and it's not
@@ -488,20 +447,23 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           continue;
         }
         List<GameBox> run = [boxes[i]];
-        for (int k = (i + 1); k < boxes.length; k++) {
+        int k = i + 1;
+        for (; k < boxes.length; k++) {
           if (boxes[k].color == run.last.color &&
               (boxes[k].loc - run.last.loc).distanceSquared < 1.01) {
             run.add(boxes[k]);
           } else {
-            i = k - 1;
             break;
           }
         }
+        i = k - 1;
+
         if (run.length >= 3) {
-          RunEventMetadata runData = RunEventMetadata()
-            ..runLength = run.length
-            ..runStreakLength = runStreakLength
-            ..color = run.last.color;
+          RunEventMetadata runData = RunEventMetadata(
+            runLength: run.length,
+            runStreakLength: runStreakLength,
+            color: run.last.color,
+          );
           run.forEach((element) => element.runs.add(runData));
           runs.add(runData);
         }
@@ -559,11 +521,14 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
     boxes.removeWhere((box) => toRemove.contains(box));
     for (RunEventMetadata run in runs) {
       run.multiples = runs.length;
+      run.stepNumber = step;
       widget.onGameEvent(GameEvent(GameEventType.RUN, metadata: run));
     }
     for (SquareEventMetadata square in squares) {
+      square.stepNumber = step;
       widget.onGameEvent(GameEvent(GameEventType.SQUARE, metadata: square));
     }
+    step++;
     return runs.isNotEmpty || squares.isNotEmpty;
   }
 
@@ -686,7 +651,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
             Offset dragDelta = tapUpdateLoc! - tapStartLoc!;
             // once the user is outside of a small window they can't change
             // whether they're dragging the column or the row
-            if (boxSize.contains(tapUpdateLoc!) && !outsideSnap) {
+            if (boxSize.inflate(boxSize.width / 2).contains(tapUpdateLoc!) &&
+                !outsideSnap) {
               if (directionDelta.dy.abs() > directionDelta.dx.abs()) {
                 draggingCol = true;
               } else {

@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:color_game/game/game-board.dart';
 import 'package:flutter/widgets.dart';
 
 import 'view-transform.dart';
@@ -104,6 +103,32 @@ class BoxAddingSpec {
   });
 }
 
+enum DragDirection {
+  HORIZONTAL,
+  VERTICAL,
+}
+
+class UserMoveEventMetadata {
+  final DragDirection dragDirection;
+  final int dragLength;
+  final List<GameBox> draggedBoxes;
+  UserMoveEventMetadata(this.dragDirection, this.dragLength, this.draggedBoxes);
+}
+
+class SquareEventMetadata {
+  Color? color;
+  int? stepNumber;
+}
+
+class GameEvent {
+  final GameEventType type;
+  final dynamic metadata;
+  final DateTime datetime;
+
+  GameEvent(this.type, {DateTime? datetime, this.metadata})
+      : this.datetime = datetime ?? DateTime.now();
+}
+
 class ColorGameConfig {
   // the number of squares on each side of the board
   final Size gridSize;
@@ -142,6 +167,32 @@ class ColorGameConfig {
 class GameCompletedEvent {
   bool successful;
   GameCompletedEvent(this.successful);
+}
+
+enum GameEventType {
+  RUN,
+  SQUARE,
+  NO_MOVES,
+  LEFT_OVER_BOX,
+  USER_MOVE,
+  TIMER_FINISHED,
+  BOARD_FULL,
+}
+
+class RunEventMetadata {
+  int runLength;
+  Color color;
+  int runStreakLength;
+  int? multiples;
+
+  // This is a way to group events together.
+  // all events occurring simultaneously will have the same stepNumber.
+  int? stepNumber;
+  RunEventMetadata({
+    required this.runLength,
+    required this.color,
+    required this.runStreakLength,
+  });
 }
 
 enum GameBoxAttribute {

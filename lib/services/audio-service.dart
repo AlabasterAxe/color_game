@@ -50,52 +50,52 @@ enum NoteName {
 }
 
 extension NoteNameExtension on NoteName {
-  NoteName _interval(int semitones) {
-    return NoteName.values[this.index + semitones % NoteName.values.length];
+  NoteName interval(int semitones) {
+    return NoteName.values[(this.index + semitones) % NoteName.values.length];
   }
 
   NoteName get minorSecond {
-    return _interval(1);
+    return interval(1);
   }
 
   NoteName get majorSecond {
-    return _interval(2);
+    return interval(2);
   }
 
   NoteName get minorThird {
-    return _interval(3);
+    return interval(3);
   }
 
   NoteName get majorThird {
-    return _interval(4);
+    return interval(4);
   }
 
   NoteName get fourth {
-    return _interval(5);
+    return interval(5);
   }
 
   NoteName get diminishedFifth {
-    return _interval(6);
+    return interval(6);
   }
 
   NoteName get perfectFifth {
-    return _interval(7);
+    return interval(7);
   }
 
   NoteName get minorSixth {
-    return _interval(8);
+    return interval(8);
   }
 
   NoteName get majorSixth {
-    return _interval(9);
+    return interval(9);
   }
 
   NoteName get minorSeventh {
-    return _interval(10);
+    return interval(10);
   }
 
   NoteName get majorSeventh {
-    return _interval(11);
+    return interval(11);
   }
 }
 
@@ -168,9 +168,9 @@ class AudioService {
 
   playNote(Instrument instrument, NoteName note) {
     AudioPlayer? currentAudioPlayer = notePlayers[instrument]?[note];
-    if (currentAudioPlayer != null) {
-      return;
-    }
+    // if (currentAudioPlayer != null) {
+    // return;
+    // }
     AudioPlayer player = AudioPlayer();
     player.mode = PlayerMode.LOW_LATENCY;
     String? noteFile = INSTRUMENTS[instrument]?[note];
@@ -182,15 +182,15 @@ class AudioService {
           player.play(file.path, isLocal: true);
         });
       }
-      notePlayers.putIfAbsent(instrument, () => {})[note] = player;
-      Timer(Duration(milliseconds: 1000), () {
-        AudioPlayer? notePlayer = notePlayers[instrument]?[note];
-        if (notePlayer != null) {
-          notePlayer.stop();
-          notePlayer.dispose();
-          notePlayers[instrument]!.remove(note);
-        }
-      });
+      // notePlayers.putIfAbsent(instrument, () => {})[note] = player;
+      // Timer(Duration(milliseconds: 1000), () {
+      //   AudioPlayer? notePlayer = notePlayers[instrument]?[note];
+      //   if (notePlayer != null) {
+      //     notePlayer.stop();
+      //     notePlayer.dispose();
+      //     notePlayers[instrument]!.remove(note);
+      //   }
+      // });
     }
   }
 }

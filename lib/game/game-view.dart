@@ -14,6 +14,7 @@ import '../model.dart';
 import '../shared-pref-helper.dart';
 import 'game-board.dart';
 import 'hud.dart';
+import 'sound-game-event-listener.dart';
 
 class InvertedRectClipper extends CustomClipper<Path> {
   @override
@@ -42,12 +43,6 @@ class GameView extends StatefulWidget {
   _GameViewState createState() => _GameViewState();
 }
 
-List<List<NoteName>> CHORD_PROGRESSIONS = [
-  [NoteName.D, NoteName.F, NoteName.A],
-  [NoteName.G, NoteName.A, NoteName.D],
-  [NoteName.C, NoteName.E, NoteName.G],
-];
-
 class _GameViewState extends State<GameView> {
   int score = 0;
   int? movesLeft;
@@ -56,6 +51,7 @@ class _GameViewState extends State<GameView> {
   Tween<int>? scoreTween;
   Key gameKey = UniqueKey();
   List<GameEvent> events = [];
+  late SoundGameEventListener soundGameEventListener;
 
   @override
   void initState() {
@@ -65,17 +61,17 @@ class _GameViewState extends State<GameView> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    soundGameEventListener =
+        SoundGameEventListener(AppContext.of(context).audioService);
+  }
+
   void _handleNewRun(RunEventMetadata metadata) {
-    List<NoteName> notesToPlay = CHORD_PROGRESSIONS[
-            min(metadata.runStreakLength - 1, CHORD_PROGRESSIONS.length)]
-        .take(metadata.multiples)
-        .toList();
-    for (NoteName note in notesToPlay) {
-      AppContext.of(context).audioService.playNote(Instrument.UKULELE, note);
-    }
     setState(() {
       score += pow(metadata.runLength, metadata.runStreakLength) *
-          metadata.multiples as int;
+          metadata.multiples! as int;
     });
   }
 
@@ -118,6 +114,7 @@ class _GameViewState extends State<GameView> {
   }
 
   void _handleGameEvent(GameEvent e) {
+    soundGameEventListener.onGameEvent(e);
     events.add(e);
     if (widget.config.completionEvaluator(events)) {
       _doGameOver();
