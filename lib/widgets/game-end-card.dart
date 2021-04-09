@@ -32,7 +32,9 @@ class GameEndCardState extends State<GameEndCard> {
         ? "Great Job!"
         : widget.earnedStars == 2
             ? "Nice Work!"
-            : "Good Job";
+            : widget.earnedStars == 2
+                ? "Good Job"
+                : "Nice Try";
     return Card(
         shape: CARD_SHAPE,
         elevation: 4,
