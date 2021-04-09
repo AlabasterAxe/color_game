@@ -47,7 +47,6 @@ class _GameViewState extends State<GameView> {
   int? movesLeft;
   bool gameOver = false;
   int? earnedStars;
-  Tween<int>? scoreTween;
   Key gameKey = UniqueKey();
   List<GameEvent> events = [];
 
@@ -220,7 +219,15 @@ class _GameViewState extends State<GameView> {
             Navigator.pop(context,
                 GameCompletedEvent(earnedStars != null && earnedStars! > 0));
           },
-          onRetry: () {}));
+          onRetry: () {
+            setState(() {
+              this.gameKey = UniqueKey();
+              this.score = 0;
+              this.movesLeft = widget.config.moveLimit;
+              this.gameOver = false;
+              this.events.clear();
+            });
+          }));
     }
 
     return Container(

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:color_game/game/game-board.dart';
+import 'package:color_game/main.dart';
+import 'package:color_game/services/analytics-service.dart';
 import 'package:color_game/widgets/cc-button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -137,6 +139,10 @@ class _WorldMapViewState extends State<WorldMapView>
                                         onTap: page == (_numVisibleItems - 1)
                                             ? null
                                             : () {
+                                                AppContext.of(context)
+                                                    .analytics
+                                                    .logEvent(AnalyticsEvent
+                                                        .start_game);
                                                 Navigator.pushNamed(
                                                         context, "/game",
                                                         arguments:
