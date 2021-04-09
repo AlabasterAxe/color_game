@@ -110,122 +110,128 @@ class _WorldMapViewState extends State<WorldMapView>
                   itemBuilder: (context, page) {
                     return FractionallySizedBox(
                         widthFactor: .9,
-                        child: Card(
-                            shape: CARD_SHAPE,
-                            elevation: 4,
-                            child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Text("Goal:",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline2),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                        _items[page].gameConfig.goalString,
-                                        textAlign: TextAlign.center,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 32),
+                          child: Card(
+                              shape: CARD_SHAPE,
+                              elevation: 4,
+                              child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Text("Goal:",
                                         style: Theme.of(context)
                                             .textTheme
-                                            .bodyText1!),
-                                  ),
-                                  FractionallySizedBox(
-                                    widthFactor: .8,
-                                    child: AspectRatio(
-                                      aspectRatio: 1,
-                                      child: GestureDetector(
-                                        onTap: page == (_numVisibleItems - 1)
-                                            ? null
-                                            : () {
-                                                AppContext.of(context)
-                                                    .analytics
-                                                    .logEvent(AnalyticsEvent
-                                                        .start_game);
-                                                Navigator.pushNamed(
-                                                        context, "/game",
-                                                        arguments:
-                                                            _items[page.floor()]
-                                                                .gameConfig)
-                                                    .then((ev) {
-                                                  int nextPage =
-                                                      (_pageController.page! +
-                                                              1)
-                                                          .round();
-                                                  shouldAdvancePage =
-                                                      _shouldAdvancePage(ev
-                                                          as GameCompletedEvent?);
-                                                  Timer(
-                                                      Duration(
-                                                          milliseconds: 400),
-                                                      () {
-                                                    _getAttemptHistory();
-                                                    if (shouldAdvancePage) {
-                                                      Timer(
-                                                          Duration(
-                                                              milliseconds:
-                                                                  750), () {
-                                                        if (shouldAdvancePage) {
-                                                          _pageController
-                                                              .animateToPage(
-                                                            nextPage,
-                                                            duration: Duration(
+                                            .headline2),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                          _items[page].gameConfig.goalString,
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!),
+                                    ),
+                                    FractionallySizedBox(
+                                      widthFactor: .8,
+                                      child: AspectRatio(
+                                        aspectRatio: 1,
+                                        child: GestureDetector(
+                                          onTap: page == (_numVisibleItems - 1)
+                                              ? null
+                                              : () {
+                                                  AppContext.of(context)
+                                                      .analytics
+                                                      .logEvent(AnalyticsEvent
+                                                          .start_game);
+                                                  Navigator.pushNamed(
+                                                          context, "/game",
+                                                          arguments: _items[
+                                                                  page.floor()]
+                                                              .gameConfig)
+                                                      .then((ev) {
+                                                    int nextPage =
+                                                        (_pageController.page! +
+                                                                1)
+                                                            .round();
+                                                    shouldAdvancePage =
+                                                        _shouldAdvancePage(ev
+                                                            as GameCompletedEvent?);
+                                                    Timer(
+                                                        Duration(
+                                                            milliseconds: 400),
+                                                        () {
+                                                      _getAttemptHistory();
+                                                      if (shouldAdvancePage) {
+                                                        Timer(
+                                                            Duration(
                                                                 milliseconds:
-                                                                    500),
-                                                            curve: Curves
-                                                                .easeInOut,
-                                                          );
-                                                        }
-                                                      });
-                                                    }
+                                                                    750), () {
+                                                          if (shouldAdvancePage) {
+                                                            _pageController
+                                                                .animateToPage(
+                                                              nextPage,
+                                                              duration: Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                              curve: Curves
+                                                                  .easeInOut,
+                                                            );
+                                                          }
+                                                        });
+                                                      }
+                                                    });
                                                   });
-                                                });
-                                              },
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            Container(
-                                                clipBehavior: Clip.hardEdge,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        cardBorderRadius,
+                                                },
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              Container(
+                                                  clipBehavior: Clip.hardEdge,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          cardBorderRadius,
+                                                      color:
+                                                          BOARD_BACKGROUND_COLOR),
+                                                  child: IgnorePointer(
+                                                    child: GameBoardWidget(
+                                                        _items[page.floor()]
+                                                            .gameConfig,
+                                                        onGameEvent: (_) {}),
+                                                  )),
+                                              Opacity(
+                                                opacity: .7,
+                                                child: ColorCollapseButton(
+                                                  child: Icon(
+                                                    page ==
+                                                            (_numVisibleItems -
+                                                                1)
+                                                        ? Icons.lock
+                                                        : Icons.play_arrow,
                                                     color:
-                                                        BOARD_BACKGROUND_COLOR),
-                                                child: IgnorePointer(
-                                                  child: GameBoardWidget(
-                                                      _items[page.floor()]
-                                                          .gameConfig,
-                                                      onGameEvent: (_) {}),
-                                                )),
-                                            Opacity(
-                                              opacity: .7,
-                                              child: ColorCollapseButton(
-                                                child: Icon(
-                                                  page == (_numVisibleItems - 1)
-                                                      ? Icons.lock
-                                                      : Icons.play_arrow,
-                                                  color: BOARD_BACKGROUND_COLOR,
-                                                  size: 72,
+                                                        BOARD_BACKGROUND_COLOR,
+                                                    size: 72,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Image.asset(
-                                            "assets/images/${_items[page].maxStars > 0 ? "gold_star" : "star"}.png"),
-                                        Image.asset(
-                                            "assets/images/${_items[page].maxStars > 1 ? "gold_star" : "star"}.png"),
-                                        Image.asset(
-                                            "assets/images/${_items[page].maxStars > 2 ? "gold_star" : "star"}.png"),
-                                      ])
-                                ])));
+                                    Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Image.asset(
+                                              "assets/images/${_items[page].maxStars > 0 ? "gold_star" : "star"}.png"),
+                                          Image.asset(
+                                              "assets/images/${_items[page].maxStars > 1 ? "gold_star" : "star"}.png"),
+                                          Image.asset(
+                                              "assets/images/${_items[page].maxStars > 2 ? "gold_star" : "star"}.png"),
+                                        ])
+                                  ])),
+                        ));
                   },
                   controller: _pageController));
         });
