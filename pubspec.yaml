@@ -67,6 +67,7 @@ flutter:
   assets:
     - assets/audio/sfx/
     - assets/audio/sfx/uke/
+    - assets/audio/sfx/marimba/
     - assets/
     - assets/images/
     - assets/icon/
