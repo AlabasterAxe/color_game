@@ -39,7 +39,6 @@ class GameEndCardState extends State<GameEndCard> {
                     children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-<<<<<<< HEAD
                     child: SpinningAnimatedStar(
                         earned: widget.earnedStars > 0,
                         size: 80,
@@ -58,20 +57,6 @@ class GameEndCardState extends State<GameEndCard> {
                         earned: widget.earnedStars > 2,
                         size: 80,
                         durationMS: 1900),
-=======
-                    child: Image.asset(
-                        "assets/images/${widget.earnedStars > 0 ? "gold_star" : "star"}.png"),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Image.asset(
-                        "assets/images/${widget.earnedStars > 1 ? "gold_star" : "star"}.png"),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Image.asset(
-                        "assets/images/${widget.earnedStars > 2 ? "gold_star" : "star"}.png"),
->>>>>>> eeaab9f174627f13af8715feb29d7312b4631546
                   ),
                 ])),
             Row(mainAxisSize: MainAxisSize.min, children: [
