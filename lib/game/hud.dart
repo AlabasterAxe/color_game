@@ -40,7 +40,11 @@ class Hud extends StatelessWidget {
             style: TextStyle(
                 fontSize: 16, color: Colors.white, fontWeight: FontWeight.w800),
           ),
-          Text("$movesLeft")
+          Text(
+            "$movesLeft",
+            style: TextStyle(
+                fontSize: 16, color: Colors.white, fontWeight: FontWeight.w800),
+          )
         ],
       );
     }
