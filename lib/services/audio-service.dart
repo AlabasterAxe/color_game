@@ -12,6 +12,9 @@ enum SoundEffectType {
   MEDIUM_POOF,
   LARGE_POOF,
   SPLASH,
+  WHOOSH,
+  SUCCESS,
+  FAILURE,
 }
 
 final Map<SoundEffectType, List<String>> sfxFileLocations =
@@ -28,10 +31,20 @@ final Map<SoundEffectType, List<String>> sfxFileLocations =
   SoundEffectType.SPLASH: [
     "audio/sfx/splash.wav",
   ],
+  SoundEffectType.WHOOSH: [
+    "audio/sfx/whoosh.wav",
+  ],
+  SoundEffectType.SUCCESS: [
+    "audio/sfx/success.wav",
+  ],
+  SoundEffectType.FAILURE: [
+    "audio/sfx/failure.wav",
+  ],
 };
 
 enum Instrument {
   UKULELE,
+  MARIMBA,
 }
 
 enum NoteName {
@@ -113,6 +126,20 @@ final Map<Instrument, Map<NoteName, String>> INSTRUMENTS = {
     NoteName.A: "audio/sfx/uke/a.mp3",
     NoteName.A_SHARP: "audio/sfx/uke/a#.mp3",
     NoteName.B: "audio/sfx/uke/b.mp3",
+  },
+  Instrument.MARIMBA: {
+    NoteName.C: "audio/sfx/marimba/c.wav",
+    NoteName.C_SHARP: "audio/sfx/marimba/c#.wav",
+    NoteName.D: "audio/sfx/marimba/d.wav",
+    NoteName.D_SHARP: "audio/sfx/marimba/d#.wav",
+    NoteName.E: "audio/sfx/marimba/e.wav",
+    NoteName.F: "audio/sfx/marimba/f.wav",
+    NoteName.F_SHARP: "audio/sfx/marimba/f#.wav",
+    NoteName.G: "audio/sfx/marimba/g.wav",
+    NoteName.G_SHARP: "audio/sfx/marimba/g#.wav",
+    NoteName.A: "audio/sfx/marimba/a.wav",
+    NoteName.A_SHARP: "audio/sfx/marimba/a#.wav",
+    NoteName.B: "audio/sfx/marimba/b.wav",
   }
 };
 
