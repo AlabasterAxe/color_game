@@ -29,7 +29,7 @@ class GameEndCardState extends State<GameEndCard> {
     Size screenSize = MediaQuery.of(context).size;
     double starSize = screenSize.width / 6;
     String message = [
-      "Better Luck Next Time",
+      "Nice Try",
       "Good Job",
       "Nice Work!",
       "Great Job!"

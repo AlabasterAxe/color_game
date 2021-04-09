@@ -110,7 +110,6 @@ class _WorldMapViewState extends State<WorldMapView>
                   itemBuilder: (context, page) {
                     return FractionallySizedBox(
                         widthFactor: .9,
-                        heightFactor: .7,
                         child: Card(
                             shape: CARD_SHAPE,
                             elevation: 4,
