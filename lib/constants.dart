@@ -187,7 +187,7 @@ List<ColorGameConfig> levels = [
       GameBox(Offset(0, 2), YELLOW_COLOR),
     ],
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: pointStarEvaluator(threeStar: 35),
+    starEvaluator: pointStarEvaluator(threeStar: 4),
   ),
   ColorGameConfig(
     "tut_3",
