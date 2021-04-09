@@ -44,9 +44,7 @@ class GameEndCardState extends State<GameEndCard> {
               children: [
                 Text(
                   message,
-                  style: TextStyle(
-                      fontSize: widget.earnedStars == 0 ? 18 : 36,
-                      fontWeight: FontWeight.w800),
+                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.w800),
                 ),
                 SizedBox(
                   height: 32,
