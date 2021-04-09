@@ -28,11 +28,12 @@ class GameEndCardState extends State<GameEndCard> {
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     double starSize = screenSize.width / 6;
-    String message = widget.earnedStars == 3
-        ? "Great Job!"
-        : widget.earnedStars == 2
-            ? "Nice Work!"
-            : "Good Job";
+    String message = [
+      "Better Luck Next Time",
+      "Good Job",
+      "Nice Work!",
+      "Great Job!"
+    ][widget.earnedStars];
     return Card(
         shape: CARD_SHAPE,
         elevation: 4,
@@ -43,7 +44,9 @@ class GameEndCardState extends State<GameEndCard> {
               children: [
                 Text(
                   message,
-                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.w800),
+                  style: TextStyle(
+                      fontSize: widget.earnedStars == 0 ? 18 : 36,
+                      fontWeight: FontWeight.w800),
                 ),
                 SizedBox(
                   height: 32,
