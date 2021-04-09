@@ -21,6 +21,7 @@ class _AnimatedScoreState extends State<AnimatedScore>
 
     controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    controller.forward();
   }
 
   @override

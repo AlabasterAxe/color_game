@@ -72,7 +72,7 @@ CompletionEvaluator moveCompletionEvaluator(int moveLimit) {
   return (List<GameEvent> events) {
     int numMoves =
         events.where((event) => event.type == GameEventType.USER_MOVE).length;
-    return numMoves > moveLimit;
+    return numMoves >= moveLimit;
   };
 }
 
@@ -284,7 +284,7 @@ List<ColorGameConfig> levels = [
     ],
     completionEvaluator: moveCompletionEvaluator(15),
     moveLimit: 15,
-    starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 15, oneStar: 30),
+    starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 10, oneStar: 15),
   ),
   ColorGameConfig(
     "level_9",

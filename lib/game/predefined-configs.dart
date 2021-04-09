@@ -82,7 +82,8 @@ ColorGameConfig immovable() {
   ];
   return ColorGameConfig(
     "immovable_boxes",
-    goalString: "Black boxes can't move at all. Trust me, we've tried.",
+    goalString:
+        "Black boxes can't move at all. Trust me, we've tried. Just make a purple quad.",
     gridSize: Size(6, 6),
     predefinedGrid: game,
     completionEvaluator: (_) => false,
@@ -131,7 +132,8 @@ ColorGameConfig undraggable() {
   ];
   return ColorGameConfig(
     "undraggable_boxes",
-    goalString: "Grey boxes don't like to be touched.",
+    goalString:
+        "Grey boxes don't like to be touched. Use the purple boxes to make a quad out of the grey boxes.",
     gridSize: Size(6, 6),
     predefinedGrid: game,
     completionEvaluator: (_) => false,

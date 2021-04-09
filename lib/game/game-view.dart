@@ -14,6 +14,7 @@ import '../model.dart';
 import '../shared-pref-helper.dart';
 import 'game-board.dart';
 import 'hud.dart';
+import 'sound-game-event-listener.dart';
 
 class InvertedRectClipper extends CustomClipper<Path> {
   @override
@@ -49,6 +50,7 @@ class _GameViewState extends State<GameView> {
   int? earnedStars;
   Key gameKey = UniqueKey();
   List<GameEvent> events = [];
+  late SoundGameEventListener soundGameEventListener;
 
   @override
   void initState() {
@@ -58,23 +60,17 @@ class _GameViewState extends State<GameView> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    soundGameEventListener =
+        SoundGameEventListener(AppContext.of(context).audioService);
+  }
+
   void _handleNewRun(RunEventMetadata metadata) {
     setState(() {
       score += pow(metadata.runLength, metadata.runStreakLength) *
-          metadata.multiples as int;
-      if (metadata.runStreakLength == 1) {
-        AppContext.of(context)
-            .audioService
-            .playSoundEffect(SoundEffectType.SMALL_POOF);
-      } else if (metadata.runStreakLength == 2) {
-        AppContext.of(context)
-            .audioService
-            .playSoundEffect(SoundEffectType.MEDIUM_POOF);
-      } else if (metadata.runStreakLength >= 3) {
-        AppContext.of(context)
-            .audioService
-            .playSoundEffect(SoundEffectType.LARGE_POOF);
-      }
+          metadata.multiples! as int;
     });
   }
 
@@ -117,6 +113,7 @@ class _GameViewState extends State<GameView> {
   }
 
   void _handleGameEvent(GameEvent e) {
+    soundGameEventListener.onGameEvent(e);
     events.add(e);
     if (widget.config.completionEvaluator(events)) {
       _doGameOver();

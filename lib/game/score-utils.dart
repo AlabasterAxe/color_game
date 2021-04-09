@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'game-board.dart';
+import '../model.dart';
 
 int calculateFinalScore(List<GameEvent> events) {
   int score = 0;
