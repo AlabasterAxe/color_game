@@ -19,6 +19,9 @@ class SoundGameEventListener {
 
   onGameEvent(GameEvent event) {
     switch (event.type) {
+      case GameEventType.USER_MOVE:
+        audioService.playSoundEffect(SoundEffectType.WHOOSH);
+        break;
       case GameEventType.RUN:
         if (playedSoundsForStep != event.metadata.stepNumber &&
             event.metadata.runStreakLength == 1) {
@@ -33,12 +36,11 @@ class SoundGameEventListener {
 
           for (int interval in intervalsToPlay) {
             audioService.playNote(
-                Instrument.UKULELE, currentNote.interval(interval));
+                Instrument.MARIMBA, currentNote.interval(interval));
           }
           playedSoundsForStep = event.metadata.stepNumber;
         }
 
-        // TODO: Handle this case.
         break;
       case GameEventType.SQUARE:
         // TODO: Handle this case.
