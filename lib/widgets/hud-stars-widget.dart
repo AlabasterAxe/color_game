@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:color_game/widgets/spinning-animated-star.dart';
 import 'package:flutter/cupertino.dart';
 

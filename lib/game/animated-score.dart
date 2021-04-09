@@ -40,16 +40,23 @@ class _AnimatedScoreState extends State<AnimatedScore>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-        animation: controller,
-        builder: (context, _) {
-          return Text(
-              "${((widget.score - prevScore!) * controller.value + prevScore!).round()}",
-              style: TextStyle(
-                  color: colorAnimation.value,
-                  decoration: TextDecoration.none,
-                  fontSize: 36),
-              textAlign: TextAlign.center);
-        });
+    return Column(children: [
+      Text(
+        "score",
+        style: TextStyle(
+            fontSize: 16, color: Colors.white, fontWeight: FontWeight.w800),
+      ),
+      AnimatedBuilder(
+          animation: controller,
+          builder: (context, _) {
+            return Text(
+                "${((widget.score - prevScore!) * controller.value + prevScore!).round()}",
+                style: TextStyle(
+                    color: colorAnimation.value,
+                    decoration: TextDecoration.none,
+                    fontSize: 36),
+                textAlign: TextAlign.center);
+          })
+    ]);
   }
 }

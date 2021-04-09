@@ -227,7 +227,8 @@ class _GameViewState extends State<GameView> {
           }));
     }
 
-    return Container(
+    return Scaffold(
+        body: Container(
       color: BOARD_BACKGROUND_COLOR,
       child: SafeArea(
         child:
@@ -236,6 +237,6 @@ class _GameViewState extends State<GameView> {
         //   Positioned(left: 0, right: 0, bottom: 0, child: BannerAdWidget())
         // ]),
       ),
-    );
+    ));
   }
 }

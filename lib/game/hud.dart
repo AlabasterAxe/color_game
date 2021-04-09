@@ -17,7 +17,7 @@ class Hud extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    Widget rightSizeWidget = ClipRRect(
+    Widget rightSideWidget = ClipRRect(
         borderRadius: BorderRadius.circular(8.0),
         child: Image.asset(
           "assets/icon/squarified.png",
@@ -25,7 +25,7 @@ class Hud extends StatelessWidget {
           fit: BoxFit.fitWidth,
         ));
     if (timerWidget != null) {
-      rightSizeWidget = Container(
+      rightSideWidget = Container(
           width: screenSize.width / 10,
           height: screenSize.height / 10,
           child: timerWidget!);
@@ -47,7 +47,7 @@ class Hud extends StatelessWidget {
                   Expanded(
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: [rightSizeWidget]))
+                          children: [rightSideWidget]))
                 ]))
       ],
     );
