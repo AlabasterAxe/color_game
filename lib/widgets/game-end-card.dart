@@ -1,4 +1,6 @@
 import 'package:color_game/constants.dart';
+import 'package:color_game/main.dart';
+import 'package:color_game/services/audio-service.dart';
 import 'package:color_game/widgets/spinning-animated-star.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +24,15 @@ class GameEndCardState extends State<GameEndCard> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    AppContext.of(context).audioService.playSoundEffect(widget.earnedStars > 0
+        ? SoundEffectType.SUCCESS
+        : SoundEffectType.FAILURE);
   }
 
   @override

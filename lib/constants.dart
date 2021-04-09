@@ -284,7 +284,7 @@ List<ColorGameConfig> levels = [
     ],
     completionEvaluator: moveCompletionEvaluator(15),
     moveLimit: 15,
-    starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 10, oneStar: 15),
+    starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 10, oneStar: 14),
   ),
   ColorGameConfig(
     "level_9",
@@ -318,7 +318,7 @@ List<ColorGameConfig> levels = [
     ],
     completionEvaluator: moveCompletionEvaluator(30),
     moveLimit: 30,
-    starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 15, oneStar: 30),
+    starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 15, oneStar: 29),
   ),
   ColorGameConfig(
     "level_11",
