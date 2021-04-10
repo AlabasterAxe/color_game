@@ -200,8 +200,13 @@ class _WorldMapViewState extends State<WorldMapView>
                                                         onGameEvent: (_) {}),
                                                   )),
                                               Opacity(
-                                                opacity: .7,
+                                                opacity: page !=
+                                                        (_numVisibleItems - 1)
+                                                    ? .7
+                                                    : 1,
                                                 child: ColorCollapseButton(
+                                                  throb: page !=
+                                                      (_numVisibleItems - 1),
                                                   child: Icon(
                                                     page ==
                                                             (_numVisibleItems -

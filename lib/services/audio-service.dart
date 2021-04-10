@@ -15,6 +15,7 @@ enum SoundEffectType {
   WHOOSH,
   SUCCESS,
   FAILURE,
+  POP,
 }
 
 final Map<SoundEffectType, List<String>> sfxFileLocations =
@@ -39,6 +40,9 @@ final Map<SoundEffectType, List<String>> sfxFileLocations =
   ],
   SoundEffectType.FAILURE: [
     "audio/sfx/failure.wav",
+  ],
+  SoundEffectType.POP: [
+    "audio/sfx/pop.wav",
   ],
 };
 

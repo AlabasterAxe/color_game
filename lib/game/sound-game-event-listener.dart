@@ -22,6 +22,9 @@ class SoundGameEventListener {
       case GameEventType.USER_MOVE:
         audioService.playSoundEffect(SoundEffectType.WHOOSH);
         break;
+      case GameEventType.LEFT_OVER_BOX:
+        audioService.playSoundEffect(SoundEffectType.POP);
+        break;
       case GameEventType.RUN:
         if (playedSoundsForStep != event.metadata.stepNumber &&
             event.metadata.runStreakLength == 1) {
