@@ -95,11 +95,24 @@ class _GameViewState extends State<GameView> {
             _handleGameEvent(GameEvent(GameEventType.TIMER_FINISHED));
           });
     }
+    int? scoreGoal;
+    if (widget.config.starEvaluator is PointStarEvaluator) {
+      PointStarEvaluator scoreGoals =
+          widget.config.starEvaluator as PointStarEvaluator;
+      if (scoreGoals.oneStar != null && score < scoreGoals.oneStar!) {
+        scoreGoal = scoreGoals.oneStar!;
+      } else if (scoreGoals.twoStar != null && score < scoreGoals.twoStar!) {
+        scoreGoal = scoreGoals.twoStar!;
+      } else {
+        scoreGoal = scoreGoals.threeStar;
+      }
+    }
     return Hud(
       numberOfStars: widget.config.starEvaluator(events),
       score: score,
       timerWidget: timerWidget,
       movesLeft: movesLeft,
+      scoreGoal: scoreGoal,
     );
   }
 

@@ -21,7 +21,7 @@ ColorGameConfig easyToMakePlus() {
     gridSize: Size(4, 4),
     predefinedGrid: game,
     completionEvaluator: (_) => false,
-    starEvaluator: (_) => 3,
+    starEvaluator: PointStarEvaluator(threeStar: 0),
   );
 }
 
@@ -87,7 +87,7 @@ ColorGameConfig immovable() {
     gridSize: Size(6, 6),
     predefinedGrid: game,
     completionEvaluator: (_) => false,
-    starEvaluator: (_) => 3,
+    starEvaluator: PointStarEvaluator(threeStar: 0),
   );
 }
 
@@ -137,7 +137,7 @@ ColorGameConfig undraggable() {
     gridSize: Size(6, 6),
     predefinedGrid: game,
     completionEvaluator: (_) => false,
-    starEvaluator: (_) => 3,
+    starEvaluator: PointStarEvaluator(threeStar: 0),
   );
 }
 

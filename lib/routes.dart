@@ -7,6 +7,7 @@ import 'views/home-view.dart';
 import 'views/settings-view.dart';
 import 'views/splash-view.dart';
 import 'views/world-map-view.dart';
+import 'constants.dart';
 
 enum RouteId {
   homeView,
@@ -47,7 +48,7 @@ Map<RouteId, _RouteConfig> _routeConfiguration = {
                     goalString:
                         "Hmm... you're definitely not supposed to see this level.",
                     completionEvaluator: (_) => false,
-                    starEvaluator: (_) => 3));
+                    starEvaluator: PointStarEvaluator(threeStar: 0)));
           })),
   RouteId.settingsView: _RouteConfig(
       name: '/settings', routeBuilder: (_) => _staticRoute(SettingsView())),

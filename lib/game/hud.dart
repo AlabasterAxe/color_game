@@ -9,13 +9,15 @@ class Hud extends StatelessWidget {
   final int score;
   final Widget? timerWidget;
   final int? movesLeft;
-  const Hud(
-      {Key? key,
-      required this.numberOfStars,
-      required this.score,
-      this.timerWidget,
-      this.movesLeft})
-      : super(key: key);
+  final int? scoreGoal;
+  const Hud({
+    Key? key,
+    required this.numberOfStars,
+    required this.score,
+    this.timerWidget,
+    this.movesLeft,
+    this.scoreGoal,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,21 @@ class Hud extends StatelessWidget {
           ),
           Text(
             "$movesLeft",
+            style: TextStyle(
+                fontSize: 16, color: Colors.white, fontWeight: FontWeight.w800),
+          )
+        ],
+      );
+    } else if (scoreGoal != null) {
+      rightSideWidget = Column(
+        children: [
+          Text(
+            "score goal",
+            style: TextStyle(
+                fontSize: 16, color: Colors.white, fontWeight: FontWeight.w800),
+          ),
+          Text(
+            "$scoreGoal",
             style: TextStyle(
                 fontSize: 16, color: Colors.white, fontWeight: FontWeight.w800),
           )

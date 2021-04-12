@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import 'game/game-board.dart';
 import 'game/generate-game-boxes.dart';
 import 'game/predefined-configs.dart';
 import 'game/score-utils.dart';
@@ -41,10 +40,8 @@ const List<Color> COLORS = [
 ];
 
 typedef bool CompletionEvaluator(List<GameEvent> events);
-typedef int StarEvaluator(List<GameEvent> events);
 
 CompletionEvaluator noopCompletionEvaluator = (_) => false;
-StarEvaluator dummyStarEvaluator = (_) => 2;
 CompletionEvaluator timeFinishedEvaluator = (events) =>
     events.any((element) => element.type == GameEventType.TIMER_FINISHED);
 
@@ -54,18 +51,72 @@ CompletionEvaluator runCompletionEvaluator =
 CompletionEvaluator boardFullFinishedEvaluator = (events) =>
     events.any((element) => element.type == GameEventType.BOARD_FULL);
 
-StarEvaluator pointStarEvaluator({int? threeStar, int? twoStar, int? oneStar}) {
-  return (List<GameEvent> events) {
+class PointStarEvaluator implements StarEvaluator {
+  // It always must be possible to achieve 3 stars.
+  final int threeStar;
+  final int? twoStar;
+  final int? oneStar;
+
+  PointStarEvaluator({required this.threeStar, this.twoStar, this.oneStar});
+  int call(List<GameEvent> events) {
     int score = calculateFinalScore(events);
-    if (threeStar != null && score > threeStar) {
+    if (score >= threeStar) {
       return 3;
-    } else if (twoStar != null && score > twoStar) {
+    } else if (twoStar != null && score >= twoStar!) {
       return 2;
-    } else if (oneStar != null && score > oneStar) {
+    } else if (oneStar != null && score >= oneStar!) {
       return 1;
     }
     return 0;
-  };
+  }
+}
+
+class MoveStarEvaluator implements StarEvaluator {
+  final int threeStar;
+  final int? twoStar;
+  final int? oneStar;
+
+  MoveStarEvaluator({required this.threeStar, this.twoStar, this.oneStar});
+
+  int call(List<GameEvent> events) {
+    int numMoves =
+        events.where((event) => event.type == GameEventType.USER_MOVE).length;
+    if (numMoves <= threeStar) {
+      return 3;
+    } else if (twoStar != null && numMoves <= twoStar!) {
+      return 2;
+    } else if (oneStar != null && numMoves <= oneStar!) {
+      return 1;
+    }
+    return 0;
+  }
+}
+
+class ConditionalPointStarEvaluator implements StarEvaluator {
+  final int threeStar;
+  final int? twoStar;
+  final int? oneStar;
+  final GameEventType forbiddenEventType;
+
+  ConditionalPointStarEvaluator(
+      {required this.threeStar,
+      this.twoStar,
+      this.oneStar,
+      required this.forbiddenEventType});
+
+  @override
+  int call(List<GameEvent> events) {
+    int starValue = PointStarEvaluator(
+        threeStar: threeStar, twoStar: twoStar, oneStar: oneStar)(events);
+    for (GameEvent e in events) {
+      if (e.type == this.forbiddenEventType) {
+        return 0;
+      } else if (e.type == GameEventType.NO_MOVES) {
+        return starValue;
+      }
+    }
+    return starValue;
+  }
 }
 
 CompletionEvaluator moveCompletionEvaluator(int moveLimit) {
@@ -73,21 +124,6 @@ CompletionEvaluator moveCompletionEvaluator(int moveLimit) {
     int numMoves =
         events.where((event) => event.type == GameEventType.USER_MOVE).length;
     return numMoves >= moveLimit;
-  };
-}
-
-StarEvaluator moveStarEvaluator({int? threeStar, int? twoStar, int? oneStar}) {
-  return (List<GameEvent> events) {
-    int numMoves =
-        events.where((event) => event.type == GameEventType.USER_MOVE).length;
-    if (threeStar != null && numMoves <= threeStar) {
-      return 3;
-    } else if (twoStar != null && numMoves <= twoStar) {
-      return 2;
-    } else if (oneStar != null && numMoves <= oneStar) {
-      return 1;
-    }
-    return 0;
   };
 }
 
@@ -147,7 +183,7 @@ ColorGameConfig generateCrossLevel() {
     gridSize: Size(6, 6),
     predefinedGrid: boxes,
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: pointStarEvaluator(threeStar: 75, twoStar: 50, oneStar: 40),
+    starEvaluator: PointStarEvaluator(threeStar: 75, twoStar: 50, oneStar: 40),
   );
 }
 
@@ -162,7 +198,7 @@ List<ColorGameConfig> levels = [
       GameBox(Offset(1, 0), YELLOW_COLOR),
     ],
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: pointStarEvaluator(threeStar: 2),
+    starEvaluator: PointStarEvaluator(threeStar: 3),
   ),
   ColorGameConfig(
     "tut_2",
@@ -176,7 +212,7 @@ List<ColorGameConfig> levels = [
       GameBox(Offset(0, 2), YELLOW_COLOR),
     ],
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: pointStarEvaluator(threeStar: 4),
+    starEvaluator: PointStarEvaluator(threeStar: 5),
   ),
   ColorGameConfig(
     "tut_3",
@@ -205,7 +241,7 @@ List<ColorGameConfig> levels = [
       GameBox(Offset(2, -2), GREEN_COLOR),
     ],
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: pointStarEvaluator(threeStar: 79),
+    starEvaluator: PointStarEvaluator(threeStar: 80),
   ),
   ColorGameConfig(
     "tut_4",
@@ -223,7 +259,7 @@ List<ColorGameConfig> levels = [
       GameBox(Offset(-.5, -.5), RED_COLOR),
     ],
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: pointStarEvaluator(threeStar: 24),
+    starEvaluator: PointStarEvaluator(threeStar: 25),
   ),
   ColorGameConfig(
     "tut_5",
@@ -249,14 +285,14 @@ List<ColorGameConfig> levels = [
       GameBox(Offset(-.5, -.5), RED_COLOR),
     ],
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: pointStarEvaluator(threeStar: 24),
+    starEvaluator: PointStarEvaluator(threeStar: 25),
   ),
   ColorGameConfig(
     "level_6",
     goalString: "Take your time. Disappear the boxes. Get some points.",
     completionEvaluator: noopCompletionEvaluator,
     starEvaluator:
-        pointStarEvaluator(threeStar: 200, twoStar: 100, oneStar: 50),
+        PointStarEvaluator(threeStar: 200, twoStar: 100, oneStar: 50),
   ),
   ColorGameConfig(
     "level_7",
@@ -274,7 +310,7 @@ List<ColorGameConfig> levels = [
     ],
     completionEvaluator: moveCompletionEvaluator(15),
     moveLimit: 15,
-    starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 10, oneStar: 14),
+    starEvaluator: MoveStarEvaluator(threeStar: 5, twoStar: 10, oneStar: 14),
   ),
   ColorGameConfig(
     "level_10",
@@ -292,7 +328,7 @@ List<ColorGameConfig> levels = [
     ],
     completionEvaluator: moveCompletionEvaluator(30),
     moveLimit: 30,
-    starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 15, oneStar: 29),
+    starEvaluator: MoveStarEvaluator(threeStar: 5, twoStar: 15, oneStar: 29),
   ),
   ColorGameConfig(
     "level_11",
@@ -300,18 +336,11 @@ List<ColorGameConfig> levels = [
     gridSize: Size(7, 7),
     predefinedGrid: generateGameBoxes(colors: COLORS, size: 5),
     completionEvaluator: timeFinishedEvaluator,
-    starEvaluator: (List<GameEvent> events) {
-      int starValue = pointStarEvaluator(
-          threeStar: 200, twoStar: 150, oneStar: 100)(events);
-      for (GameEvent e in events) {
-        if (e.type == GameEventType.TIMER_FINISHED) {
-          return 0;
-        } else if (e.type == GameEventType.NO_MOVES) {
-          return starValue;
-        }
-      }
-      return starValue;
-    },
+    starEvaluator: ConditionalPointStarEvaluator(
+        threeStar: 200,
+        twoStar: 150,
+        oneStar: 100,
+        forbiddenEventType: GameEventType.TIMER_FINISHED),
     boxAddingSpec: BoxAddingSpec(
         behavior: BoxAddingBehavior.PER_MOVE, addBoxEveryNMoves: 1),
     timerSpec: TimerSpec(numberOfSeconds: 60),
@@ -322,7 +351,7 @@ List<ColorGameConfig> levels = [
       predefinedGrid: generateGameBoxes(colors: COLORS, size: 5),
       completionEvaluator: boardFullFinishedEvaluator,
       starEvaluator:
-          pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100),
+          PointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100),
       boxAddingSpec: BoxAddingSpec(
         behavior: BoxAddingBehavior.PER_TIME,
         boxAddingPeriod: Duration(seconds: 1),
@@ -339,7 +368,7 @@ List<ColorGameConfig> levels = [
       ...getImmovableBorder()
     ],
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: pointStarEvaluator(threeStar: 24),
+    starEvaluator: PointStarEvaluator(threeStar: 24),
   ),
   ColorGameConfig(
     "level_17",
@@ -349,7 +378,7 @@ List<ColorGameConfig> levels = [
       ...generateGameBoxes(colors: [...COLORS, Colors.orange], size: 6),
     ],
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: pointStarEvaluator(threeStar: 24),
+    starEvaluator: PointStarEvaluator(threeStar: 24),
   ),
   ColorGameConfig(
     "level_20",
@@ -361,7 +390,7 @@ List<ColorGameConfig> levels = [
     ],
     completionEvaluator: moveCompletionEvaluator(10),
     moveLimit: 10,
-    starEvaluator: pointStarEvaluator(threeStar: 100),
+    starEvaluator: PointStarEvaluator(threeStar: 100),
   ),
   generateCrossLevel(),
   ColorGameConfig(
@@ -376,15 +405,15 @@ List<ColorGameConfig> levels = [
           attributes: [GameBoxAttribute.UNGRAVITIZABLE]),
     ],
     completionEvaluator: runCompletionEvaluator,
-    starEvaluator: (List<GameEvent> events) =>
-        events.any((element) => element.type == GameEventType.RUN) ? 0 : 3,
+    starEvaluator: ConditionalPointStarEvaluator(
+        forbiddenEventType: GameEventType.RUN, threeStar: 0),
   ),
   ColorGameConfig(
     "level_25",
     goalString:
         "Get 1000 points! All or nothing. It's definitely probably possible.",
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: pointStarEvaluator(threeStar: 1000),
+    starEvaluator: PointStarEvaluator(threeStar: 1000),
   ),
 ];
 

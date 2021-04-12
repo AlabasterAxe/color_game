@@ -128,6 +128,10 @@ class GameEvent {
       : this.datetime = datetime ?? DateTime.now();
 }
 
+abstract class StarEvaluator {
+  int call(List<GameEvent> events);
+}
+
 class ColorGameConfig {
   // the number of squares on each side of the board
   final Size gridSize;
@@ -140,7 +144,7 @@ class ColorGameConfig {
   final int? moveLimit;
 
   final bool Function(List<GameEvent> events) completionEvaluator;
-  final int Function(List<GameEvent> events) starEvaluator;
+  final StarEvaluator starEvaluator;
 
   final bool gravitizeAfterEveryMove;
 
