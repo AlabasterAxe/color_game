@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:color_game/constants.dart';
 import 'package:color_game/services/analytics-service.dart';
 import 'package:color_game/services/audio-service.dart';
+import 'package:color_game/widgets/banner-ad-widget.dart';
 import 'package:color_game/widgets/circular-timer.dart';
 import 'package:color_game/widgets/game-end-card.dart';
 import 'package:flutter/material.dart';
@@ -202,20 +203,8 @@ class _GameViewState extends State<GameView> {
       ),
       ClipPath(
         clipper: InvertedRectClipper(),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: 5,
-            sigmaY: 5,
-          ),
-          child: Container(
-            color: Colors.transparent,
-          ),
-        ),
-      ),
-      ClipPath(
-        clipper: InvertedRectClipper(),
         child: Opacity(
-          opacity: .1,
+          opacity: .2,
           child: Container(
             color: Colors.black,
           ),
@@ -246,11 +235,10 @@ class _GameViewState extends State<GameView> {
         body: Container(
       color: BOARD_BACKGROUND_COLOR,
       child: SafeArea(
-        child:
-            // Stack(children: [
-            Stack(alignment: Alignment.center, children: stackChildren),
-        //   Positioned(left: 0, right: 0, bottom: 0, child: BannerAdWidget())
-        // ]),
+        child: Stack(children: [
+          Stack(alignment: Alignment.center, children: stackChildren),
+          Positioned(left: 0, right: 0, bottom: 0, child: BannerAdWidget())
+        ]),
       ),
     ));
   }
