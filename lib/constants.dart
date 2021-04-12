@@ -220,7 +220,8 @@ List<ColorGameConfig> levels = [
   ),
   ColorGameConfig(
     "tut_4",
-    goalString: "Learn about the magic of quads.",
+    goalString:
+        "Making a 2x2 grid (or \"quad\") of a single color clears all the boxes of that color.",
     gridSize: Size(6, 6),
     predefinedGrid: [
       GameBox(Offset(-2.5, -2.5), RED_COLOR),

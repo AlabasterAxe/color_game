@@ -177,6 +177,7 @@ enum GameEventType {
   USER_MOVE,
   TIMER_FINISHED,
   BOARD_FULL,
+  GAME_START,
 }
 
 class RunEventMetadata {

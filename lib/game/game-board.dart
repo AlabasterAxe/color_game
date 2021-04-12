@@ -82,6 +82,8 @@ class _GameBoardWidgetState extends State<GameBoardWidget> {
           _doPeriodicBoxAdd);
     }
 
+    widget.onGameEvent(GameEvent(GameEventType.GAME_START));
+
     getUser().then((user) {
       setState(() {
         developerMode = user.settings.developerMode;

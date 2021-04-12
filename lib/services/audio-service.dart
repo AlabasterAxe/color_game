@@ -177,7 +177,7 @@ class AudioService {
         .writeAsBytes((await _fetchAsset(fileName)).buffer.asUint8List());
   }
 
-  playSoundEffect(SoundEffectType type) {
+  playSoundEffect(SoundEffectType type, {double volume = 1.0}) {
     AudioPlayer player = AudioPlayer();
     List<String>? variants = sfxFileLocations[type];
     if (variants != null) {
