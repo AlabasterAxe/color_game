@@ -91,17 +91,6 @@ StarEvaluator moveStarEvaluator({int? threeStar, int? twoStar, int? oneStar}) {
   };
 }
 
-ColorGameConfig gravitizePerMoveLevel = ColorGameConfig(
-  "level_16",
-  goalString:
-      "This level is actually on Jupiter. As a result, gravity can't be contained.",
-  gridSize: Size(6, 6),
-  // predefinedGrid: generateGameBoxes(colors: COLORS, size: 4),
-  completionEvaluator: noopCompletionEvaluator,
-  starEvaluator: pointStarEvaluator(threeStar: 200, twoStar: 150, oneStar: 100),
-  gravitizeAfterEveryMove: true,
-);
-
 ColorGameConfig generateCrossLevel() {
   List<GameBox> boxes = generateGameBoxes(colors: COLORS, size: 6);
   GameBox box = boxes.removeAt(0);
@@ -352,7 +341,6 @@ List<ColorGameConfig> levels = [
     completionEvaluator: noopCompletionEvaluator,
     starEvaluator: pointStarEvaluator(threeStar: 24),
   ),
-  gravitizePerMoveLevel,
   ColorGameConfig(
     "level_17",
     goalString: "I guess most of these aren't really goals...",
