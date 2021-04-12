@@ -38,6 +38,14 @@ class SpinningAnimatedStarState extends State<SpinningAnimatedStar>
     }
   }
 
+  @override
+  void dispose() {
+    if (animation != null) {
+      animation.dispose();
+    }
+    super.dispose();
+  }
+
   void runAnimations() {
     imageAsset = TweenSequence([
       TweenSequenceItem(

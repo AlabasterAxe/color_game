@@ -70,7 +70,6 @@ class User {
 }
 
 class TimerSpec {
-  final Key key = UniqueKey();
   final int numberOfSeconds;
 
   TimerSpec({required this.numberOfSeconds});

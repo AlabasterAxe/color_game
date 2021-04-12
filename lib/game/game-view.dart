@@ -88,7 +88,7 @@ class _GameViewState extends State<GameView> {
     if (widget.config.timerSpec != null) {
       TimerSpec spec = widget.config.timerSpec!;
       timerWidget = CircularTimer(
-          key: spec.key,
+          key: gameKey,
           duration: Duration(seconds: spec.numberOfSeconds),
           stop: gameOver,
           onFinished: () {
