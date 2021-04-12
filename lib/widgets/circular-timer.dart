@@ -53,9 +53,11 @@ class CircularTimerState extends State<CircularTimer>
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
       animation: controller,
-      builder: (context, child) => CustomPaint(
-            painter: CircularTimerPainter(1.0 - controller.value),
-          ));
+      builder: (context, child) => controller.value == 1.0
+          ? Container()
+          : CustomPaint(
+              painter: CircularTimerPainter(1.0 - controller.value),
+            ));
 }
 
 class CircularTimerPainter extends CustomPainter {
