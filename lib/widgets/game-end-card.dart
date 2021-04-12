@@ -53,7 +53,7 @@ class GameEndCardState extends State<GameEndCard> {
             child: Card(
                 shape: CARD_SHAPE,
                 elevation: 12,
-                color: Colors.grey.shade600,
+                color: BLUE_COLOR,
                 child: Padding(
                     padding: EdgeInsets.all(16),
                     child: Column(
@@ -103,7 +103,7 @@ class GameEndCardState extends State<GameEndCard> {
                                   child: Text(
                                     "Retry",
                                     style: TextStyle(
-                                        fontSize: 32,
+                                        fontSize: 24,
                                         color: BOARD_BACKGROUND_COLOR,
                                         fontWeight: FontWeight.w800),
                                     textAlign: TextAlign.center,
@@ -117,7 +117,7 @@ class GameEndCardState extends State<GameEndCard> {
                                   child: Text(
                                     "Next",
                                     style: TextStyle(
-                                        fontSize: 32,
+                                        fontSize: 24,
                                         color: BOARD_BACKGROUND_COLOR,
                                         fontWeight: FontWeight.w800),
                                     textAlign: TextAlign.center,
