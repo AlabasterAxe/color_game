@@ -113,6 +113,7 @@ class _GameViewState extends State<GameView> {
       timerWidget: timerWidget,
       movesLeft: movesLeft,
       scoreGoal: scoreGoal,
+      goalBoard: widget.config.goalBoard,
     );
   }
 

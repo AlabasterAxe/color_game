@@ -188,18 +188,21 @@ ColorGameConfig generateCrossLevel() {
 }
 
 List<ColorGameConfig> levels = [
-  ColorGameConfig(
-    "tut_1",
-    goalString: "Drag the middle column up to make a run of 3.",
-    gridSize: Size(3, 3),
-    predefinedGrid: [
-      GameBox(Offset(-1, 0), YELLOW_COLOR),
-      GameBox(Offset(0, 1), YELLOW_COLOR),
-      GameBox(Offset(1, 0), YELLOW_COLOR),
-    ],
-    completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: PointStarEvaluator(threeStar: 3),
-  ),
+  ColorGameConfig("tut_1",
+      goalString: "Drag the middle column up to make a run of 3.",
+      gridSize: Size(3, 3),
+      predefinedGrid: [
+        GameBox(Offset(-1, 0), YELLOW_COLOR),
+        GameBox(Offset(0, 1), YELLOW_COLOR),
+        GameBox(Offset(1, 0), YELLOW_COLOR),
+      ],
+      completionEvaluator: noopCompletionEvaluator,
+      starEvaluator: PointStarEvaluator(threeStar: 3),
+      goalBoard: [
+        GameBox(Offset(-1, 0), YELLOW_COLOR),
+        GameBox(Offset(0, 0), YELLOW_COLOR),
+        GameBox(Offset(1, 0), YELLOW_COLOR),
+      ]),
   ColorGameConfig(
     "tut_2",
     goalString: "Drag the middle row to the right to make a run of 5.",

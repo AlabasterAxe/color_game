@@ -151,6 +151,7 @@ class ColorGameConfig {
   final GameMode mode;
 
   final BoxAddingSpec? boxAddingSpec;
+  final List<GameBox>? goalBoard;
 
   const ColorGameConfig(
     this.label, {
@@ -164,6 +165,7 @@ class ColorGameConfig {
     this.moveLimit,
     this.mode = GameMode.POINT_GOAL,
     this.boxAddingSpec,
+    this.goalBoard,
   });
 }
 
