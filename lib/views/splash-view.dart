@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
@@ -9,7 +11,8 @@ class SplashView extends StatefulWidget {
   _SplashViewState createState() => _SplashViewState();
 }
 
-const Color BACKGROUND_COLOR = Color(0xff0D6334);
+const Color ANDROID_BACKGROUND_COLOR = Color(0xff0D6334);
+const Color IOS_BACKGROUND_COLOR = Color(0xff0f572f);
 
 class _SplashViewState extends State<SplashView>
     with SingleTickerProviderStateMixin {
@@ -32,16 +35,16 @@ class _SplashViewState extends State<SplashView>
 
     _videoController.addListener(() {
       setState(() {});
-      if (_videoController.value.position == _videoController.value.duration) {
-        Navigator.pushReplacementNamed(context, "/");
-      }
+      // if (_videoController.value.position == _videoController.value.duration) {
+      //   Navigator.pushReplacementNamed(context, "/");
+      // }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: BACKGROUND_COLOR,
+      color: Platform.isIOS ? IOS_BACKGROUND_COLOR : ANDROID_BACKGROUND_COLOR,
       child: Center(
           child: FractionallySizedBox(
         widthFactor: 1 / 2,
