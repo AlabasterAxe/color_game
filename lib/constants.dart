@@ -288,22 +288,6 @@ List<ColorGameConfig> levels = [
     starEvaluator: moveStarEvaluator(threeStar: 5, twoStar: 10, oneStar: 14),
   ),
   ColorGameConfig(
-    "level_9",
-    goalString: "Sometimes, you only have a few seconds.",
-    gridSize: Size(5, 5),
-    predefinedGrid: [
-      GameBox(Offset(0, -1), GREEN_COLOR),
-      GameBox(Offset(1, -2), GREEN_COLOR),
-      GameBox(Offset(2, -2), GREEN_COLOR),
-    ],
-    completionEvaluator: timeFinishedEvaluator,
-    starEvaluator: (List<GameEvent> events) =>
-        events.any((element) => element.type == GameEventType.TIMER_FINISHED)
-            ? 0
-            : 3,
-    timerSpec: TimerSpec(numberOfSeconds: 60),
-  ),
-  ColorGameConfig(
     "level_10",
     goalString: "Have I been here before?",
     gridSize: Size(6, 6),
