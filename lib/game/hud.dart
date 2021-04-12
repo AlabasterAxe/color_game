@@ -94,17 +94,33 @@ class Hud extends StatelessWidget {
         }
       }
 
-      double xDimension = maxX! - minX!;
-      double yDimension = maxY! - minY!;
-      goalBoardWidget = GameBoardWidget(
-          ColorGameConfig("goal",
-              goalString: "shouldn't be seen",
-              predefinedGrid: goalBoard!,
-              gridSize: Size(
-                  max(yDimension, xDimension), max(yDimension, xDimension)),
-              completionEvaluator: (_) => false,
-              starEvaluator: PointStarEvaluator(threeStar: 0)),
-          onGameEvent: (_) {});
+      double xDimension = (maxX! - minX!) + 1;
+      double yDimension = (maxY! - minY!) + 1;
+      rightSideWidget = Expanded(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Text(
+          "goal",
+          style: TextStyle(
+              fontSize: 16, color: Colors.white, fontWeight: FontWeight.w800),
+        ),
+        Flexible(
+          child: Center(
+            child: FractionallySizedBox(
+                widthFactor: .3,
+                child: AspectRatio(
+                    aspectRatio: 1,
+                    child: GameBoardWidget(
+                        ColorGameConfig("goal",
+                            goalString: "shouldn't be seen",
+                            predefinedGrid: goalBoard!,
+                            gridSize: Size(max(yDimension, xDimension),
+                                max(yDimension, xDimension)),
+                            completionEvaluator: (_) => false,
+                            starEvaluator: PointStarEvaluator(threeStar: 0)),
+                        onGameEvent: (_) {}))),
+          ),
+        )
+      ]));
     }
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -120,27 +136,7 @@ class Hud extends StatelessWidget {
                     numberOfStars: numberOfStars,
                     starWidth: screenSize.width / 12,
                   )),
-                  goalBoardWidget != null
-                      ? Expanded(
-                          child:
-                              Column(mainAxisSize: MainAxisSize.min, children: [
-                          Text(
-                            "goal",
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800),
-                          ),
-                          Flexible(
-                            child: Center(
-                              child: FractionallySizedBox(
-                                  widthFactor: .3,
-                                  child: AspectRatio(
-                                      aspectRatio: 1, child: goalBoardWidget)),
-                            ),
-                          )
-                        ]))
-                      : Expanded(child: AnimatedScore(score: score)),
+                  Expanded(child: AnimatedScore(score: score)),
                   Expanded(
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
