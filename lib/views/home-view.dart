@@ -57,46 +57,53 @@ class HomeView extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      ColorCollapseButton(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Image.asset("assets/images/high_scores.png"),
-                              Text("High Scores",
-                                  style: Theme.of(context).textTheme.bodyText1),
-                            ],
-                          ),
-                          onPressed: () {
-                            getScores().then((highScores) {
-                              highScores
-                                  .sort((a, b) => b.score.compareTo(a.score));
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return HighScoresDialog(
-                                      highScores: highScores);
-                                },
-                                barrierDismissible: false,
-                              );
-                            });
-                          }),
-                      ColorCollapseButton(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Image.asset("assets/images/play_button.png"),
-                              Text("Play",
-                                  style: Theme.of(context).textTheme.bodyText1),
-                            ],
-                          ),
-                          onPressed: () {
-                            analyticsService
-                                .logEvent(AnalyticsEvent.start_game);
-                            Navigator.pushNamed(
-                              context,
-                              "/world_map",
-                            );
-                          }),
+                      Expanded(
+                          child: ColorCollapseButton(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset("assets/images/high_scores.png"),
+                                  Text("High Scores",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1),
+                                ],
+                              ),
+                              onPressed: () {
+                                getScores().then((highScores) {
+                                  highScores.sort(
+                                      (a, b) => b.score.compareTo(a.score));
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return HighScoresDialog(
+                                          highScores: highScores);
+                                    },
+                                    barrierDismissible: false,
+                                  );
+                                });
+                              })),
+                      SizedBox(width: 16),
+                      Expanded(
+                          child: ColorCollapseButton(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset("assets/images/play_button.png"),
+                                  Text("Play",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1),
+                                ],
+                              ),
+                              onPressed: () {
+                                analyticsService
+                                    .logEvent(AnalyticsEvent.start_game);
+                                Navigator.pushNamed(
+                                  context,
+                                  "/world_map",
+                                );
+                              })),
                     ],
                   ),
                 ),
