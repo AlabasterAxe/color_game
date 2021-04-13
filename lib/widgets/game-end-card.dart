@@ -53,7 +53,7 @@ class GameEndCardState extends State<GameEndCard> {
             child: Card(
                 shape: CARD_SHAPE,
                 elevation: 12,
-                color: BLUE_COLOR,
+                color: widget.earnedStars > 0 ? BLUE_COLOR : Colors.grey[600],
                 child: Padding(
                     padding: EdgeInsets.all(16),
                     child: Column(
@@ -115,7 +115,7 @@ class GameEndCardState extends State<GameEndCard> {
                           Expanded(
                               child: ColorCollapseButton(
                                   child: Text(
-                                    "Next",
+                                    widget.earnedStars > 0 ? "Next" : "Back",
                                     style: TextStyle(
                                         fontSize: 24,
                                         color: BOARD_BACKGROUND_COLOR,

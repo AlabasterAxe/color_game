@@ -20,7 +20,7 @@ class SoundGameEventListener {
   onGameEvent(GameEvent event) {
     switch (event.type) {
       case GameEventType.USER_MOVE:
-        audioService.playSoundEffect(SoundEffectType.WHOOSH, volume: .5);
+        audioService.playSoundEffect(SoundEffectType.WHOOSH, volume: .3);
         break;
       case GameEventType.LEFT_OVER_BOX:
         audioService.playSoundEffect(SoundEffectType.POP);
