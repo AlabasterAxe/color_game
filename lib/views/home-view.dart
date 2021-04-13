@@ -5,6 +5,7 @@ import 'package:color_game/widgets/cc-button.dart';
 import 'package:color_game/widgets/high-scores-dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:color_game/widgets/home-view-button-icons.dart';
 
 import '../shared-pref-helper.dart';
 
@@ -14,6 +15,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AnalyticsService analyticsService = AppContext.of(context).analytics;
+    bool useCustomPaintedIcons = true;
     return Container(
         decoration: BoxDecoration(
             image: DecorationImage(
@@ -62,7 +64,11 @@ class HomeView extends StatelessWidget {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Image.asset("assets/images/high_scores.png"),
+                                  Container(
+                                      width: 80,
+                                      height: 70,
+                                      child: BarChartIcon(
+                                          color: BOARD_BACKGROUND_COLOR)),
                                   Text("High Scores",
                                       style: Theme.of(context)
                                           .textTheme
@@ -89,7 +95,13 @@ class HomeView extends StatelessWidget {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Image.asset("assets/images/play_button.png"),
+                                  Container(
+                                      width: 80,
+                                      height: 70,
+                                      child: Padding(
+                                          padding: EdgeInsets.all(4),
+                                          child: TriangleFacingEast(
+                                              color: BOARD_BACKGROUND_COLOR))),
                                   Text("Play",
                                       style: Theme.of(context)
                                           .textTheme
