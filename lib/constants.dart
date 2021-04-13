@@ -183,7 +183,7 @@ ColorGameConfig generateCrossLevel() {
     gridSize: Size(6, 6),
     predefinedGrid: boxes,
     completionEvaluator: noopCompletionEvaluator,
-    starEvaluator: PointStarEvaluator(threeStar: 75, twoStar: 50, oneStar: 40),
+    starEvaluator: PointStarEvaluator(threeStar: 75, twoStar: 50, oneStar: 30),
   );
 }
 
