@@ -88,6 +88,12 @@ ColorGameConfig immovable() {
     predefinedGrid: game,
     completionEvaluator: (_) => false,
     starEvaluator: PointStarEvaluator(threeStar: 0),
+    goalBoard: [
+      GameBox(Offset(.5, -.5), Colors.purple),
+      GameBox(Offset(-.5, .5), Colors.purple),
+      GameBox(Offset(.5, .5), Colors.purple),
+      GameBox(Offset(-.5, -.5), Colors.purple),
+    ],
   );
 }
 
@@ -138,6 +144,12 @@ ColorGameConfig undraggable() {
     predefinedGrid: game,
     completionEvaluator: (_) => false,
     starEvaluator: PointStarEvaluator(threeStar: 0),
+    goalBoard: [
+      GameBox(Offset(.5, -.5), Colors.grey),
+      GameBox(Offset(-.5, .5), Colors.grey),
+      GameBox(Offset(.5, .5), Colors.grey),
+      GameBox(Offset(-.5, -.5), Colors.grey),
+    ],
   );
 }
 

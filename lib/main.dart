@@ -1,5 +1,7 @@
 // @dart=2.9
 
+import 'dart:ui';
+
 import 'package:color_game/services/analytics-service.dart';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -75,6 +77,8 @@ class _AppContextStateState extends State<AppContextState> {
                   TagForChildDirectedTreatment.unspecified))
           .then((value) {});
     });
+
+    ThemeData colorCollapseTheme = getTheme(window.physicalSize.width);
     return AppContext(
         MaterialApp(
           onGenerateRoute: (RouteSettings settings) =>

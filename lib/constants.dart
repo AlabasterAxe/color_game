@@ -298,6 +298,12 @@ List<ColorGameConfig> levels = [
     ],
     completionEvaluator: noopCompletionEvaluator,
     starEvaluator: PointStarEvaluator(threeStar: 25),
+    goalBoard: [
+      GameBox(Offset(.5, -.5), RED_COLOR),
+      GameBox(Offset(-.5, .5), RED_COLOR),
+      GameBox(Offset(.5, .5), RED_COLOR),
+      GameBox(Offset(-.5, -.5), RED_COLOR),
+    ],
   ),
   ColorGameConfig(
     "level_6",
@@ -323,6 +329,12 @@ List<ColorGameConfig> levels = [
     completionEvaluator: moveCompletionEvaluator(15),
     moveLimit: 15,
     starEvaluator: MoveStarEvaluator(threeStar: 5, twoStar: 10, oneStar: 14),
+    goalBoard: [
+      GameBox(Offset(.5, -.5), GREEN_COLOR),
+      GameBox(Offset(-.5, .5), GREEN_COLOR),
+      GameBox(Offset(.5, .5), GREEN_COLOR),
+      GameBox(Offset(-.5, -.5), GREEN_COLOR),
+    ],
   ),
   ColorGameConfig(
     "level_10",
@@ -341,6 +353,12 @@ List<ColorGameConfig> levels = [
     completionEvaluator: moveCompletionEvaluator(30),
     moveLimit: 30,
     starEvaluator: MoveStarEvaluator(threeStar: 5, twoStar: 15, oneStar: 29),
+    goalBoard: [
+      GameBox(Offset(.5, -.5), RED_COLOR),
+      GameBox(Offset(-.5, .5), RED_COLOR),
+      GameBox(Offset(.5, .5), RED_COLOR),
+      GameBox(Offset(-.5, -.5), RED_COLOR),
+    ],
   ),
   ColorGameConfig(
     "level_11",
@@ -433,22 +451,24 @@ const String ANDROID_BANNER_AD_UNIT_ID =
     "ca-app-pub-1235186580185107/8452878897";
 const String IOS_BANNER_AD_UNIT_ID = "ca-app-pub-1235186580185107/4021026902";
 
-ThemeData colorCollapseTheme = ThemeData(
-  // Define the default font family.
-  fontFamily: 'Lato',
+ThemeData getTheme(double screenWidth) {
+  return ThemeData(
+    // Define the default font family.
+    fontFamily: 'Lato',
 
-  // Define the default TextTheme. Use this to specify the default
-  // text styling for headlines, titles, bodies of text, and more.
-  textTheme: TextTheme(
-    headline1: TextStyle(
-        fontSize: 64.0, fontWeight: FontWeight.bold, color: Colors.white),
-    headline2: TextStyle(
-        fontSize: 32.0,
-        fontWeight: FontWeight.bold,
-        color: BOARD_BACKGROUND_COLOR),
-    bodyText1: TextStyle(
-        fontSize: 20.0,
-        fontWeight: FontWeight.bold,
-        color: BOARD_BACKGROUND_COLOR),
-  ),
-);
+    // Define the default TextTheme. Use this to specify the default
+    // text styling for headlines, titles, bodies of text, and more.
+    textTheme: TextTheme(
+      headline1: TextStyle(
+          fontSize: 64.0, fontWeight: FontWeight.bold, color: Colors.white),
+      headline2: TextStyle(
+          fontSize: 32.0,
+          fontWeight: FontWeight.bold,
+          color: BOARD_BACKGROUND_COLOR),
+      bodyText1: TextStyle(
+          fontSize: screenWidth < 300 ? 16 : 20.0,
+          fontWeight: FontWeight.bold,
+          color: BOARD_BACKGROUND_COLOR),
+    ),
+  );
+}

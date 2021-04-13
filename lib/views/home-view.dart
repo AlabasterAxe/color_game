@@ -15,7 +15,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AnalyticsService analyticsService = AppContext.of(context).analytics;
-    bool useCustomPaintedIcons = true;
+    double screenWidth = MediaQuery.of(context).size.width;
     return Container(
         decoration: BoxDecoration(
             image: DecorationImage(
@@ -70,9 +70,13 @@ class HomeView extends StatelessWidget {
                                       child: BarChartIcon(
                                           color: BOARD_BACKGROUND_COLOR)),
                                   Text("High Scores",
+                                      textAlign: TextAlign.center,
                                       style: Theme.of(context)
                                           .textTheme
-                                          .bodyText1),
+                                          .bodyText1!
+                                          .copyWith(
+                                              fontSize:
+                                                  screenWidth < 400 ? 16 : 20)),
                                 ],
                               ),
                               onPressed: () {
@@ -105,7 +109,10 @@ class HomeView extends StatelessWidget {
                                   Text("Play",
                                       style: Theme.of(context)
                                           .textTheme
-                                          .bodyText1),
+                                          .bodyText1!
+                                          .copyWith(
+                                              fontSize:
+                                                  screenWidth < 400 ? 16 : 20)),
                                 ],
                               ),
                               onPressed: () {

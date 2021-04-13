@@ -73,7 +73,6 @@ class Hud extends StatelessWidget {
       );
     }
 
-    Widget? goalBoardWidget;
     if (goalBoard != null && goalBoard!.isNotEmpty) {
       double? minX;
       double? maxX;
