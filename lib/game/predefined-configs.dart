@@ -119,22 +119,22 @@ ColorGameConfig undraggable() {
       Colors.grey,
       attributes: [GameBoxAttribute.UNGRABBABLE],
     ),
-    GameBox(
-      Offset(-2.5, -2.5),
-      Colors.purple,
-    ),
-    GameBox(
-      Offset(2.5, 2.5),
-      Colors.purple,
-    ),
-    GameBox(
-      Offset(-2.5, 2.5),
-      Colors.purple,
-    ),
-    GameBox(
-      Offset(2.5, -2.5),
-      Colors.purple,
-    ),
+    GameBox(Offset(-2.5, -2.5), Colors.purple, attributes: [
+      GameBoxAttribute.UNFEATURED,
+      GameBoxAttribute.UNGRAVITIZABLE
+    ]),
+    GameBox(Offset(2.5, 2.5), Colors.purple, attributes: [
+      GameBoxAttribute.UNFEATURED,
+      GameBoxAttribute.UNGRAVITIZABLE
+    ]),
+    GameBox(Offset(-2.5, 2.5), Colors.purple, attributes: [
+      GameBoxAttribute.UNFEATURED,
+      GameBoxAttribute.UNGRAVITIZABLE
+    ]),
+    GameBox(Offset(2.5, -2.5), Colors.purple, attributes: [
+      GameBoxAttribute.UNFEATURED,
+      GameBoxAttribute.UNGRAVITIZABLE
+    ]),
   ];
   return ColorGameConfig(
     "undraggable_boxes",
