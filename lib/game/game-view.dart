@@ -232,14 +232,15 @@ class _GameViewState extends State<GameView> {
     }
 
     return Scaffold(
+        appBar: AppBar(backgroundColor: BOARD_BACKGROUND_COLOR, elevation: 0),
         body: Container(
-      color: BOARD_BACKGROUND_COLOR,
-      child: SafeArea(
-        child: Stack(children: [
-          Stack(alignment: Alignment.center, children: stackChildren),
-          Positioned(left: 0, right: 0, bottom: 0, child: BannerAdWidget())
-        ]),
-      ),
-    ));
+          color: BOARD_BACKGROUND_COLOR,
+          child: SafeArea(
+            child: Stack(children: [
+              Stack(alignment: Alignment.center, children: stackChildren),
+              Positioned(left: 0, right: 0, bottom: 0, child: BannerAdWidget())
+            ]),
+          ),
+        ));
   }
 }

@@ -73,7 +73,6 @@ class Hud extends StatelessWidget {
       );
     }
 
-    Widget? goalBoardWidget;
     if (goalBoard != null && goalBoard!.isNotEmpty) {
       double? minX;
       double? maxX;
@@ -126,7 +125,7 @@ class Hud extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 mainAxisSize: MainAxisSize.min,
