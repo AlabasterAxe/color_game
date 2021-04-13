@@ -119,13 +119,15 @@ class _GameViewState extends State<GameView> {
   }
 
   void _doGameOver() {
+    if (gameOver) {
+      return;
+    }
+    gameOver = true;
     earnedStars = widget.config.starEvaluator(events);
     AppContext.of(context).analytics.logEvent(AnalyticsEvent.finish_game);
     addScore(
         levelTag: widget.config.label, score: score, earnedStars: earnedStars!);
-    setState(() {
-      gameOver = true;
-    });
+    setState(() {});
   }
 
   void _handleGameEvent(GameEvent e) {
