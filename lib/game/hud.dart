@@ -57,20 +57,45 @@ class Hud extends StatelessWidget {
         ],
       );
     } else if (scoreGoal != null) {
-      rightSideWidget = Column(
-        children: [
-          Text(
-            "next star at",
-            style: TextStyle(
-                fontSize: 16, color: Colors.white, fontWeight: FontWeight.w800),
-          ),
-          Text(
-            "$scoreGoal",
-            style: TextStyle(
-                fontSize: 16, color: Colors.white, fontWeight: FontWeight.w800),
-          )
-        ],
-      );
+      if (scoreGoal! < score) {
+        rightSideWidget = Column(
+          children: [
+            Text(
+              "mission",
+              style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800),
+            ),
+            Text(
+              "completed!",
+              style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800),
+            )
+          ],
+        );
+      } else {
+        rightSideWidget = Column(
+          children: [
+            Text(
+              "next star at",
+              style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800),
+            ),
+            Text(
+              "$scoreGoal",
+              style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800),
+            )
+          ],
+        );
+      }
     }
 
     if (goalBoard != null && goalBoard!.isNotEmpty) {
