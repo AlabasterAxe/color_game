@@ -53,7 +53,7 @@ flutter_icons:
   ios: true
   image_path: "assets/icon/squarified_big.png"
   adaptive_icon_background: "#00000000"
-  adaptive_icon_foreground: "assets/icon/squarified_big_w_padding.png"
+  adaptive_icon_foreground: "assets/icon/adaptive.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
