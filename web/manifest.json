@@ -1,6 +1,6 @@
 {
-    "name": "color_game",
-    "short_name": "color_game",
+    "name": "Color Collapse",
+    "short_name": "Color Collapse",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
