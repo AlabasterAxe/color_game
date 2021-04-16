@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:color_game/widgets/home-view-button-icons.dart';
 
+import '../app.dart';
 import '../shared-pref-helper.dart';
 
 class HomeView extends StatelessWidget {
@@ -14,7 +15,7 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AnalyticsService analyticsService = AppContext.of(context).analytics;
+    AnalyticsService analyticsService = AppContext.of(context)!.analytics;
     double screenWidth = MediaQuery.of(context).size.width;
     return Container(
         decoration: BoxDecoration(

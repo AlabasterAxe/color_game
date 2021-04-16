@@ -5,6 +5,8 @@ import 'package:color_game/widgets/cc-button.dart';
 import 'package:color_game/widgets/spinning-animated-star.dart';
 import 'package:flutter/material.dart';
 
+import '../app.dart';
+
 class GameEndCard extends StatefulWidget {
   final int earnedStars;
   final void Function() onBack;
@@ -31,7 +33,7 @@ class GameEndCardState extends State<GameEndCard> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    AppContext.of(context).audioService.playSoundEffect(widget.earnedStars > 0
+    AppContext.of(context)!.audioService.playSoundEffect(widget.earnedStars > 0
         ? SoundEffectType.SUCCESS
         : SoundEffectType.FAILURE);
   }

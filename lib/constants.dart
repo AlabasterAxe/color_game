@@ -475,7 +475,7 @@ const String IOS_BANNER_AD_UNIT_ID = "ca-app-pub-1235186580185107/4021026902";
 const String IOS_TEST_BANNER_AD_UNIT_ID =
     "ca-app-pub-3940256099942544/2934735716";
 
-ThemeData getTheme(double screenWidth) {
+ThemeData getTheme() {
   return ThemeData(
     // Define the default font family.
     fontFamily: 'Lato',
@@ -490,7 +490,7 @@ ThemeData getTheme(double screenWidth) {
           fontWeight: FontWeight.bold,
           color: BOARD_BACKGROUND_COLOR),
       bodyText1: TextStyle(
-          fontSize: screenWidth < 300 ? 16 : 20.0,
+          fontSize: 20.0,
           fontWeight: FontWeight.bold,
           color: BOARD_BACKGROUND_COLOR),
     ),

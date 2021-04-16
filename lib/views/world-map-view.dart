@@ -8,6 +8,7 @@ import 'package:color_game/widgets/cc-button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import '../app.dart';
 import '../constants.dart';
 import '../model.dart';
 import '../shared-pref-helper.dart';
@@ -140,7 +141,7 @@ class _WorldMapViewState extends State<WorldMapView>
                                           onTap: page == (_numVisibleItems - 1)
                                               ? null
                                               : () {
-                                                  AppContext.of(context)
+                                                  AppContext.of(context)!
                                                       .analytics
                                                       .logEvent(AnalyticsEvent
                                                           .start_game);

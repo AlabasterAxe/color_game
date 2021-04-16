@@ -10,7 +10,7 @@ import 'package:color_game/widgets/game-end-card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../main.dart';
+import '../app.dart';
 import '../model.dart';
 import '../shared-pref-helper.dart';
 import 'game-board.dart';
@@ -65,7 +65,7 @@ class _GameViewState extends State<GameView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     soundGameEventListener =
-        SoundGameEventListener(AppContext.of(context).audioService);
+        SoundGameEventListener(AppContext.of(context)!.audioService);
   }
 
   void _handleNewRun(RunEventMetadata metadata) {
@@ -76,7 +76,7 @@ class _GameViewState extends State<GameView> {
   }
 
   void _handleNewSquare(SquareEventMetadata metadata) {
-    AppContext.of(context)
+    AppContext.of(context)!
         .audioService
         .playSoundEffect(SoundEffectType.LARGE_POOF);
     setState(() {
@@ -124,7 +124,7 @@ class _GameViewState extends State<GameView> {
     }
     gameOver = true;
     earnedStars = widget.config.starEvaluator(events);
-    AppContext.of(context).analytics.logEvent(AnalyticsEvent.finish_game);
+    AppContext.of(context)!.analytics.logEvent(AnalyticsEvent.finish_game);
     addScore(
         levelTag: widget.config.label, score: score, earnedStars: earnedStars!);
     setState(() {});
