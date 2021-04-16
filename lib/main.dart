@@ -17,11 +17,9 @@ import 'services/audio-service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await MobileAds.instance.initialize();
   runApp(MyApp());
 }
-
-const String IOS_ADMOB_APP_ID = "ca-app-pub-1235186580185107~4655451720";
-const String ANDROID_ADMOB_APP_ID = "ca-app-pub-1235186580185107~4695991932";
 
 class MyApp extends StatelessWidget {
   @override
@@ -69,14 +67,14 @@ class _AppContextStateState extends State<AppContextState> {
         FirebaseAnalyticsObserver(analytics: analytics);
     analytics.logAppOpen();
 
-    MobileAds.instance.initialize().then((InitializationStatus status) {
-      print('Initialization done: ${status.toString()}');
-      MobileAds.instance
-          .updateRequestConfiguration(RequestConfiguration(
-              tagForChildDirectedTreatment:
-                  TagForChildDirectedTreatment.unspecified))
-          .then((value) {});
-    });
+    // MobileAds.instance.initialize().then((InitializationStatus status) {
+    //   print('Initialization done: ${status.toString()}');
+    //   MobileAds.instance
+    //       .updateRequestConfiguration(RequestConfiguration(
+    //           tagForChildDirectedTreatment:
+    //               TagForChildDirectedTreatment.unspecified))
+    //       .then((value) {});
+    // });
 
     ThemeData colorCollapseTheme = getTheme(window.physicalSize.width);
     return AppContext(

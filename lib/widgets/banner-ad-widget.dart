@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:color_game/constants.dart';
 import 'package:flutter/material.dart';
@@ -19,9 +20,9 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
   void initState() {
     super.initState();
     bannerAd = PublisherBannerAd(
-        adUnitId: ANDROID_BANNER_AD_UNIT_ID,
+        adUnitId: Platform.isAndroid ? ANDROID_BANNER_AD_UNIT_ID : IOS_BANNER_AD_UNIT_ID,
         request: PublisherAdRequest(nonPersonalizedAds: true),
-        sizes: [AdSize.smartBanner],
+        sizes: [Platform.isAndroid ? AdSize.smartBanner: AdSize.smartBannerPortrait],
         listener: AdListener(
           onAdLoaded: (Ad ad) {
             bannerCompleter.complete(ad as PublisherBannerAd);
