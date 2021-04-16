@@ -35,6 +35,7 @@ class AppContext extends InheritedWidget {
     this.audioService,
     this.analytics, {
     Key? key,
+    builderWrapper,
   }) : super(key: key, child: child);
 
   static AppContext? of(BuildContext context) {
@@ -48,7 +49,12 @@ class AppContext extends InheritedWidget {
 }
 
 class AppContextState extends StatefulWidget {
-  AppContextState({Key? key}) : super(key: key);
+  final Widget Function(BuildContext, Widget?) builderWrapper;
+  AppContextState({
+    Key? key,
+    builderWrapper,
+  })  : this.builderWrapper = builderWrapper ?? passThroughBuilder,
+        super(key: key);
 
   @override
   _AppContextStateState createState() => _AppContextStateState();
@@ -71,6 +77,7 @@ class _AppContextStateState extends State<AppContextState> {
               getRouteIdByName(settings.name).generateRoute(settings),
           initialRoute: "/splash",
           theme: colorCollapseTheme,
+          builder: widget.builderWrapper,
         ),
         audioService,
         AnalyticsService(analytics, observer));

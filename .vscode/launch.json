@@ -19,6 +19,13 @@
       "args": ["--no-sound-null-safety"]
     },
     {
+      "name": "DEVICE PREVIEW",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main_dp.dart",
+      "args": ["--no-sound-null-safety"]
+    },
+    {
       "name": "Flutter (release mode)",
       "type": "dart",
       "request": "launch",
