@@ -471,8 +471,9 @@ List<ColorGameConfig> levels = [
 
 const String ANDROID_BANNER_AD_UNIT_ID =
     "ca-app-pub-1235186580185107/8452878897";
-const String IOS_BANNER_AD_UNIT_ID = "ca-app-pub-3777305311106149/4217030072";
-const String IOS_TEST_BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/2934735716";
+const String IOS_BANNER_AD_UNIT_ID = "ca-app-pub-1235186580185107/4021026902";
+const String IOS_TEST_BANNER_AD_UNIT_ID =
+    "ca-app-pub-3940256099942544/2934735716";
 
 ThemeData getTheme(double screenWidth) {
   return ThemeData(
