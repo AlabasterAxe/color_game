@@ -67,15 +67,6 @@ class _AppContextStateState extends State<AppContextState> {
         FirebaseAnalyticsObserver(analytics: analytics);
     analytics.logAppOpen();
 
-    // MobileAds.instance.initialize().then((InitializationStatus status) {
-    //   print('Initialization done: ${status.toString()}');
-    //   MobileAds.instance
-    //       .updateRequestConfiguration(RequestConfiguration(
-    //           tagForChildDirectedTreatment:
-    //               TagForChildDirectedTreatment.unspecified))
-    //       .then((value) {});
-    // });
-
     ThemeData colorCollapseTheme = getTheme(window.physicalSize.width);
     return AppContext(
         MaterialApp(
